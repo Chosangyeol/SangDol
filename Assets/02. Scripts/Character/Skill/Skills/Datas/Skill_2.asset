@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 161dc4070d498d346b2bec2b09d969c8, type: 3}
+  m_Name: Skill_2
+  m_EditorClassIdentifier: Assembly-CSharp::Skill_2SO
+  skillID: 10002
+  skillName: "\uD30C\uC9C4 / \uB099\uC6D4"
+  skillDesc: "\uC804\uBC29\uC744 \uBCA0\uC11C \uC12C\uAD11\uC744 \uC77C\uC73C\uD0A4\uACE0
+    \uD55C\uBC88 \uB354 \uD0A4\uB97C \uC785\uB825 \uC2DC \uC804\uBC29\uC744 \uB0B4\uB824\uCC0D\uC5B4\uC11C
+    \uB370\uBBF8\uC9C0\uB97C \uC900\uB2E4. "
+  skillIcon: {fileID: 21300000, guid: 7972dd97521bb1c44ba8e3774391b996, type: 3}
+  requireLevel: 0
+  maxLevel: 10
+  skillCool: 6
+  skillEffects:
+  - {fileID: 7752083996402044098, guid: 8419b00d8b6ddf34198834e732c088f2, type: 3}
+  - {fileID: -5438589630168675564, guid: 43f0faecc4d5f6546b43797c01736343, type: 3}

@@ -1,0 +1,18 @@
+using UnityEngine;
+
+[CreateAssetMenu(fileName = "CharacterStatSO", menuName = "SO/Character/CharacterStatSO", order = 1)]
+public class CharacterStatSO : ScriptableObject
+{
+    [Header("Ä³¸¯ÅÍ ½ºÅÈ")]
+    public float maxHp;
+    public float attackDamage;
+    public float defense;
+
+    public float moveSpeed = 1f;
+    public float attackSpeed = 1f;
+    public float downPower = 1f;
+
+    public float cirticalChance = 0.3f;
+    public float cirticalDamage = 1.5f;
+
+}
