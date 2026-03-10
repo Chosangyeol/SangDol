@@ -1,15 +1,18 @@
 using UnityEngine;
+using TMPro;
+using UnityEngine.UI;
 
 public interface IInteractable
 {
-    public string InteractText { get; }
+    string interactName { get; }
+    bool canInteract { get; }
 
-    public void Init(string text);
+    void Init(string text);
 
-    public void Interact(CharacterModel character);
+    void Interact(Transform target);
 
-    public void EnableInteract();
+    void EnableInteract(Transform target);
 
-    public void DisableInteract();
+    void DisableInteract(Transform target);
 
 }
