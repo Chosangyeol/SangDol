@@ -13,6 +13,8 @@ public class CharacterModel : MonoBehaviour
     [Header("캐릭터 기본 설정")]
     public CharacterStatSO characterStatSO;
     public int inventorySlotSize = 30;
+    public LayerMask interactableLayer;
+    public float interactableDistance = 3f;
 
     [SerializeField]
     public List<Item> testItems;
@@ -62,14 +64,20 @@ public class CharacterModel : MonoBehaviour
         StartCoroutine(routine);
     }
 
+    #region 캐릭터 스탯 관리
     public void Damaged(float damage)
     {
         Stat.Damaged(damage);
         if (stat.Stat.curHp <= 0)
         {
             // 캐릭터 사망 처리
-            Debug.Log("캐릭터가 사망했습니다.");
+            Die();
         }
+    }
+
+    private void Die()
+    {
+        Debug.Log("캐릭터가 사망했습니다.");
     }
 
     public void Heal(float healAmount)
@@ -148,4 +156,35 @@ public class CharacterModel : MonoBehaviour
             Stat.RemoveCirticalDamage(value);
         }
     }
+    #endregion
+
+    #region 상호작용
+    public void TryInteract()
+    {
+        Collider[] targets = Physics.OverlapSphere(transform.position, interactableDistance, interactableLayer);
+
+        if (targets.Length <= 0)
+        {
+            Debug.Log("상호작용 오브젝트 없음");
+            return;
+        }
+
+        Collider target = null;
+        float closest = 999;
+
+        for (int i = 0; i < targets.Length; i++)
+        {
+            float dis = Vector3.Distance(this.transform.position, targets[i].transform.position);
+            if (dis < closest)
+            {
+                closest = dis;
+                target = targets[i];
+            }
+        }
+
+        if (target != null)
+            target.gameObject.GetComponent<IInteractable>().Interact(this.transform);
+    }
+
+    #endregion
 }

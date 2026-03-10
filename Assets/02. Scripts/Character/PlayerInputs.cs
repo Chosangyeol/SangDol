@@ -6,6 +6,7 @@ public class PlayerInputs : MonoBehaviour
 {
     [SerializeField] private CharacterModel model;
     [SerializeField] private InputActionReference moveAction;
+    [SerializeField] private InputActionReference interactActon;
     [SerializeField] private InputActionReference attackAction;
     [SerializeField] private InputActionReference skillSlotAction;
     [SerializeField] private InputActionReference uiAction;
@@ -19,12 +20,14 @@ public class PlayerInputs : MonoBehaviour
     private void OnEnable()
     {
         moveAction.action.Enable();
+        interactActon.action.Enable();
         attackAction.action.Enable();
         skillSlotAction.action.Enable();
         uiAction.action.Enable();
         pointerPos.action.Enable();
 
         moveAction.action.performed += OnMove;
+        interactActon.action.performed += OnInteract;
         attackAction.action.performed += OnBasicAttack;
         skillSlotAction.action.performed += OnSkillSlot;
         uiAction.action.performed += OnUIInput;
@@ -33,6 +36,7 @@ public class PlayerInputs : MonoBehaviour
     private void OnDisable()
     {
         moveAction.action.performed -= OnMove;
+        interactActon.action.performed -= OnInteract;
         attackAction.action.performed -= OnBasicAttack;
         skillSlotAction.action.performed -= OnSkillSlot;
         uiAction.action.performed -= OnUIInput;
@@ -43,6 +47,9 @@ public class PlayerInputs : MonoBehaviour
 
     private void OnMove(InputAction.CallbackContext ctx)
         => model.PlayerInput.OnMoveClick(GetPointerScreenPos());
+
+    private void OnInteract(InputAction.CallbackContext ctx)
+        => model.PlayerInput.OnInteract();
 
     private void OnBasicAttack(InputAction.CallbackContext ctx)
         => model.PlayerInput.OnAttackClick(GetPointerScreenPos());

@@ -9,7 +9,7 @@ public interface IInteractable
 
     void Init(string text);
 
-    void Interact(Transform target);
+    bool Interact(Transform target);
 
     void EnableInteract(Transform target);
 

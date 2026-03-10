@@ -29,6 +29,12 @@ public class C_Input
         _controller.RequestBasicAttack(point);
     }
 
+    public void OnInteract()
+    {
+        _controller.RequestInteract();
+    }
+
+
     public void OnSkillInput(C_Enums.SkillSlot skillSlot, Vector2 screenPos)
     {
         if (!GetMouseInput(screenPos, out var point))

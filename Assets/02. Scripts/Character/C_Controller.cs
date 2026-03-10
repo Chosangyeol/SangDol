@@ -57,6 +57,11 @@ public class C_Controller
         }
     }
 
+    public void RequestInteract()
+    {
+        _model.TryInteract();
+    }
+
     public void RequestBasicAttack(Vector3 dest)
     {
         StopMove();
