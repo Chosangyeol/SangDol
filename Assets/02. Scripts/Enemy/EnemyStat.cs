@@ -10,6 +10,9 @@ public class EnemyStat
     public float moveSpeed;
     public float attackSpeed;
 
+    public float detactRange;
+    public float attackRange;
+
     public EnemyStat(EnemyStatSO statSO)
     {
         enemyName = statSO.enemyName;
@@ -19,6 +22,9 @@ public class EnemyStat
         attackDamage = statSO.attackDamage;
         moveSpeed = statSO.moveSpeed;
         attackSpeed = statSO.attackSpeed;
+
+        detactRange = statSO.detactRange;
+        attackRange = statSO.attackRange;
     }
 
     public void Damaged(float damage)

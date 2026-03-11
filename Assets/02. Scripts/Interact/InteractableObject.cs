@@ -14,7 +14,7 @@ public class InteractableObject : MonoBehaviour, IInteractable
     public bool canInteract => CanInteract;
 
     public GameObject interactUI;
-    public RawImage interactImage;
+    public GameObject interactObject;
     public TMP_Text interactText;
     public Vector3 offset;
 
@@ -31,8 +31,7 @@ public class InteractableObject : MonoBehaviour, IInteractable
         if (!canInteract) return;
 
         Vector3 pos = Camera.main.WorldToScreenPoint(interactUIPoint.position + offset);
-        interactImage.gameObject.transform.position = pos;
-        interactText.gameObject.transform.position = pos;
+        interactObject.gameObject.transform.position = pos;
     }
 
 

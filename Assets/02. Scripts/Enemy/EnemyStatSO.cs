@@ -14,6 +14,10 @@ public class EnemyStatSO : ScriptableObject
     public float attackDamage;
     public float moveSpeed = 1f;
     public float attackSpeed = 1f;
+
+    [Header("범위 설정")]
+    public float detactRange = 5f;
+    public float attackRange = 2f;
     
 
 }
