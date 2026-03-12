@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b34247faa7bd69d44bd1c88d1e822fdc, type: 3}
   m_Name: Test
   m_EditorClassIdentifier: Assembly-CSharp::EnemyStatSO
-  enemyName: 
-  isAggressive: 0
-  canDown: 0
-  maxHp: 0
-  level: 0
-  attackDamage: 0
-  moveSpeed: 1
-  attackSpeed: 1
+  enemyName: Test
+  isAggressive: 1
+  canDown: 1
+  maxHp: 100
+  level: 1
+  attackDamage: 1
+  moveSpeed: 2
+  attackSpeed: 2
   detactRange: 5
   attackRange: 2
