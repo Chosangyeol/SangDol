@@ -67,13 +67,26 @@ public class EnemyModel : MonoBehaviour
                 }
                 else if (!canChase && !canAttack)
                 {
-                    curState = EState.Patrol;
-                    stateMachine.ChangeState(new PatrolState(this));
-                    return;
+                    if (stateMachine.CurState is IdleState idle && idle.canPatrol)
+                    {
+                        stateMachine.ChangeState(new PatrolState(this));
+                        return;
+                    }
                 }
                 break;
             case EState.Patrol:
-                // 순찰 상태에서의 행동
+                if (canAttack && canChase)
+                {
+                    curState = EState.Attack;
+                    stateMachine.ChangeState(new AttackState(this));
+                    return;
+                }
+                else if (canChase && !canAttack)
+                {
+                    curState = EState.Chase;
+                    stateMachine.ChangeState(new ChaseState(this));
+                    return;
+                }
                 break;
             case EState.Chase:
                 // 추적 상태에서의 행동
