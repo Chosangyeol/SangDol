@@ -16,22 +16,27 @@ public class EnemyModel : MonoBehaviour
     [Header("적 기본 설정")]
     public EnemyStatSO statSO;
 
+    [SerializeField] private Transform spawnPoint;
+    public Transform SpawnPoint => spawnPoint;
 
-    private NavMeshAgent agent;
-    public NavMeshAgent Agent => agent;
+    private CharacterModel _target;
+    public CharacterModel Target => _target;
 
-    private Animator anim;
-    public Animator Anim => anim;
+    private NavMeshAgent _agent;
+    public NavMeshAgent Agent => _agent;
 
-    private E_Stat stat;
-    private E_Stat Stat => stat;
+    private Animator _anim;
+    public Animator Anim => _anim;
+
+    private EnemyStat _stat;
+    public EnemyStat Stat => _stat;
 
     private StateMachine stateMachine;
     private EState curState;
 
     private void Awake()
     {
-        stat = new E_Stat(this, statSO);
+        _stat = new EnemyStat(statSO);
         stateMachine = new StateMachine(this);
 
         curState = EState.Idle;
@@ -40,20 +45,24 @@ public class EnemyModel : MonoBehaviour
 
     private void Start()
     {
-        agent = GetComponent<NavMeshAgent>();
-        anim = GetComponent<Animator>();
+        _target = FindAnyObjectByType<CharacterModel>();
+
+        _agent = GetComponent<NavMeshAgent>();
+        _agent.speed = _stat.moveSpeed;
+
+        _anim = GetComponent<Animator>();
 
     }
 
     private void Update()
     {
-        bool canChase = Physics.CheckSphere(transform.position, Stat.Stat.detactRange, LayerMask.GetMask("Player"));
-        bool canAttack = Physics.CheckSphere(transform.position, Stat.Stat.attackRange, LayerMask.GetMask("Player"));
+        bool canChase = Physics.CheckSphere(transform.position, _stat.detactRange, LayerMask.GetMask("Player"));
+        bool canAttack = Physics.CheckSphere(transform.position, _stat.attackRange, LayerMask.GetMask("Player"));
 
         switch (curState)
         {
             case EState.Idle:
-                if (canAttack && canChase)
+                if (canAttack)
                 {
                     curState = EState.Attack;
                     stateMachine.ChangeState(new AttackState(this));
@@ -69,6 +78,7 @@ public class EnemyModel : MonoBehaviour
                 {
                     if (stateMachine.CurState is IdleState idle && idle.canPatrol)
                     {
+                        curState = EState.Patrol;
                         stateMachine.ChangeState(new PatrolState(this));
                         return;
                     }
@@ -87,15 +97,39 @@ public class EnemyModel : MonoBehaviour
                     stateMachine.ChangeState(new ChaseState(this));
                     return;
                 }
+                else if (!canChase && !canAttack)
+                {
+                    if (stateMachine.CurState is PatrolState patrol && !patrol.isPatrolling)
+                    {
+                        curState = EState.Idle;
+                        stateMachine.ChangeState(new IdleState(this));
+                        return;
+                    }
+                }
                 break;
             case EState.Chase:
+                if (canAttack)
+                {
+                    curState = EState.Attack;
+                    stateMachine.ChangeState(new AttackState(this));
+                }
+                else if (!canChase)
+                {
+                    curState = EState.Return;
+                    stateMachine.ChangeState(new ReturnState(this));
+                }
                 // 추적 상태에서의 행동
                 break;
             case EState.Attack:
                 // 공격 상태에서의 행동
                 break;
             case EState.Return:
-                // 귀환 상태에서의 행동
+                // 스폰 포인트로 복귀 후 Idle 상태로 자동 전환
+                if (stateMachine.CurState is ReturnState returnState && !returnState.isReturning)
+                {
+                    curState = EState.Idle;
+                    stateMachine.ChangeState(new IdleState(this));
+                }
                 break;
         }
 
@@ -105,8 +139,8 @@ public class EnemyModel : MonoBehaviour
 
     public void Damaged(float damage)
     {
-        stat.Damaged(damage);
-        if (stat.Stat.curHp <= 0)
+        _stat.Damaged(damage);
+        if (_stat.curHp <= 0)
         {
             Die();
         }
@@ -114,12 +148,12 @@ public class EnemyModel : MonoBehaviour
 
     public void Heal(float healAmount)
     {
-        stat.Heal(healAmount);
+        _stat.Heal(healAmount);
     }
 
     public void Die()
     {
         // 적 사망 처리
-        Debug.Log($"{stat.Stat.enemyName}이(가) 사망했습니다.");
+        Debug.Log($"{_stat.enemyName}이(가) 사망했습니다.");
     }
 }

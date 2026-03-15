@@ -18,7 +18,7 @@ public class IdleState : State
 
     public override void UpdateState()
     {
-        Debug.Log(patrolDelay);
+        //Debug.Log(patrolDelay);
 
         patrolDelay -= Time.deltaTime;
         if (patrolDelay < 0)
@@ -30,4 +30,5 @@ public class IdleState : State
     {
         Debug.Log("대기 상태에서 벗어남");
     }
+
 }
