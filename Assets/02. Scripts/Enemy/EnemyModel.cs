@@ -15,6 +15,7 @@ public class EnemyModel : MonoBehaviour
 {
     [Header("적 기본 설정")]
     public EnemyStatSO statSO;
+    [SerializeField] private LayerMask _playerLayer;
 
     [SerializeField] private Transform spawnPoint;
     public Transform SpawnPoint => spawnPoint;
@@ -56,8 +57,13 @@ public class EnemyModel : MonoBehaviour
 
     private void Update()
     {
-        bool canChase = Physics.CheckSphere(transform.position, _stat.detactRange, LayerMask.GetMask("Player"));
-        bool canAttack = Physics.CheckSphere(transform.position, _stat.attackRange, LayerMask.GetMask("Player"));
+        float dist = Vector3.Distance(transform.position, _target.transform.position);
+
+        bool canChase = dist <= _stat.detactRange;
+        bool canAttack = dist <= _stat.attackRange;
+        bool canReturn = dist >= _stat.detactRange + 5f;
+
+        Debug.Log($"canChase: {canChase}, canAttack: {canAttack}, curState: {curState}");
 
         switch (curState)
         {
@@ -113,7 +119,7 @@ public class EnemyModel : MonoBehaviour
                     curState = EState.Attack;
                     stateMachine.ChangeState(new AttackState(this));
                 }
-                else if (!canChase)
+                else if (canReturn)
                 {
                     curState = EState.Return;
                     stateMachine.ChangeState(new ReturnState(this));
@@ -121,6 +127,19 @@ public class EnemyModel : MonoBehaviour
                 // 추적 상태에서의 행동
                 break;
             case EState.Attack:
+                if (stateMachine.CurState is AttackState attack && attack.CanAttack)
+                {
+                    if (canChase)
+                    {
+                        curState = EState.Chase;
+                        stateMachine.ChangeState(new ChaseState(this));
+                    }
+                    else if (canReturn)
+                    {
+                        curState = EState.Return;
+                        stateMachine.ChangeState(new ReturnState(this));
+                    }
+                }
                 // 공격 상태에서의 행동
                 break;
             case EState.Return:
@@ -136,6 +155,13 @@ public class EnemyModel : MonoBehaviour
 
         stateMachine.UpdateState();
     }
+
+    public void Attack()
+    {
+        // 자식 클래스에서 공격 구현
+        Debug.Log("공격 실행");
+    }
+
 
     public void Damaged(float damage)
     {
@@ -155,5 +181,18 @@ public class EnemyModel : MonoBehaviour
     {
         // 적 사망 처리
         Debug.Log($"{_stat.enemyName}이(가) 사망했습니다.");
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (_stat == null) return;
+
+        // 추적 범위 (노란색)
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, _stat.detactRange);
+
+        // 공격 범위 (빨간색)
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, _stat.attackRange);
     }
 }

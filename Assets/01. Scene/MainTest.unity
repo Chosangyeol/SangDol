@@ -1343,7 +1343,7 @@ GameObject:
   - component: {fileID: 409263473}
   - component: {fileID: 409263472}
   - component: {fileID: 409263471}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: TestEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1407,6 +1407,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyModel
   statSO: {fileID: 11400000, guid: 855df06f557a4c642b0b166c786d86b2, type: 2}
+  _playerLayer:
+    serializedVersion: 2
+    m_Bits: 128
   spawnPoint: {fileID: 76313224}
 --- !u!135 &409263474
 SphereCollider:
