@@ -2,11 +2,15 @@ using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
+using static C_Enums;
 
 public class StatusUI : MonoBehaviour
 {
+    [Header("장비 슬룻")]
     [SerializeField] List<EquipmentSlot> equipmentSlots;
 
+    [Header("기본 스텟 UI")]
     [SerializeField] TMP_Text hpText;
     [SerializeField] TMP_Text levelText;
     [SerializeField] TMP_Text expText;
@@ -15,9 +19,24 @@ public class StatusUI : MonoBehaviour
     [SerializeField] TMP_Text criticalChanceText;
     [SerializeField] TMP_Text criticalDamageText;
 
+    [Header("스텟 투자 UI")]
+    [SerializeField] GameObject specialStat;
+
     [SerializeField] TMP_Text totalPointText;
     [SerializeField] TMP_Text remainPointText;
     [SerializeField] TMP_Text usedPointText;
+
+    [SerializeField] Button _s1Button;
+    [SerializeField] Button _s2Button;
+    [SerializeField] Button _s3Button;
+    [SerializeField] Button _s4Button;
+    [SerializeField] Button _s5Button;
+
+    [SerializeField] TMP_Text _statS1Text;
+    [SerializeField] TMP_Text _statS2Text;
+    [SerializeField] TMP_Text _statS3Text;
+    [SerializeField] TMP_Text _statS4Text;
+    [SerializeField] TMP_Text _statS5Text;
 
 
     private C_Stat _stat;
@@ -29,6 +48,14 @@ public class StatusUI : MonoBehaviour
         _stat = stat;
         _equipment = equipment;
         _special = special;
+
+        specialStat.SetActive(false);
+
+        _s1Button.onClick.AddListener(() => InvestStat(C_Enums.SpecialStat.S1));
+        _s2Button.onClick.AddListener(() => InvestStat(C_Enums.SpecialStat.S2));
+        _s3Button.onClick.AddListener(() => InvestStat(C_Enums.SpecialStat.S3));
+        _s4Button.onClick.AddListener(() => InvestStat(C_Enums.SpecialStat.S4));
+        _s5Button.onClick.AddListener(() => InvestStat(C_Enums.SpecialStat.S5));
 
         for (int i = 0; i < equipmentSlots.Count; i++)
         {
@@ -62,22 +89,46 @@ public class StatusUI : MonoBehaviour
 
     public void RefreshStatus()
     {  
-        hpText.text = $"HP: {_stat.Stat.curHp} / {_stat.Stat.maxHp.GetValue()}";
-        levelText.text = $"Level: {_stat.Stat.currentLevel}";
-        expText.text = $"EXP: {_stat.Stat.currentExp} / {_stat.Stat.maxExp}";
-        attackText.text = $"Attack: {_stat.Stat.attackDamage.GetValue()}";
-        defenseText.text = $"Defense: {_stat.Stat.defense.GetValue()}";
-        criticalChanceText.text = $"Critical Chance: {_stat.Stat.criticalChance.GetValue() * 100}%";
-        criticalDamageText.text = $"Critical Damage: {_stat.Stat.criticalDamage.GetValue() * 100}%";
+        hpText.text = $"체력: {_stat.Stat.curHp} / {_stat.Stat.maxHp.GetValue()}";
+        levelText.text = $"레벨: {_stat.Stat.currentLevel}";
+        expText.text = $"경험치: {_stat.Stat.currentExp} / {_stat.Stat.maxExp}";
+        attackText.text = $"공격력: {_stat.Stat.attackDamage.GetValue()}";
+        defenseText.text = $"방어력: {_stat.Stat.defense.GetValue()}";
+        criticalChanceText.text = $"치명타 확률: {_stat.Stat.criticalChance.GetValue() * 100}%";
+        criticalDamageText.text = $"치명타 피해량: {_stat.Stat.criticalDamage.GetValue() * 100}%";
 
         totalPointText.text = $"전체 스텟 포인트 : {_special._totalPoint}";
         remainPointText.text = $"남은 스텟 포인트 : {_special._remainPoint}";
         usedPointText.text = $"사용한 스텟 포인트 : {_special._usedPoint}";
+
+        _statS1Text.text = $"{_special._currentStatState[SpecialStat.S1]} 포인트";
+        _statS2Text.text = $"{_special._currentStatState[SpecialStat.S2]} 포인트";
+        _statS3Text.text = $"{_special._currentStatState[SpecialStat.S3]} 포인트";
+        _statS4Text.text = $"{_special._currentStatState[SpecialStat.S4]} 포인트";
+        _statS5Text.text = $"{_special._currentStatState[SpecialStat.S5]} 포인트";
     }
 
     public void Toggle()
     {
         gameObject.SetActive(!gameObject.activeSelf);
+        specialStat.SetActive(false);
         RefreshStatus();
+    }
+
+    public void SpecialToggle()
+    {
+        specialStat.SetActive(!specialStat.activeSelf);
+    }
+
+    public void InvestStat(C_Enums.SpecialStat stat)
+    {
+        if (_special.TryInvestPont(stat))
+        {
+            Debug.Log($"{stat}에 포인트 투자 성공");
+        }
+        else
+        {
+            Debug.Log("포인트 투자 실패");
+        }
     }
 }

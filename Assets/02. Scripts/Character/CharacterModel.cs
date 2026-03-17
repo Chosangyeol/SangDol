@@ -100,7 +100,7 @@ public class CharacterModel : MonoBehaviour
 
     public void AddStat(C_Enums.CharacterStat statType,bool isFlat, float value)
     {
-        if (statType == C_Enums.CharacterStat.MaxHP)
+        if (statType == C_Enums.CharacterStat.MaxHp)
         {
             Stat.AddMaxHp(isFlat, value);
         }
@@ -124,11 +124,11 @@ public class CharacterModel : MonoBehaviour
         {
             Stat.AddDownPower(value);
         }
-        else if (statType == C_Enums.CharacterStat.CirticalChance)
+        else if (statType == C_Enums.CharacterStat.CriticalChance)
         {
             Stat.AddCirticalChance(value);
         }
-        else if (statType == C_Enums.CharacterStat.CirticalDamage)
+        else if (statType == C_Enums.CharacterStat.CriticalDamage)
         {
             Stat.AddCirticalDamage(value);
         }
@@ -136,7 +136,7 @@ public class CharacterModel : MonoBehaviour
 
     public void RemoveStat(C_Enums.CharacterStat statType, bool isFlat, float value)
     {
-        if (statType == C_Enums.CharacterStat.MaxHP)
+        if (statType == C_Enums.CharacterStat.MaxHp)
         {
             Stat.RemoveMaxHp(isFlat, value);
         }
@@ -160,15 +160,16 @@ public class CharacterModel : MonoBehaviour
         {
             Stat.RemoveDownPower(value);
         }
-        else if (statType == C_Enums.CharacterStat.CirticalChance)
+        else if (statType == C_Enums.CharacterStat.CriticalChance)
         {
             Stat.RemoveCirticalChance(value);
         }
-        else if (statType == C_Enums.CharacterStat.CirticalDamage)
+        else if (statType == C_Enums.CharacterStat.CriticalDamage)
         {
             Stat.RemoveCirticalDamage(value);
         }
     }
+
     #endregion
 
     #region 상호작용

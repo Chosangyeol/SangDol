@@ -23,14 +23,14 @@ public class C_Enums
 
     public enum CharacterStat
     {
-        MaxHP,
+        MaxHp,
         AttackDamage,
         Defense,
         MoveSpeed,
         AttackSpeed,
         DownPower,
-        CirticalChance,
-        CirticalDamage
+        CriticalChance,
+        CriticalDamage
     }
 
     public enum SpecialStat

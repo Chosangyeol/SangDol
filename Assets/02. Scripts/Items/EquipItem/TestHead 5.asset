@@ -21,6 +21,6 @@ MonoBehaviour:
   stackable: 0
   maxStack: 1
   equipItemType: 5
-  statToIncrease: 1
+  statToIncrease: 6
   isFlat: 0
   value: 0.5

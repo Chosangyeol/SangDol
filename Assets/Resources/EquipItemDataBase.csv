@@ -1,0 +1,7 @@
+﻿ID,Name,NameKr,Icon,Rarity,Desc,EquipType,IncreStat,IsFlat,Value
+10001,TestHead,테스트용 장비 머리,10001,Common,테스트용 장비 머리,Head,MaxHp,TRUE,10
+10002,TestBody,테스트용 장비 상의,10002,Uncommon,테스트용 장비 상의,Body,AttackDamage,FALSE,0.5
+10003,TestGloves,테스트용 장비 장갑,10003,Rare,테스트용 장비 장갑,Gloves,Defense,TRUE,10
+10004,TestPants,테스트용 장비 하의,10004,Unique,테스트용 장비 하의,Pants,MoveSpeed,FALSE,0.2
+10005,TestShoes,테스트용 장비 신발,10005,Legendary,테스트용 장비 신발,Shoes,AttackSpeed,FALSE,0.3
+10006,TestWeapon,테스트용 장비 무기,10006,Legendary,테스트용 장비 무기,Weapon,CriticalChance,FALSE,0.5

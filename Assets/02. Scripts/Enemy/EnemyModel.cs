@@ -176,6 +176,8 @@ public class EnemyModel : MonoBehaviour
 
     public void Damaged(float damage, GameObject source = null)
     {
+        if (_isDead) return;
+
         _stat.Damaged(damage);
         if (_stat.down <= 0)
         {
@@ -190,11 +192,15 @@ public class EnemyModel : MonoBehaviour
 
     public void Heal(float healAmount)
     {
+        if (_isDead) return;
+
         _stat.Heal(healAmount);
     }
 
     public void Die(GameObject source)
     {
+        if (_isDead) return;
+
         _isDead = true;
 
         curState = EState.Die;

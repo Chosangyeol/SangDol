@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f402cc7d7f5033e4ea7058b3ae8a2648, type: 3}
+  m_Name: 10005_TestShoes
+  m_EditorClassIdentifier: Assembly-CSharp::EquipItemSO
+  itemID: 10005
+  itemName: "\uD14C\uC2A4\uD2B8\uC6A9 \uC7A5\uBE44 \uC2E0\uBC1C"
+  itemIcon: {fileID: 21300000, guid: f24aa2bf3fddb86468c460f59b449d02, type: 3}
+  itemType: 0
+  itemRarity: 4
+  itemDesc: "\uD14C\uC2A4\uD2B8\uC6A9 \uC7A5\uBE44 \uC2E0\uBC1C"
+  stackable: 0
+  maxStack: 1
+  equipItemType: 4
+  statToIncrease: 4
+  isFlat: 0
+  value: 0.3
