@@ -59,8 +59,8 @@ public class StatusUI : MonoBehaviour
         expText.text = $"EXP: {_stat.Stat.currentExp} / {_stat.Stat.maxExp}";
         attackText.text = $"Attack: {_stat.Stat.attackDamage.GetValue()}";
         defenseText.text = $"Defense: {_stat.Stat.defense.GetValue()}";
-        criticalChanceText.text = $"Critical Chance: {_stat.Stat.cirticalChance.GetValue() * 100}%";
-        criticalDamageText.text = $"Critical Damage: {_stat.Stat.cirticalDamage.GetValue() * 100}%";
+        criticalChanceText.text = $"Critical Chance: {_stat.Stat.criticalChance.GetValue() * 100}%";
+        criticalDamageText.text = $"Critical Damage: {_stat.Stat.criticalDamage.GetValue() * 100}%";
     }
 
     public void Toggle()

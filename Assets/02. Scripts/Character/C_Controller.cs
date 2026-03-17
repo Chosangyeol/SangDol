@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UIElements;
 
 public class C_Controller
 {
@@ -47,7 +48,10 @@ public class C_Controller
 
         if (agent != null)
         {
+            agent.isStopped = true;
             agent.isStopped = false;
+            agent.velocity = Vector3.zero;
+
             agent.SetDestination(dest);
         }
 
@@ -67,6 +71,27 @@ public class C_Controller
         StopMove();
 
         FaceTo(dest);
+
+        Collider[] targets = Physics.OverlapSphere(_model.transform.position, 4f);
+
+        foreach (Collider target in targets)
+        {
+            if (target.TryGetComponent<EnemyModel>(out EnemyModel enemy))
+            {
+                Vector3 dir = (enemy.transform.position - _model.transform.position).normalized;
+
+                dir.y = 0;
+                Vector3 myForward = _model.transform.forward;
+                myForward.y = 0;
+
+                float angle = Vector3.Angle(myForward, dir);
+
+                if (angle <= 90 / 2f)
+                    enemy.Damaged(_model.GetCritical(_model.Stat.Stat.attackDamage.FinalValue), _model.gameObject);
+                else
+                    enemy.Damaged(_model.Stat.Stat.attackDamage.FinalValue, _model.gameObject);
+            }
+        }    
     }
 
     public void RequsetSkill(C_Enums.SkillSlot skillSlot, Vector3 dest)

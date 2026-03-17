@@ -49,7 +49,7 @@ public class StatValue
         percentBonus = 0;
     }
 
-    private void Recalculate()
+    public void Recalculate()
     {
         finalValue = (baseValue + flatBonus) * (1f + percentBonus);
     }
@@ -78,8 +78,11 @@ public class CharacterStat
     public StatValue attackSpeed;
     public StatValue downPower;
 
-    public StatValue cirticalChance;
-    public StatValue cirticalDamage;
+    public StatValue criticalChance;
+    public StatValue criticalDamage;
+
+    public int gold;
+    public int statPoint;
 
     public CharacterStat(CharacterStatSO statSO, string name = "테스트")
     {
@@ -97,8 +100,10 @@ public class CharacterStat
         this.attackSpeed = new StatValue(statSO.attackSpeed);
         this.downPower = new StatValue(statSO.downPower);
 
-        this.cirticalChance = new StatValue(statSO.cirticalChance);
-        this.cirticalDamage = new StatValue(statSO.cirticalDamage);
+        this.criticalChance = new StatValue(statSO.criticalChance);
+        this.criticalDamage = new StatValue(statSO.criticalDamage);
+
+        statPoint = 0;
     }
 
     public void Damaged(float damage)
@@ -116,6 +121,53 @@ public class CharacterStat
             curHp = maxHp.FinalValue;
     }
 
+    public void GainGold(int amount)
+    {
+        gold += amount;
+        Debug.Log($"{gold}원 보유");
+    }
+
+    public void UseGold(int amount)
+    {
+        gold -= amount;
+    }
+
+    public float GetCritical(float baseDamage)
+    {
+        int random = UnityEngine.Random.Range(1, 101);
+        if (random <= criticalChance.FinalValue * 100)
+            return baseDamage * criticalDamage.FinalValue;
+        else
+            return baseDamage;
+    }
+
+    #region Level & Exp
+    public void GainExp(float amount)
+    {
+        currentExp += amount;
+        if (currentExp >= maxExp)
+            LevelUp();
+    }
+
+    public void LevelUp()
+    {
+        if (currentExp < maxExp) return;
+
+        currentExp -= maxExp;
+        currentLevel++;
+        statPoint++;
+        Debug.Log($"레벨업, 레벨 : {currentLevel} / 경험치 : {currentExp} / 스탯포인트 : {statPoint}");
+        // 캐릭터 기본 스텟 추가
+
+        // 최대 경험치량 증가 -> csv 파일로 받아올 예정
+
+
+        if (currentExp >= maxExp)
+            LevelUp();
+
+    }
+
+    #endregion
 
     #region Add Stat Methods
     public void AddMaxHp(bool isFlat, float value)
@@ -159,12 +211,12 @@ public class CharacterStat
 
     public void AddCirticalChance(float value)
     {
-        cirticalChance.AddFlat(value);
+        criticalChance.AddFlat(value);
     }
 
     public void AddCirticalDamage(float value)
     {
-        cirticalDamage.AddFlat(value);
+        criticalDamage.AddFlat(value);
     }
     #endregion
 
@@ -210,15 +262,27 @@ public class CharacterStat
 
     public void RemoveCirticalChance(float value)
     {
-        cirticalChance.RemoveFlat(value);
+        criticalChance.RemoveFlat(value);
     }
 
     public void RemoveCirticalDamage(float value)
     {
-        cirticalDamage.RemoveFlat(value);
+        criticalDamage.RemoveFlat(value);
     }
 
     #endregion
+    
+    public void RecalculateAll()
+    {
+        maxHp.Recalculate();
+        attackDamage.Recalculate();
+        defense.Recalculate();
+        moveSpeed.Recalculate();
+        attackSpeed.Recalculate();
+        downPower.Recalculate();
+        criticalChance.Recalculate();
+        criticalDamage.Recalculate();
+    }
 
 
 }

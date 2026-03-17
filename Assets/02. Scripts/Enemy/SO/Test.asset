@@ -20,5 +20,8 @@ MonoBehaviour:
   attackDamage: 1
   moveSpeed: 2
   attackSpeed: 2
+  down: 100
   detactRange: 5
   attackRange: 2
+  expAmount: 100
+  goldAmount: 100

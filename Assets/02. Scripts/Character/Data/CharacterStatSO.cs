@@ -12,7 +12,7 @@ public class CharacterStatSO : ScriptableObject
     public float attackSpeed = 1f;
     public float downPower = 1f;
 
-    public float cirticalChance = 0.3f;
-    public float cirticalDamage = 1.5f;
+    public float criticalChance = 0.3f;
+    public float criticalDamage = 1.5f;
 
 }

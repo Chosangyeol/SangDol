@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 
 public class CharacterModel : MonoBehaviour
@@ -64,6 +65,8 @@ public class CharacterModel : MonoBehaviour
         StartCoroutine(routine);
     }
 
+
+
     #region 캐릭터 스탯 관리
     public void Damaged(float damage)
     {
@@ -83,6 +86,11 @@ public class CharacterModel : MonoBehaviour
     public void Heal(float healAmount)
     {
         Stat.Heal(healAmount);
+    }
+
+    public float GetCritical(float baseDamage)
+    {
+        return (Stat.GetCritical(baseDamage));
     }
 
     public void AddStat(C_Enums.CharacterStat statType,bool isFlat, float value)
@@ -187,4 +195,30 @@ public class CharacterModel : MonoBehaviour
     }
 
     #endregion
+
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        // 기즈모가 그려질 기준 위치 (발 밑 기준이면 transform.position, 가슴 높이면 약간 올림)
+        Vector3 origin = transform.position;// + Vector3.up; // 필요에 따라 높이 조절
+
+        // 1. 부채꼴의 왼쪽과 오른쪽 경계선 방향(Vector3)을 계산합니다.
+        // transform.forward(정면)를 Y축 기준으로 총 각도의 절반만큼 좌우로 회전시킵니다.
+        Vector3 leftBoundary = Quaternion.Euler(0, -90 / 2f, 0) * transform.forward;
+        Vector3 rightBoundary = Quaternion.Euler(0, 90 / 2f, 0) * transform.forward;
+
+        // 2. 부채꼴 내부를 반투명하게 색칠합니다. (선택 사항, 시인성이 아주 좋아짐)
+        Handles.color = new Color(1f, 0f, 0f, 0.2f); // 빨간색, 투명도 20%
+        Handles.DrawSolidArc(origin, Vector3.up, leftBoundary, 90, 90);
+
+        // 3. 부채꼴의 테두리 선을 그립니다.
+        Handles.color = Color.yellow;
+        Handles.DrawWireArc(origin, Vector3.up, leftBoundary, 90, 90);
+        Handles.DrawLine(origin, origin + leftBoundary * 90);
+        Handles.DrawLine(origin, origin + rightBoundary * 90);
+
+        Gizmos.color = new Color(1, 0, 0, 0.3f);
+        Gizmos.DrawWireSphere(transform.position, 4f);   
+    }
+#endif
 }

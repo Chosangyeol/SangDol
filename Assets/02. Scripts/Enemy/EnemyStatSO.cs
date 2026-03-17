@@ -14,10 +14,15 @@ public class EnemyStatSO : ScriptableObject
     public float attackDamage;
     public float moveSpeed = 1f;
     public float attackSpeed = 1f;
+    public float down = 100f;
 
     [Header("범위 설정")]
     public float detactRange = 5f;
     public float attackRange = 2f;
-    
+
+    [Header("적 드랍 테이블")]
+    public float expAmount = 0f;
+    public int goldAmount = 0;
+    // 아이템 드랍;
 
 }

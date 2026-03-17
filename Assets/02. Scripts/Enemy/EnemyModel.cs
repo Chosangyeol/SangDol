@@ -8,7 +8,8 @@ enum EState
     Patrol, // 순찰 상태 - 정해진 범위 내에서 돌아다니는 상태
     Chase, // 추적 상태 - 플레이어를 인식하여, 추적하는 상태
     Attack, // 공격 상태 - 플레이어가 공격 범위 안에 들어와서 공격하는 상태
-    Return // 귀환 상태 - 몬스터가 스폰 포인트로부터 너무 멀어져서 or 플레이어가 몬스터로부터 너무 멀어져서 스폰포인트로 귀환하는 상태
+    Return, // 귀환 상태 - 몬스터가 스폰 포인트로부터 너무 멀어져서 or 플레이어가 몬스터로부터 너무 멀어져서 스폰포인트로 귀환하는 상태
+    Die
 }
 
 public class EnemyModel : MonoBehaviour
@@ -19,6 +20,10 @@ public class EnemyModel : MonoBehaviour
 
     [SerializeField] private Transform spawnPoint;
     public Transform SpawnPoint => spawnPoint;
+
+
+
+    private bool _isDead = false;
 
     private CharacterModel _target;
     public CharacterModel Target => _target;
@@ -57,6 +62,12 @@ public class EnemyModel : MonoBehaviour
 
     private void Update()
     {
+        if (_isDead)
+        {
+            stateMachine.UpdateState();
+            return;
+        }
+
         float dist = Vector3.Distance(transform.position, _target.transform.position);
 
         bool canChase = dist <= _stat.detactRange;
@@ -163,12 +174,17 @@ public class EnemyModel : MonoBehaviour
     }
 
 
-    public void Damaged(float damage)
+    public void Damaged(float damage, GameObject source = null)
     {
         _stat.Damaged(damage);
+        if (_stat.down <= 0)
+        {
+            Debug.Log("무력화");
+        }
+
         if (_stat.curHp <= 0)
         {
-            Die();
+            Die(source);
         }
     }
 
@@ -177,8 +193,19 @@ public class EnemyModel : MonoBehaviour
         _stat.Heal(healAmount);
     }
 
-    public void Die()
+    public void Die(GameObject source)
     {
+        _isDead = true;
+
+        curState = EState.Die;
+        stateMachine.ChangeState(new DieState(this));
+
+        if (source.TryGetComponent<CharacterModel>(out CharacterModel character))
+        {
+            character.Stat.GainExp(statSO.expAmount);
+            character.Stat.GainGold(statSO.goldAmount);
+            // 아이템 드랍 처리
+        }
         // 적 사망 처리
         Debug.Log($"{_stat.enemyName}이(가) 사망했습니다.");
     }

@@ -26,11 +26,25 @@ public class C_Stat
         stat.Damaged(damage);
     }
 
+    public float GetCritical(float baseDamage)
+    {
+        return stat.GetCritical(baseDamage);
+    }
+
     public void Heal(float amount)
     {
         stat.Heal(amount);
     }
 
+    public void GainExp(float amount)
+    {
+        stat.GainExp(amount);
+    }
+
+    public void GainGold(int amount)
+    {
+        stat.GainGold(amount);
+    }
 
     #region Add Stat Methods
     public void AddMaxHp(bool isFlat, float value)
