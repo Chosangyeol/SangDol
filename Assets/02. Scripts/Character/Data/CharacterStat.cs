@@ -145,8 +145,6 @@ public class CharacterStat
     public void GainExp(float amount)
     {
         currentExp += amount;
-        if (currentExp >= maxExp)
-            LevelUp();
     }
 
     public void LevelUp()
@@ -271,7 +269,11 @@ public class CharacterStat
     }
 
     #endregion
-    
+
+    #region Special Stat Methods
+
+    #endregion
+
     public void RecalculateAll()
     {
         maxHp.Recalculate();

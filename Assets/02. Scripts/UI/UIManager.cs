@@ -27,7 +27,7 @@ public class UIManager : MonoBehaviour
         mainUI.Init(character.SkillSystem, character);
         inventoryUI.Init(character.Inventory, character.Equipment);
         skillTreeUI.Init(character.SkillSystem, character);
-        statusUI.Init(character.Stat,character.Equipment);
+        statusUI.Init(character.Stat,character.Equipment,character.SpecialStat);
 
     }
 

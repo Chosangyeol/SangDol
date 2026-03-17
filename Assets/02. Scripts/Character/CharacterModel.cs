@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using static C_Enums;
 
 public class CharacterModel : MonoBehaviour
 {
@@ -22,6 +23,9 @@ public class CharacterModel : MonoBehaviour
 
     public C_Stat Stat => stat;
     private C_Stat stat;
+    public C_SpecialStat SpecialStat => specialStat;
+    private C_SpecialStat specialStat;
+
     public C_Inventory Inventory => inventory;
     private C_Inventory inventory;
     public C_Equipment Equipment => equipment;
@@ -38,6 +42,7 @@ public class CharacterModel : MonoBehaviour
         if (mainCam == null) mainCam = Camera.main;
 
         stat = new C_Stat(this, characterStatSO);
+        specialStat = new C_SpecialStat(this);
         inventory = new C_Inventory(this, inventorySlotSize);
         equipment = new C_Equipment(this);
         playerController = new C_Controller(this);

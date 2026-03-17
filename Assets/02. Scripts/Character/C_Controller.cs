@@ -48,10 +48,6 @@ public class C_Controller
 
         if (agent != null)
         {
-            agent.isStopped = true;
-            agent.isStopped = false;
-            agent.velocity = Vector3.zero;
-
             agent.SetDestination(dest);
         }
 
