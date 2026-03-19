@@ -178,6 +178,7 @@ public class InventorySlot : MonoBehaviour,
             fromEquipmentSlot.Refresh();
             Refresh();
         }
+
     }
 
     public void SetDropped(bool value)

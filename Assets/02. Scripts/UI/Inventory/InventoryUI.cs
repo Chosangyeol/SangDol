@@ -2,9 +2,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class InventoryUI : MonoBehaviour,
-    IBeginDragHandler,
-    IDragHandler
+public class InventoryUI : MonoBehaviour
+    
 {
     [SerializeField] InventorySlot slotPrefab;
     [SerializeField] Transform slotParent;
@@ -59,15 +58,7 @@ public class InventoryUI : MonoBehaviour,
     }
 
     #region UI 이동
-    public void OnBeginDrag(PointerEventData eventData)
-    {
-        transform.SetAsLastSibling();
-    }
-
-    public void OnDrag(PointerEventData eventData)
-    {
-        rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
-    }
+    
 
     #endregion
 }

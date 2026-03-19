@@ -24,7 +24,7 @@ public class UIManager : MonoBehaviour
     {
         CharacterModel character = FindAnyObjectByType<CharacterModel>();
 
-        mainUI.Init(character.SkillSystem, character);
+        mainUI.Init(character.SkillSystem,character.Inventory, character);
         inventoryUI.Init(character.Inventory, character.Equipment);
         skillTreeUI.Init(character.SkillSystem, character);
         statusUI.Init(character.Stat,character.Equipment,character.SpecialStat);

@@ -14,6 +14,14 @@ public class C_Enums
         F
     }
 
+    public enum UseSlot
+    {
+        Slot_1,
+        Slot_2,
+        Slot_3,
+        Slot_4
+    }
+
     public enum  UIList
     {
         Inventory,

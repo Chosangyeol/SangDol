@@ -11,10 +11,10 @@ public class SkillSlot : MonoBehaviour,
     IEndDragHandler,
     IDropHandler
 {
-    [Header("��ų ���� ����")]
+    [Header("스킬 슬룻 설정")]
     public C_Enums.SkillSlot skillSlot;
 
-    [Header("UI ���� ���")]
+    [Header("UI 세팅")]
     [SerializeField] private Image iconImage;
     [SerializeField] private TMP_Text slotKey;
 
