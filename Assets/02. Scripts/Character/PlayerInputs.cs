@@ -9,6 +9,7 @@ public class PlayerInputs : MonoBehaviour
     [SerializeField] private InputActionReference interactActon;
     [SerializeField] private InputActionReference attackAction;
     [SerializeField] private InputActionReference skillSlotAction;
+    [SerializeField] private InputActionReference useItemSlotAction;
     [SerializeField] private InputActionReference uiAction;
     [SerializeField] private InputActionReference pointerPos;
 
@@ -23,6 +24,7 @@ public class PlayerInputs : MonoBehaviour
         interactActon.action.Enable();
         attackAction.action.Enable();
         skillSlotAction.action.Enable();
+        useItemSlotAction.action.Enable();
         uiAction.action.Enable();
         pointerPos.action.Enable();
 
@@ -60,6 +62,11 @@ public class PlayerInputs : MonoBehaviour
         model.PlayerInput.OnSkillInput(slot, GetPointerScreenPos());
     }
 
+    private void OnUseItemSlot(InputAction.CallbackContext ctx)
+    {
+        C_Enums.UseSlot slot = GetUseSlotFromInput(ctx);
+        model.PlayerInput.OnUseItemInput(slot);
+    }
     private void OnUIInput(InputAction.CallbackContext ctx)
     {
         if (ctx.control is KeyControl key)
@@ -85,5 +92,17 @@ public class PlayerInputs : MonoBehaviour
         }
 
         return C_Enums.SkillSlot.Q;
+    }
+
+    private C_Enums.UseSlot GetUseSlotFromInput(InputAction.CallbackContext ctx)
+    {
+        if (ctx.control is KeyControl key)
+        {
+            if (key.keyCode == Key.Digit1) return C_Enums.UseSlot.Slot_1;
+            if (key.keyCode == Key.Digit2) return C_Enums.UseSlot.Slot_2;
+            if (key.keyCode == Key.Digit3) return C_Enums.UseSlot.Slot_3;
+            if (key.keyCode == Key.Digit4) return C_Enums.UseSlot.Slot_4;
+        }
+        return C_Enums.UseSlot.Slot_1;
     }
 }

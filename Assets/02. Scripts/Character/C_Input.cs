@@ -43,6 +43,10 @@ public class C_Input
         _controller.RequsetSkill(skillSlot, point);
     }
 
+    public void OnUseItemInput(C_Enums.UseSlot useSlot)
+    {
+        _controller.RequestUseItem(useSlot);
+    }
     public void OnUIInput(C_Enums.UIList ui)
     {
         _controller.RequestUI(ui);

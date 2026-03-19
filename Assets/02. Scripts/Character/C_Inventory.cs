@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using UnityEngine;
 
 public class C_Inventory
@@ -154,5 +155,22 @@ public class C_Inventory
         if (from == to) return;
 
         (items[from], items[to]) = (items[to], items[from]);
+    }
+
+    public void UseItem(int slotIndex)
+    {
+        UseItemBase useItem = Items[slotIndex] as UseItemBase;
+
+        if (useItem == null) return;
+
+        if (useItem.UseItem(owner))
+        {
+            useItem.currentStack--;
+
+            if (useItem.currentStack <= 0)
+            {
+                RemoveItemAt(slotIndex);
+            }
+        }
     }
 }

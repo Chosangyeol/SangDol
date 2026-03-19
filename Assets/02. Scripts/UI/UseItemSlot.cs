@@ -48,7 +48,6 @@ public class UseItemSlot : MonoBehaviour,
 
         if (item == null)
         {
-            iconImage.enabled = false;
             stackText.enabled = false;
             stackText.text = "";
             return;
@@ -126,7 +125,7 @@ public class UseItemSlot : MonoBehaviour,
         InventorySlot fromInventorySlot =
             eventData.pointerDrag?.GetComponent<InventorySlot>();
 
-        if (fromInventorySlot != null)
+        if (fromInventorySlot != null && _inventory.Items[fromInventorySlot.slotIndex] is UseItemBase)
         {
             fromInventorySlot.SetDropped(true);
 

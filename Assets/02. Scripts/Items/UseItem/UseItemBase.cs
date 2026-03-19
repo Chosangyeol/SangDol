@@ -32,4 +32,9 @@ public class UseItemBase : ItemBase
     {
         
     }
+
+    public bool UseItem(CharacterModel owner)
+    {
+
+    }
 }
