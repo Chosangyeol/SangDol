@@ -9,7 +9,9 @@ public class EquipmentSlot : MonoBehaviour,
     IBeginDragHandler,
     IDragHandler,
     IEndDragHandler,
-    IDropHandler
+    IDropHandler,
+    IPointerEnterHandler,
+    IPointerExitHandler
 {
     [Header("장비 슬롯 정보")]
     public ItemEnums.EquipItemType equipType;
@@ -17,6 +19,8 @@ public class EquipmentSlot : MonoBehaviour,
     [Header("UI 구성 요소")]
     [SerializeField] private Image iconImage;
     [SerializeField] private GameObject highlight;
+
+    private ItemTooltip tooltip;
 
     private bool droppedOnSlot;
 
@@ -31,10 +35,12 @@ public class EquipmentSlot : MonoBehaviour,
     private Image dragIcon;
     private RectTransform dragIconRect;
 
-    public void Init(C_Equipment equipment, ItemEnums.EquipItemType equipType)
+    #region 생성 및 초기화
+    public void Init(C_Equipment equipment, ItemEnums.EquipItemType equipType, ItemTooltip tooltip)
     {
         _equipment = equipment;
         this.equipType = equipType;
+        this.tooltip = tooltip;
 
         rootCanvas = GetComponentInParent<Canvas>();
         Refresh();
@@ -55,8 +61,9 @@ public class EquipmentSlot : MonoBehaviour,
             iconImage.sprite = item.itemBaseSO.itemIcon;
         }
     }
+    #endregion
 
-
+    #region 클릭
     public void OnPointerClick(PointerEventData eventData)
     {
         ItemBase item = equipItem;
@@ -66,6 +73,7 @@ public class EquipmentSlot : MonoBehaviour,
         if (eventData.clickCount == 2)
         {
             _equipment.UnequipItem(equipType);
+            tooltip.ToggleTooltip(false);
             return;
         }
 
@@ -78,7 +86,9 @@ public class EquipmentSlot : MonoBehaviour,
             Debug.Log("우클릭 : " + item.itemBaseSO.itemName);
         }
     }
+    #endregion
 
+    #region 드래그 & 드랍
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (equipItem == null) return;
@@ -138,5 +148,29 @@ public class EquipmentSlot : MonoBehaviour,
     {
         droppedOnSlot = value;
     }
+    #endregion
+
+    #region 아이템 툴팁 출력
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (equipItem == null) return;
+        if (tooltip == null) return;
+
+        // tooltip 위치 지정
+        tooltip.ToggleTooltip(true, this.GetComponent<RectTransform>(), equipItem);
+
+        // tooltip에 아이템 정보 입력
+
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        if (equipItem == null) return;
+        if (tooltip == null) return;
+
+        tooltip.ToggleTooltip(false);
+
+    }
+    #endregion
 }
 

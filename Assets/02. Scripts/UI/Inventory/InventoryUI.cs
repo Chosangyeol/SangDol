@@ -1,10 +1,18 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class InventoryUI : MonoBehaviour
+public class InventoryUI : MonoBehaviour,
+    IBeginDragHandler,
+    IDragHandler
 {
     [SerializeField] InventorySlot slotPrefab;
     [SerializeField] Transform slotParent;
+    [SerializeField] ItemTooltip tooltip;
+
+    private RectTransform rectTransform;
+    private Canvas canvas;
+
 
     private C_Inventory _inventory;
     private List<InventorySlot> slots = new();
@@ -12,16 +20,20 @@ public class InventoryUI : MonoBehaviour
     public void Init(C_Inventory inventory, C_Equipment equipment)
     {
         _inventory = inventory;
+        rectTransform = GetComponent<RectTransform>();
+        canvas = GetComponentInParent<Canvas>();
 
         for (int i = 0; i < inventory.slotSize; i++)
         {
             InventorySlot slot = Instantiate(slotPrefab, slotParent);
-            slot.Init(inventory,equipment, i);
+            slot.Init(inventory,equipment, i, tooltip);
             slots.Add(slot);
         }
 
         BindInventoryEvents();
         RefreshAll();
+
+        tooltip.gameObject.SetActive(false);
     }
 
     private void BindInventoryEvents()
@@ -45,4 +57,17 @@ public class InventoryUI : MonoBehaviour
     {
         gameObject.SetActive(!gameObject.activeSelf);
     }
+
+    #region UI 이동
+    public void OnBeginDrag(PointerEventData eventData)
+    {
+        transform.SetAsLastSibling();
+    }
+
+    public void OnDrag(PointerEventData eventData)
+    {
+        rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
+    }
+
+    #endregion
 }

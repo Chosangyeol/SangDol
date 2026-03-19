@@ -10,6 +10,9 @@ public class StatusUI : MonoBehaviour
     [Header("장비 슬룻")]
     [SerializeField] List<EquipmentSlot> equipmentSlots;
 
+    [Header("툴팁 UI")]
+    [SerializeField] ItemTooltip tooltip;
+
     [Header("기본 스텟 UI")]
     [SerializeField] TMP_Text hpText;
     [SerializeField] TMP_Text levelText;
@@ -59,7 +62,7 @@ public class StatusUI : MonoBehaviour
 
         for (int i = 0; i < equipmentSlots.Count; i++)
         {
-            equipmentSlots[i].Init(equipment, equipmentSlots[i].equipType);
+            equipmentSlots[i].Init(equipment, equipmentSlots[i].equipType, tooltip);
         }
 
         BindStatusEvents();

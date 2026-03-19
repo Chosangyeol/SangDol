@@ -1,4 +1,3 @@
-using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
@@ -9,7 +8,9 @@ public class InventorySlot : MonoBehaviour,
     IBeginDragHandler,
     IDragHandler,
     IEndDragHandler,
-    IDropHandler
+    IDropHandler,
+    IPointerEnterHandler,
+    IPointerExitHandler
 {
     [Header("아이템 슬룻 정보")]
     public int slotIndex;
@@ -23,6 +24,8 @@ public class InventorySlot : MonoBehaviour,
     private Image dragIcon;
     private RectTransform dragIconRect;
 
+    private ItemTooltip tooltip;
+
     private bool droppedOnSlot;
 
     private C_Inventory _inventory;
@@ -34,11 +37,13 @@ public class InventorySlot : MonoBehaviour,
     public ItemBase CurrentItem => currentItem;
 
     #region 생성 및 새로고침
-    public void Init(C_Inventory inventory, C_Equipment equipment, int index)
+    public void Init(C_Inventory inventory, C_Equipment equipment, int index,ItemTooltip tooltip)
     {
         _inventory = inventory;
         _equipment = equipment;
         slotIndex = index;
+        this.tooltip = tooltip;
+
 
         rootCanvas = GetComponentInParent<Canvas>();
         Refresh();
@@ -84,6 +89,7 @@ public class InventorySlot : MonoBehaviour,
             if (item is EquipItemBase)
             {
                 _equipment.EquipItem(item as EquipItemBase);
+                tooltip.ToggleTooltip(false);
             }
             return;
         }
@@ -177,6 +183,29 @@ public class InventorySlot : MonoBehaviour,
     public void SetDropped(bool value)
     {
         droppedOnSlot = value;
+    }
+    #endregion
+
+    #region 아이템 툴팁 출력
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (currentItem == null) return;
+        if (tooltip == null) return;
+
+        // tooltip 위치 지정
+        tooltip.ToggleTooltip(true,this.GetComponent<RectTransform>(),currentItem);
+
+        // tooltip에 아이템 정보 입력
+
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        if (currentItem == null) return;
+        if (tooltip == null) return;
+
+        tooltip.ToggleTooltip(false);
+
     }
     #endregion
 
