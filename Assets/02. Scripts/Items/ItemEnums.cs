@@ -38,5 +38,11 @@ public class ItemEnums
         Weapon
     }
 
-
+    public enum UseItemType
+    {
+        Potion,
+        Scroll,
+        Food,
+        Boom
+    }
 }

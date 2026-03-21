@@ -32,6 +32,7 @@ public class PlayerInputs : MonoBehaviour
         interactActon.action.performed += OnInteract;
         attackAction.action.performed += OnBasicAttack;
         skillSlotAction.action.performed += OnSkillSlot;
+        useItemSlotAction.action.performed += OnUseItemSlot;
         uiAction.action.performed += OnUIInput;
     }
 
@@ -41,6 +42,7 @@ public class PlayerInputs : MonoBehaviour
         interactActon.action.performed -= OnInteract;
         attackAction.action.performed -= OnBasicAttack;
         skillSlotAction.action.performed -= OnSkillSlot;
+        useItemSlotAction.action.performed -= OnUseItemSlot;
         uiAction.action.performed -= OnUIInput;
     }
 

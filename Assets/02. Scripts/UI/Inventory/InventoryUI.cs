@@ -39,6 +39,7 @@ public class InventoryUI : MonoBehaviour
     {
         _inventory.OnAddItemInventory += OnInvenytoryChange;
         _inventory.OnRemoveItemInventory += OnInvenytoryChange;
+        _inventory.OnInventoryUpdated += RefreshAll;
     }
 
     private void OnInvenytoryChange(ItemBase _)

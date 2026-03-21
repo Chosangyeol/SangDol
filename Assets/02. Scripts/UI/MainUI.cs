@@ -32,6 +32,7 @@ public class MainUI : MonoBehaviour
         }
         
         BindSkillEvent();
+        BindUseEvent();
     }
 
     private void BindSkillEvent()
@@ -39,9 +40,17 @@ public class MainUI : MonoBehaviour
         _skillSystem.OnSkillDataChanged += RefreshAll;
     }
 
+    private void BindUseEvent()
+    {
+        _inventory.OnInventoryUpdated += RefreshAll;
+    }
+
     private void RefreshAll()
     {
         foreach (var slot in skillSlots)
+            slot.Refresh();
+
+        foreach (var slot in useItemSlots)
             slot.Refresh();
     }
 

@@ -102,10 +102,10 @@ public class C_Controller
 
     public void RequestUseItem(C_Enums.UseSlot useSlot)
     {
-
         Debug.Log("아이템 " + useSlot + " 사용 시도");
-        //_model.Inventory.UseItem(useSlot);
+        _model.Inventory.UseItem(useSlot);
     }
+
     public void RequestUI(C_Enums.UIList ui)
     {
         StopMove();

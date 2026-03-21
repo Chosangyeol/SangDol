@@ -16,6 +16,7 @@ public class C_Enums
 
     public enum UseSlot
     {
+        None,
         Slot_1,
         Slot_2,
         Slot_3,
@@ -31,6 +32,7 @@ public class C_Enums
 
     public enum CharacterStat
     {
+        None,
         MaxHp,
         AttackDamage,
         Defense,

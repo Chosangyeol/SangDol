@@ -19,4 +19,9 @@ MonoBehaviour:
   itemRarity: 4
   itemDesc: "\uD14C\uC2A4\uD2B8\uC6A9 \uC77C\uBC18 \uC544\uC774\uD15C"
   stackable: 1
-  maxStack: 99
+  maxStack: 10
+  useItemType: 0
+  effectedStat: 1
+  effectAmount: 10
+  itemDuration: 0
+  coolDownTime: 0

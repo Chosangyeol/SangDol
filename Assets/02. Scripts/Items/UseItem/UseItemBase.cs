@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class UseItemBase : ItemBase
+public abstract class UseItemBase : ItemBase
 {
     public UseItemSO itemBaseSO;
 
@@ -9,13 +9,6 @@ public class UseItemBase : ItemBase
         this.itemBaseSO = itemBaseSO;
         this.currentStack = currentStack;
         return;
-    }
-
-    public override ItemBase Clone(int stack)
-    {
-        UseItemBase newItem = new UseItemBase(this.itemBaseSO,stack);
-        newItem.currentStack = stack;
-        return newItem;
     }
 
     public override void OnAddInventory()
@@ -33,8 +26,5 @@ public class UseItemBase : ItemBase
         
     }
 
-    public bool UseItem(CharacterModel owner)
-    {
-
-    }
+    public abstract bool UseItem(CharacterModel owner);
 }

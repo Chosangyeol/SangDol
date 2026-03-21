@@ -48,6 +48,7 @@ public class UseItemSlot : MonoBehaviour,
 
         if (item == null)
         {
+            iconImage.enabled = false;
             stackText.enabled = false;
             stackText.text = "";
             return;
@@ -96,7 +97,7 @@ public class UseItemSlot : MonoBehaviour,
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (!droppedOnSlot) rinkedSlotIndex = -1;
+        if (!droppedOnSlot) rinkedSlotIndex = 99;
 
         if (dragIcon != null)
             Destroy(dragIcon.gameObject);
@@ -117,7 +118,10 @@ public class UseItemSlot : MonoBehaviour,
 
             int temp = rinkedSlotIndex;
             rinkedSlotIndex = fromUseItemSlot.rinkedSlotIndex;
+            _inventory.useSlots[useSlot] = rinkedSlotIndex;
+
             fromUseItemSlot.rinkedSlotIndex = temp;
+            _inventory.useSlots[fromUseItemSlot.useSlot] = fromUseItemSlot.rinkedSlotIndex;
 
             Refresh();
         }
@@ -130,6 +134,7 @@ public class UseItemSlot : MonoBehaviour,
             fromInventorySlot.SetDropped(true);
 
             rinkedSlotIndex = fromInventorySlot.slotIndex;
+            _inventory.useSlots[useSlot] = rinkedSlotIndex;
 
             Refresh();
         }

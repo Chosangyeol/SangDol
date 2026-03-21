@@ -93,15 +93,6 @@ public class InventorySlot : MonoBehaviour,
             }
             return;
         }
-
-        if (eventData.button == PointerEventData.InputButton.Left)
-        {
-            Select(item);
-        }
-        else if (eventData.button == PointerEventData.InputButton.Right)
-        {
-            OpenContextMenu(item);
-        }
         Debug.Log($"슬롯 {slotIndex} 클릭됨");
     }
 
@@ -177,6 +168,7 @@ public class InventorySlot : MonoBehaviour,
 
             fromEquipmentSlot.Refresh();
             Refresh();
+            return;
         }
 
     }
@@ -216,12 +208,6 @@ public class InventorySlot : MonoBehaviour,
         Debug.Log("아이템 선택");
         //highlight?.SetActive(true);
         // 아이템 정보 UI 호출
-    }
-
-    private void Use(ItemBase item)
-    {
-        // 아이템 사용 로직
-        Debug.Log(item.itemBaseSO.itemName + " 사용됨");
     }
 
     private void OpenContextMenu(ItemBase item)

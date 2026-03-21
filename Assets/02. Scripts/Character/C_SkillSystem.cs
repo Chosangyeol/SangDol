@@ -20,7 +20,7 @@ public class C_SkillSystem
             { C_Enums.SkillSlot.A, null },
             { C_Enums.SkillSlot.S, null },
             { C_Enums.SkillSlot.D, null },
-            { C_Enums.SkillSlot.F, null },
+            { C_Enums.SkillSlot.F, null }
         };
 
     public event Action OnSkillDataChanged;
@@ -52,7 +52,7 @@ public class C_SkillSystem
             return activeSkills[slot];
         }
         return null;
-    } 
+    }
 
     public void UseSkill(C_Enums.SkillSlot slot, Vector3 targetPos)
     {

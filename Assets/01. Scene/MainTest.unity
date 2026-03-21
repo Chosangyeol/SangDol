@@ -472,7 +472,7 @@ PrefabInstance:
     - target: {fileID: -9041286694161390006, guid: 418037643b532124a9ea7e748ea4e849,
         type: 3}
       propertyPath: useSlot
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 2862664514625144170, guid: 418037643b532124a9ea7e748ea4e849,
         type: 3}
@@ -712,7 +712,7 @@ PrefabInstance:
     - target: {fileID: -9041286694161390006, guid: 418037643b532124a9ea7e748ea4e849,
         type: 3}
       propertyPath: useSlot
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2862664514625144170, guid: 418037643b532124a9ea7e748ea4e849,
         type: 3}
@@ -1846,20 +1846,6 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 318090369}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &334510081
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc1515ab76e54f068e2f2207940fab32, type: 3}
-  m_Name: Player/Move
-  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.InputActionReference
-  m_Asset: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  m_ActionId: 85f6a0f4-cd66-4e76-a3a5-1c6307e8be90
 --- !u!1 &344687419
 GameObject:
   m_ObjectHideFlags: 0
@@ -3578,13 +3564,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInputs
   model: {fileID: 592544199}
-  moveAction: {fileID: 334510081}
-  interactActon: {fileID: 1018576548}
-  attackAction: {fileID: 782772138}
-  skillSlotAction: {fileID: 1325443990}
-  useItemSlotAction: {fileID: 0}
-  uiAction: {fileID: 1450127579}
-  pointerPos: {fileID: 1078610123}
+  moveAction: {fileID: -61183637759418425, guid: 052faaac586de48259a63d0c4782560b,
+    type: 3}
+  interactActon: {fileID: 2558216385808051489, guid: 052faaac586de48259a63d0c4782560b,
+    type: 3}
+  attackAction: {fileID: 1120369429361536294, guid: 052faaac586de48259a63d0c4782560b,
+    type: 3}
+  skillSlotAction: {fileID: -3015689791727636621, guid: 052faaac586de48259a63d0c4782560b,
+    type: 3}
+  useItemSlotAction: {fileID: 6740642044089569918, guid: 052faaac586de48259a63d0c4782560b,
+    type: 3}
+  uiAction: {fileID: 4002509880683026006, guid: 052faaac586de48259a63d0c4782560b,
+    type: 3}
+  pointerPos: {fileID: -9186636312192583795, guid: 052faaac586de48259a63d0c4782560b,
+    type: 3}
 --- !u!95 &592544205
 Animator:
   serializedVersion: 5
@@ -3917,20 +3910,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 768546963}
   m_CullTransparentMesh: 1
---- !u!114 &782772138
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc1515ab76e54f068e2f2207940fab32, type: 3}
-  m_Name: Player/Attack
-  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.InputActionReference
-  m_Asset: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  m_ActionId: 6c2ab1b8-8984-453a-af3d-a3c78ae1679a
 --- !u!1 &835982206
 GameObject:
   m_ObjectHideFlags: 0
@@ -4936,20 +4915,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1000208776}
   m_CullTransparentMesh: 1
---- !u!114 &1018576548
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc1515ab76e54f068e2f2207940fab32, type: 3}
-  m_Name: Player/Interact
-  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.InputActionReference
-  m_Asset: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  m_ActionId: 151b488c-c630-4c37-b5fd-d66b84ca288d
 --- !u!1 &1045362157
 GameObject:
   m_ObjectHideFlags: 0
@@ -5153,20 +5118,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1060911583}
   m_CullTransparentMesh: 1
---- !u!114 &1078610123
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc1515ab76e54f068e2f2207940fab32, type: 3}
-  m_Name: Player/PointerPos
-  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.InputActionReference
-  m_Asset: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  m_ActionId: b08bcdbf-a612-4768-94ff-b8f4fac7a836
 --- !u!1 &1095706816
 GameObject:
   m_ObjectHideFlags: 0
@@ -5888,20 +5839,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1314907236}
   m_CullTransparentMesh: 1
---- !u!114 &1325443990
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc1515ab76e54f068e2f2207940fab32, type: 3}
-  m_Name: Player/SkillSlot
-  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.InputActionReference
-  m_Asset: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  m_ActionId: a9fc75c1-388a-4d7a-85de-afbc708a581d
 --- !u!1 &1325689161
 GameObject:
   m_ObjectHideFlags: 0
@@ -6533,20 +6470,6 @@ MonoBehaviour:
   interactObject: {fileID: 376474004}
   interactText: {fileID: 2001329942}
   offset: {x: 0, y: -2, z: 0}
---- !u!114 &1450127579
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc1515ab76e54f068e2f2207940fab32, type: 3}
-  m_Name: Player/UI
-  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.InputActionReference
-  m_Asset: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  m_ActionId: deb60f13-9955-4863-899e-a8c619b69a3c
 --- !u!1 &1482802087
 GameObject:
   m_ObjectHideFlags: 0
@@ -8316,7 +8239,7 @@ PrefabInstance:
     - target: {fileID: -9041286694161390006, guid: 418037643b532124a9ea7e748ea4e849,
         type: 3}
       propertyPath: useSlot
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 2862664514625144170, guid: 418037643b532124a9ea7e748ea4e849,
         type: 3}
@@ -8745,7 +8668,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1851383510
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8857,7 +8780,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1867176032
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9739,6 +9662,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 115175040}
     m_Modifications:
+    - target: {fileID: -9041286694161390006, guid: 418037643b532124a9ea7e748ea4e849,
+        type: 3}
+      propertyPath: useSlot
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2862664514625144170, guid: 418037643b532124a9ea7e748ea4e849,
         type: 3}
       propertyPath: m_Name

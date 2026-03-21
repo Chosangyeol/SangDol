@@ -13,6 +13,14 @@ public class C_Inventory
 
     public int slotSize = 30;
 
+    public Dictionary<C_Enums.UseSlot, int> useSlots =
+        new Dictionary<C_Enums.UseSlot, int>()
+        {
+            { C_Enums.UseSlot.Slot_1, 99 },
+            { C_Enums.UseSlot.Slot_2, 99 },
+            { C_Enums.UseSlot.Slot_3, 99 },
+            { C_Enums.UseSlot.Slot_4, 99 }
+        };
 
     /// <summary>
     /// 인벤토리에 아이템이 추가된 후 호출되는 이벤트
@@ -25,6 +33,8 @@ public class C_Inventory
     /// EX) UI 업데이트
     /// </summary>
     public event Action<ItemBase> OnRemoveItemInventory;
+
+    public event Action OnInventoryUpdated;
 
     public C_Inventory(CharacterModel model, int slotSize)
     {
@@ -157,20 +167,26 @@ public class C_Inventory
         (items[from], items[to]) = (items[to], items[from]);
     }
 
-    public void UseItem(int slotIndex)
+    public void UseItem(C_Enums.UseSlot slot)
     {
-        UseItemBase useItem = Items[slotIndex] as UseItemBase;
+        if (slot == C_Enums.UseSlot.None) return;
+
+        int index = useSlots[slot];
+
+        if (index == 99) return;
+
+        UseItemBase useItem = Items[index] as UseItemBase;
 
         if (useItem == null) return;
 
         if (useItem.UseItem(owner))
         {
-            useItem.currentStack--;
-
-            if (useItem.currentStack <= 0)
-            {
-                RemoveItemAt(slotIndex);
-            }
+            Items[index].currentStack--;
+            Debug.Log(Items[index].currentStack);
+            if (Items[index].currentStack <= 0)
+                RemoveItemAt(index);
         }
+
+        OnInventoryUpdated?.Invoke();
     }
 }
