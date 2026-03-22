@@ -1,0 +1,4 @@
+﻿Quest_ID,Quest_Name,Quest_Type,Quest_Target,Quest_Count,Reward_Gold,Reward_Exp,Reward1_Item,Reward1_Count,Reward2_Item,Reward2_Count,Reward3_Item,Reward3_Count
+Q_30001_001,배달,Talk,30002,,100,100,10001,1,,,,
+Q_30001_002,슬라임 토벌,Kill,Slime,5,100,100,10002,1,10003,1,,
+Q_30001_003,식량 모으기,Item,20001,5,100,100,,,,,,

@@ -18,7 +18,7 @@ public class InteractableObject : MonoBehaviour, IInteractable
     public TMP_Text interactText;
     public Vector3 offset;
 
-    private void Start()
+    protected virtual void Start()
     {
         Init(InteractName);
         interactUI.SetActive(false);
@@ -42,7 +42,7 @@ public class InteractableObject : MonoBehaviour, IInteractable
         interactText.text = text;
     }
 
-    public bool Interact(Transform target)
+    public virtual bool Interact(Transform target)
     {
         if (!canInteract) return false;
 
