@@ -20,6 +20,7 @@ public class EquipItemBase : ItemBase
     public override void OnAddInventory()
     {
         Debug.Log("인벤토리 추가 : " + itemBaseSO.itemName);
+        GameEvent.OnGetItem?.Invoke(itemBaseSO.itemID);
     }
 
     public override void OnUpdateInventory(float delta)
