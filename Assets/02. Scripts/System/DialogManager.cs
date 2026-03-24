@@ -49,7 +49,7 @@ public class DialogManager : MonoBehaviour
     private void Awake()
     {
         if (Instance == null) Instance = this;
-        LoadDialogueCSV("Dialogue_Data"); // Assets/Resources/Dialogue_Data.csv 로드
+        LoadDialogueCSV("NpcDialogDataBase"); // Assets/Resources/Dialogue_Data.csv 로드
     }
 
     // 1. CSV 로드 및 파싱 기능
@@ -180,7 +180,7 @@ public class DialogManager : MonoBehaviour
         {
             case "Quest_Show":
                 Debug.Log($"[{value}] 퀘스트 상세 정보창 띄우기 요청 (UI 연결 필요)");
-                // 예: QuestUIManager.Instance.ShowQuestDetails(value);
+                QuestManager.Instance.ShowQuestPreview(value);
                 break;
 
             case "Quest_Accept":
@@ -190,9 +190,10 @@ public class DialogManager : MonoBehaviour
 
             case "Quest_Refuse":
                 Debug.Log($"[{value}] 퀘스트를 거절했습니다.");
+                QuestManager.Instance.RefuseQuest();
                 break;
 
-            case "Quest_Complete": // 나중에 퀘스트 완료 대사용 액션
+            case "Quest_Clear": // 나중에 퀘스트 완료 대사용 액션
                 QuestManager.Instance.CompleteQuest(value);
                 break;
         }

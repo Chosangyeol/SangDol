@@ -4,7 +4,7 @@ using UnityEngine;
 public abstract class ItemBaseSO : ScriptableObject
 {
     [Header("아이템 고유 ID")]
-    public int itemID;
+    public string itemID;
     [Header("아이템 이름")]
     public string itemName;
     [Header("아이템 아이콘")]

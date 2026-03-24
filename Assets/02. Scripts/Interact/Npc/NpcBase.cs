@@ -20,8 +20,9 @@ public class NpcBase : InteractableObject
 
         if (npcSO == null) return false;
 
-        NpcDialogManager.Instance.OpenNpcUI(npcSO);
+        GameEvent.OnTalkNpc?.Invoke(npcSO.npcID);
 
+        NpcDialogManager.Instance.OpenNpcUI(npcSO);
         return true;
     }
 }

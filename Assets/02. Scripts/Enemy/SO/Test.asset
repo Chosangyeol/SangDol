@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b34247faa7bd69d44bd1c88d1e822fdc, type: 3}
   m_Name: Test
   m_EditorClassIdentifier: Assembly-CSharp::EnemyStatSO
-  enemyName: Test
+  enemyID: Slime
+  enemyName: "\uC2AC\uB77C\uC784"
   isAggressive: 1
   canDown: 1
   maxHp: 100

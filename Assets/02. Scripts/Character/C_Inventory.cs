@@ -45,6 +45,7 @@ public class C_Inventory
         {
             items.Add(null);
         }
+
         return;
     }
 
@@ -188,5 +189,20 @@ public class C_Inventory
         }
 
         OnInventoryUpdated?.Invoke();
+    }
+
+    public int GetTotalItemCount(string targetItemID)
+    {
+        int totalCount = 0;
+
+        foreach (var item in Items)
+        {
+            if (item != null && item.itemBaseSO.itemID == targetItemID)
+            {
+                totalCount += item.currentStack;
+            }
+        }
+
+        return totalCount;
     }
 }

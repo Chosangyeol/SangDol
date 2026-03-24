@@ -4,6 +4,7 @@ using UnityEngine;
 public class EnemyStatSO : ScriptableObject
 {
     [Header("적 세팅값")]
+    public string enemyID;
     public string enemyName;
     public bool isAggressive = false;
     public bool canDown = false;

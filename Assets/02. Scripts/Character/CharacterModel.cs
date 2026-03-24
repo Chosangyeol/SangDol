@@ -93,6 +93,16 @@ public class CharacterModel : MonoBehaviour
         Stat.Heal(healAmount);
     }
 
+    public void GainExp(float amount)
+    {
+        Stat.GainExp(amount);
+    }
+
+    public void GainGold(int amount)
+    {
+        Stat.GainGold(amount);
+    }
+
     public float GetCritical(float baseDamage)
     {
         return (Stat.GetCritical(baseDamage));

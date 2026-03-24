@@ -21,8 +21,6 @@ public class EnemyModel : MonoBehaviour
     [SerializeField] private Transform spawnPoint;
     public Transform SpawnPoint => spawnPoint;
 
-
-
     private bool _isDead = false;
 
     private CharacterModel _target;
@@ -212,6 +210,8 @@ public class EnemyModel : MonoBehaviour
             character.Stat.GainGold(statSO.goldAmount);
             // 아이템 드랍 처리
         }
+
+        GameEvent.OnMonsterKill?.Invoke(statSO.enemyID);
         // 적 사망 처리
         Debug.Log($"{_stat.enemyName}이(가) 사망했습니다.");
     }

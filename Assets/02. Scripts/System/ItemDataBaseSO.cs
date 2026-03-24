@@ -43,7 +43,7 @@ public class ItemDataBaseSO : ScriptableObject
                 cols[j] = cols[j].TrimStart('\"', ' ').TrimEnd('\"', ' ');
             }
 
-            int id = int.Parse(cols[0]);
+            string id = cols[0];
             string name = cols[1];
             string nameKr = cols[2];
 

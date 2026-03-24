@@ -10,8 +10,6 @@ public class NpcDialogManager : MonoBehaviour
 
     [Header("Dialog 패널 연결")]
     public GameObject npcDialogPanel;
-    public TMP_Text nameText;
-    public TMP_Text dialogText;
 
     [Header("버튼 생성")]
     public Transform buttonGroup;
@@ -25,8 +23,8 @@ public class NpcDialogManager : MonoBehaviour
     public void OpenNpcUI(NpcSO npc)
     {
         npcDialogPanel.SetActive(true);
-        nameText.text = npc.name;
-        dialogText.text = npc.defaultDialogID;
+        buttonGroup.gameObject.SetActive(true);
+        DialogManager.Instance.StartDialogue(npc.defaultDialogID);
 
         foreach (Transform child in buttonGroup)
         {
@@ -42,7 +40,7 @@ public class NpcDialogManager : MonoBehaviour
             });
         }
 
-        CreateButton("대화하기", () =>
+        CreateButton("대화 하기", () =>
         {
             Debug.Log("대화 하기 실행 ");
         });
@@ -62,13 +60,13 @@ public class NpcDialogManager : MonoBehaviour
                 if (state != QuestState.Completed)
                 {
                     string questName = QuestManager.Instance.GetQuestName(q.questID);
-
                     CreateButton($"[퀘스트] {questName}", () =>
                     {
                         // 상태에 맞는 대사 ID를 찾아 대화 매니저에게 넘김
                         string dialogueToPlay = DetermineQuestDialogueID(q, state);
+                        Debug.Log(dialogueToPlay);
                         DialogManager.Instance.StartDialogue(dialogueToPlay);
-                        CloseUI();
+                        buttonGroup.gameObject.SetActive(false);
                     });
                 }
             }

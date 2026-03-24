@@ -24,3 +24,15 @@ MonoBehaviour:
   - questID: Q_30001_001
     requiredQuestID: 
     startDialogID: D_30001_003
+    inProgressDialogueID: D_30001_009
+    clearDialogueID: D_30001_010
+  - questID: Q_30001_002
+    requiredQuestID: 
+    startDialogID: D_30001_012
+    inProgressDialogueID: D_30001_015
+    clearDialogueID: D_30001_016
+  - questID: Q_30001_003
+    requiredQuestID: 
+    startDialogID: D_30001_018
+    inProgressDialogueID: D_30001_021
+    clearDialogueID: D_30001_022

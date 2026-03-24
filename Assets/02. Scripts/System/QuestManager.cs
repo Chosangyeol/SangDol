@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Text.RegularExpressions;
 using System.Runtime.CompilerServices;
+using TMPro;
+using UnityEngine.UIElements;
+using System;
 
 [System.Serializable]
 public struct RewardItem
@@ -22,8 +25,9 @@ public class QuestData
 
     public int rewardGold;
     public int rewardExp;
-
     public List<RewardItem> rewardItems = new List<RewardItem>();
+
+    public string questDialog;
 }
 
 public class QuestManager : MonoBehaviour
@@ -33,11 +37,43 @@ public class QuestManager : MonoBehaviour
     public Dictionary<string, QuestData> questDict = new Dictionary<string, QuestData>();
     public Dictionary<string, QuestState> questStateDict = new Dictionary<string, QuestState>();
 
+    public Dictionary<string, int> questKillProgressDict = new Dictionary<string, int>();
+    public Dictionary<string, int> questItemProgressDict = new Dictionary<string, int>();
+    public Dictionary<string, bool> questTalkProgressDict = new Dictionary<string, bool>();
+
+    private CharacterModel _model;
+
+    [Header("퀘스트 미리보기")]
+    public GameObject questPreview;
+    public TMP_Text questNameText;
+    public TMP_Text questDialogText;
+
+    
+
     private void Awake()
     {
         if (Instance == null ) Instance = this;
 
         LoadQuestCsv("NpcQuestDataBase");
+    }
+
+    private void Start()
+    {
+        _model = FindAnyObjectByType<CharacterModel>();
+    }
+
+    private void OnEnable()
+    {
+        GameEvent.OnMonsterKill += HandleCountMonsterKill;
+        GameEvent.OnGetItem += HandleCountItem;
+        GameEvent.OnTalkNpc += HandleTalkNpc;
+    }
+
+    private void OnDisable()
+    {
+        GameEvent.OnMonsterKill -= HandleCountMonsterKill;
+        GameEvent.OnGetItem -= HandleCountItem;
+        GameEvent.OnTalkNpc -= HandleTalkNpc;
     }
 
     private void LoadQuestCsv(string fileName)
@@ -63,30 +99,34 @@ public class QuestManager : MonoBehaviour
 
             data.questID = columns[0];
             data.questName = columns[1];
+            data.questDialog = columns[2];
 
-            if (columns.Length > 2) data.questType = columns[2];
-            if (columns.Length > 3) data.questTarget = columns[3];
-            if (columns.Length > 4) int.TryParse(columns[4], out data.questCount);
-            if (columns.Length > 5) int.TryParse(columns[5], out data.rewardGold);
-            if (columns.Length > 6) int.TryParse(columns[6], out data.rewardExp);
+            if (columns.Length > 3) data.questType = columns[3];
+            if (columns.Length > 4) data.questTarget = columns[4];
+            if (columns.Length > 5) int.TryParse(columns[5], out data.questCount);
+            if (columns.Length > 6) int.TryParse(columns[6], out data.rewardGold);
+            if (columns.Length > 7) int.TryParse(columns[7], out data.rewardExp);
 
-            if (columns.Length > 8 && !string.IsNullOrWhiteSpace(columns[7]))
+            // 보상 1 (Index 8, 9)
+            if (columns.Length > 9 && !string.IsNullOrWhiteSpace(columns[8]))
             {
-                int.TryParse(columns[8], out int count);
-                data.rewardItems.Add(new RewardItem { itemID = columns[7], count = count });
+                int.TryParse(columns[9], out int count);
+                data.rewardItems.Add(new RewardItem { itemID = columns[8], count = count });
             }
-            // 보상 2 (Index 9, 10)
-            if (columns.Length > 10 && !string.IsNullOrWhiteSpace(columns[9]))
+            // 보상 2 (Index 10, 11)
+            if (columns.Length > 11 && !string.IsNullOrWhiteSpace(columns[10]))
             {
-                int.TryParse(columns[10], out int count);
-                data.rewardItems.Add(new RewardItem { itemID = columns[9], count = count });
+                int.TryParse(columns[11], out int count);
+                data.rewardItems.Add(new RewardItem { itemID = columns[10], count = count });
             }
-            // 보상 3 (Index 11, 12)
-            if (columns.Length > 12 && !string.IsNullOrWhiteSpace(columns[11]))
+            // 보상 3 (Index 12, 13)
+            if (columns.Length > 13 && !string.IsNullOrWhiteSpace(columns[12]))
             {
-                int.TryParse(columns[12], out int count);
-                data.rewardItems.Add(new RewardItem { itemID = columns[11], count = count });
+                int.TryParse(columns[13], out int count);
+                data.rewardItems.Add(new RewardItem { itemID = columns[12], count = count });
             }
+
+            
 
             questDict.Add(data.questID, data);
         }
@@ -107,38 +147,171 @@ public class QuestManager : MonoBehaviour
         return columns;
     }
 
+    private void HandleCountMonsterKill(string targetMonsterID)
+    {
+        // 💡 1. 에러 방지를 위해 임시 리스트로 복사! (가장 안전한 questStateDict 기준)
+        List<string> activeQuests = new List<string>(questStateDict.Keys);
+
+        foreach (var questID in activeQuests)
+        {
+            // 💡 2. 퀘스트가 '진행 중'일 때만 검사! (이미 깬 퀘스트는 무시)
+            if (questStateDict[questID] == QuestState.InProgress)
+            {
+                QuestData data = questDict[questID];
+
+                if (data.questType == "Kill" && data.questTarget == targetMonsterID)
+                {
+                    // 딕셔너리에 값이 없다면 0으로 안전하게 초기화
+                    if (!questKillProgressDict.ContainsKey(questID))
+                        questKillProgressDict[questID] = 0;
+
+                    questKillProgressDict[questID]++;
+
+                    Debug.Log($"[퀘스트 진행] {data.questName} : {questKillProgressDict[questID]} / {data.questCount}");
+
+                    if (questKillProgressDict[questID] >= data.questCount)
+                    {
+                        questStateDict[questID] = QuestState.CanClear;
+                        Debug.Log($"<color=cyan>[퀘스트 조건 달성] NPC에게 돌아가 보상을 받으세요!</color>");
+                    }
+                }
+            }
+        }
+    }
+
+    private void HandleCountItem(string targetItemID)
+    {
+        List<string> activeQuests = new List<string>(questStateDict.Keys);
+
+        foreach (var questID in activeQuests)
+        {
+            QuestData data = questDict[questID];
+
+            // 💡 최적화: 수집 퀘스트이고, 지금 변동된 아이템이 퀘스트 목표와 일치할 때만 검사
+            if (data.questType == "Item" && data.questTarget == targetItemID)
+            {
+                int currentItemCount = _model.Inventory.GetTotalItemCount(data.questTarget);
+                Debug.Log(currentItemCount);
+                questItemProgressDict[questID] = currentItemCount;
+
+                if (questStateDict[questID] == QuestState.InProgress)
+                {
+                    if (questItemProgressDict[questID] >= data.questCount)
+                    {
+                        questStateDict[questID] = QuestState.CanClear;
+                        Debug.Log($"<color=cyan>[아이템 수집 완료] NPC에게 돌아가세요!</color>");
+                    }
+                }
+                else if (questStateDict[questID] == QuestState.CanClear)
+                {
+                    if (questItemProgressDict[questID] < data.questCount)
+                    {
+                        questStateDict[questID] = QuestState.InProgress;
+                        Debug.Log($"<color=red>퀘스트 아이템이 부족해졌습니다.</color>");
+                    }
+                }
+            }
+        }
+    }
+
+    private void HandleTalkNpc(string targetNpcID)
+    {
+        List<string> activeQuests = new List<string>(questStateDict.Keys);
+
+        foreach (var questID in activeQuests)
+        {
+            // 💡 진행 중인 대화 퀘스트만 검사
+            if (questStateDict[questID] == QuestState.InProgress)
+            {
+                QuestData data = questDict[questID];
+
+                if (data.questType == "Talk" && data.questTarget == targetNpcID)
+                {
+                    questTalkProgressDict[questID] = true;
+                    questStateDict[questID] = QuestState.CanClear;
+
+                    Debug.Log($"<color=cyan>[대화 완료] 대화 퀘스트 조건을 달성했습니다!</color>");
+                }
+            }
+        }
+    }
+
     public QuestState GetQuestState(string questID)
     {
+        questID = questID.Trim();
+
         if (questStateDict.TryGetValue(questID, out QuestState state)) return state;
         return QuestState.NotStart;
     }
 
     public string GetQuestName(string questID)
     {
+        questID = questID.Trim();
+
         if (questDict.TryGetValue(questID, out QuestData data)) return data.questName;
         return "알 수 없는 퀘스트";
     }
 
     public void AcceptQuest(string questID)
     {
-        if (GetQuestState(questID)==QuestState.NotStart)
+        questID = questID.Trim();
+
+        if (GetQuestState(questID) == QuestState.NotStart)
         {
+            QuestData data = questDict[questID];
+
             questStateDict[questID] = QuestState.InProgress;
 
+            if (questDict[questID].questType == "Kill")
+                questKillProgressDict.Add(questID, 0);
+            else if (questDict[questID].questType == "Item")
+            {
+                int currentItemCount = _model.Inventory.GetTotalItemCount(data.questTarget);
+                Debug.Log(currentItemCount);
 
+
+                questItemProgressDict.Add(questID, 0);
+
+                HandleCountItem(data.questTarget); 
+            }
+            else if (questDict[questID].questType == "Talk")
+            {
+                questTalkProgressDict.Add(questID, false);
+                Debug.Log(questTalkProgressDict[questID]);
+            }
+
+            questPreview.SetActive(false);
         }
+    }
+
+    public void RefuseQuest()
+    {
+        questPreview.SetActive(false);
     }
 
     public void CompleteQuest(string questID)
     {
+        questID = questID.Trim();
+
+        Debug.Log(questDict[questID].questName);
+
         if (GetQuestState(questID) == QuestState.CanClear)
         {
             questStateDict[questID] = QuestState.Completed;
 
             if (questDict.TryGetValue(questID, out QuestData data))
             {
-                if (data.rewardExp > 0) Debug.Log($"경험치 {data.rewardExp} 획득");
-                if (data.rewardGold > 0) Debug.Log($"골드 {data.rewardGold} 획득");
+                if (data.rewardExp > 0)
+                {
+                    Debug.Log($"경험치 {data.rewardExp} 획득");
+                    _model.GainExp(data.rewardExp);
+                }
+
+                if (data.rewardGold > 0)
+                {
+                    Debug.Log($"골드 {data.rewardGold} 획득");
+                    _model.GainGold(data.rewardGold);
+                }
 
                 foreach (var reward in data.rewardItems)
                 {
@@ -151,5 +324,18 @@ public class QuestManager : MonoBehaviour
         {
             Debug.LogWarning("아직 퀘스트 완료 조건을 달성하지 못했습니다.");
         }
+    }
+
+    public QuestData GetQuestData(string questID)
+    {
+        if (questDict.TryGetValue(questID, out QuestData data)) return data;
+        return null;
+    }
+
+    public void ShowQuestPreview(string questID)
+    {
+        questPreview.SetActive(true);
+        questNameText.text = GetQuestName(questID);
+        questDialogText.text = questDict[questID].questDialog;
     }
 }
