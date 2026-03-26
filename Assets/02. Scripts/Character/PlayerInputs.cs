@@ -87,10 +87,10 @@ public class PlayerInputs : MonoBehaviour
             if (key.keyCode == Key.W) return C_Enums.SkillSlot.W;
             if (key.keyCode == Key.E) return C_Enums.SkillSlot.E;
             if (key.keyCode == Key.R) return C_Enums.SkillSlot.R;
-            if (key.keyCode == Key.A) return C_Enums.SkillSlot.A;
-            if (key.keyCode == Key.S) return C_Enums.SkillSlot.S;
-            if (key.keyCode == Key.D) return C_Enums.SkillSlot.D;
-            if (key.keyCode == Key.F) return C_Enums.SkillSlot.F;
+            //if (key.keyCode == Key.A) return C_Enums.SkillSlot.A;
+            //if (key.keyCode == Key.S) return C_Enums.SkillSlot.S;
+            //if (key.keyCode == Key.D) return C_Enums.SkillSlot.D;
+            //if (key.keyCode == Key.F) return C_Enums.SkillSlot.F;
         }
 
         return C_Enums.SkillSlot.Q;

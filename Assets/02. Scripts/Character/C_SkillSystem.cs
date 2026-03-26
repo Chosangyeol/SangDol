@@ -17,10 +17,10 @@ public class C_SkillSystem
             { C_Enums.SkillSlot.W, null },
             { C_Enums.SkillSlot.E, null },
             { C_Enums.SkillSlot.R, null },
-            { C_Enums.SkillSlot.A, null },
-            { C_Enums.SkillSlot.S, null },
-            { C_Enums.SkillSlot.D, null },
-            { C_Enums.SkillSlot.F, null }
+            //{ C_Enums.SkillSlot.A, null },
+            //{ C_Enums.SkillSlot.S, null },
+            //{ C_Enums.SkillSlot.D, null },
+            //{ C_Enums.SkillSlot.F, null }
         };
 
     public event Action OnSkillDataChanged;

@@ -16,7 +16,6 @@ public class StatusUI : MonoBehaviour
     [Header("기본 스텟 UI")]
     [SerializeField] TMP_Text hpText;
     [SerializeField] TMP_Text levelText;
-    [SerializeField] TMP_Text expText;
     [SerializeField] TMP_Text attackText;
     [SerializeField] TMP_Text defenseText;
     [SerializeField] TMP_Text criticalChanceText;
@@ -71,9 +70,7 @@ public class StatusUI : MonoBehaviour
 
     private void BindStatusEvents()
     {
-        //_equipment.OnEquipItem += OnStatusChange;
-        //_equipment.OnUnequipItem += OnStatusChange;
-        _stat.OnStatChange += RefreshStatus;
+        GameEvent.OnStatChange += RefreshStatus;
     }
 
 
@@ -87,18 +84,17 @@ public class StatusUI : MonoBehaviour
         foreach (var slot in equipmentSlots)
             slot.Refresh();
 
-        RefreshStatus();
+        RefreshStatus(_stat.Stat);
     }
 
-    public void RefreshStatus()
+    public void RefreshStatus(CharacterStat stat)
     {  
-        hpText.text = $"체력: {_stat.Stat.curHp} / {_stat.Stat.maxHp.GetValue()}";
-        levelText.text = $"레벨: {_stat.Stat.currentLevel}";
-        expText.text = $"경험치: {_stat.Stat.currentExp} / {_stat.Stat.maxExp}";
-        attackText.text = $"공격력: {_stat.Stat.attackDamage.GetValue()}";
-        defenseText.text = $"방어력: {_stat.Stat.defense.GetValue()}";
-        criticalChanceText.text = $"치명타 확률: {_stat.Stat.criticalChance.GetValue() * 100}%";
-        criticalDamageText.text = $"치명타 피해량: {_stat.Stat.criticalDamage.GetValue() * 100}%";
+        hpText.text = $"체력: {stat.curHp} / {stat.maxHp.GetValue()}";
+        levelText.text = $"레벨: {stat.currentLevel}";
+        attackText.text = $"공격력: {stat.attackDamage.GetValue()}";
+        defenseText.text = $"방어력: {stat.defense.GetValue()}";
+        criticalChanceText.text = $"치명타 확률: {stat.criticalChance.GetValue() * 100}%";
+        criticalDamageText.text = $"치명타 피해량: {stat.criticalDamage.GetValue() * 100}%";
 
         totalPointText.text = $"전체 스텟 포인트 : {_special._totalPoint}";
         remainPointText.text = $"남은 스텟 포인트 : {_special._remainPoint}";
@@ -115,7 +111,7 @@ public class StatusUI : MonoBehaviour
     {
         gameObject.SetActive(!gameObject.activeSelf);
         specialStat.SetActive(false);
-        RefreshStatus();
+        RefreshStatus(_stat.Stat);
     }
 
     public void SpecialToggle()

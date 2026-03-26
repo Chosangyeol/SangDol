@@ -57,6 +57,8 @@ public class CharacterModel : MonoBehaviour
         {
             Inventory.AddItem(testItems[i].GetItem());
         }
+
+        GameEvent.OnStatChange?.Invoke(stat.Stat);
     }
 
     private void Update()

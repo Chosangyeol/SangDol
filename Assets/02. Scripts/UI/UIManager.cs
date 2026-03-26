@@ -18,17 +18,18 @@ public class UIManager : MonoBehaviour
         }
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
+        CharacterModel character = FindAnyObjectByType<CharacterModel>();
+
+        mainUI.Init(character.SkillSystem, character.Inventory, character);
+        inventoryUI.Init(character.Inventory, character.Equipment);
+        skillTreeUI.Init(character.SkillSystem, character);
+        statusUI.Init(character.Stat, character.Equipment, character.SpecialStat);
     }
 
     void Start()
     {
-        CharacterModel character = FindAnyObjectByType<CharacterModel>();
-
-        mainUI.Init(character.SkillSystem,character.Inventory, character);
-        inventoryUI.Init(character.Inventory, character.Equipment);
-        skillTreeUI.Init(character.SkillSystem, character);
-        statusUI.Init(character.Stat,character.Equipment,character.SpecialStat);
-
+        
     }
 
     public void ToggleUI(C_Enums.UIList ui)

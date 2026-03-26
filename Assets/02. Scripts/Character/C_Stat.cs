@@ -13,20 +13,19 @@ public class C_Stat
     private CharacterStat stat;
     public CharacterStat Stat => stat;
 
-    public event Action OnStatChange;
-
     public C_Stat(CharacterModel model, CharacterStatSO statSO)
     {
         this.owner = model;
         this.statSO = statSO;
         this.stat = new CharacterStat(this.statSO);
+
         return;
     }
 
     public void Damaged(float damage)
     {
         stat.Damaged(damage);
-        OnStatChange?.Invoke();
+        GameEvent.OnStatChange?.Invoke(Stat);
     }
 
     public float GetCritical(float baseDamage)
@@ -37,7 +36,7 @@ public class C_Stat
     public void Heal(float amount)
     {
         stat.Heal(amount);
-        OnStatChange?.Invoke();
+        GameEvent.OnStatChange?.Invoke(Stat);
     }
 
     public void GainExp(float amount)
@@ -46,71 +45,71 @@ public class C_Stat
         if (stat.currentExp >= stat.maxExp)
             LevelUp();
 
-        OnStatChange?.Invoke();
+        GameEvent.OnStatChange?.Invoke(Stat);
     }
 
     public void LevelUp()
     {
         stat.LevelUp();
-        OnStatChange?.Invoke();
+        GameEvent.OnStatChange?.Invoke(Stat);
     }
 
     public void GainGold(int amount)
     {
         stat.GainGold(amount);
-        OnStatChange?.Invoke();
+        GameEvent.OnStatChange?.Invoke(Stat);
     }
 
     #region Add Stat Methods
     public void AddMaxHp(bool isFlat, float value)
     {
         stat.AddMaxHp(isFlat, value);
-        OnStatChange?.Invoke();
+        GameEvent.OnStatChange?.Invoke(Stat);
 
     }
 
     public void AddAttackDamage(bool isFlat, float value)
     {
         stat.AddAttackDamage(isFlat, value);
-        OnStatChange?.Invoke();
+        GameEvent.OnStatChange?.Invoke(Stat);
 
     }
 
     public void AddDefense(bool isFlat, float value)
     {
         stat.AddDefense(isFlat, value);
-        OnStatChange?.Invoke();
+        GameEvent.OnStatChange?.Invoke(Stat);
 
     }
 
     public void AddMoveSpeed(float value)
     {
         stat.AddMoveSpeed(value);
-        OnStatChange?.Invoke();
+        GameEvent.OnStatChange?.Invoke(Stat);
     }
 
     public void AddAttackSpeed(float value)
     {
         stat.AddAttackSpeed(value);
-        OnStatChange?.Invoke();
+        GameEvent.OnStatChange?.Invoke(Stat);
     }
 
     public void AddDownPower(float value)
     {
         stat.AddDownPower(value);
-        OnStatChange?.Invoke();
+        GameEvent.OnStatChange?.Invoke(Stat);
     }
 
     public void AddCirticalChance(float value)
     {
         stat.AddCirticalChance(value);
-        OnStatChange?.Invoke();
+        GameEvent.OnStatChange?.Invoke(Stat);
     }
 
     public void AddCirticalDamage(float value)
     {
         stat.AddCirticalDamage(value);
-        OnStatChange?.Invoke();
+        GameEvent.OnStatChange?.Invoke(Stat);
     }
     #endregion
 
@@ -118,49 +117,49 @@ public class C_Stat
     public void RemoveMaxHp(bool isFlat, float value)
     {
         stat.RemoveMaxHp(isFlat, value);
-        OnStatChange?.Invoke();
+        GameEvent.OnStatChange?.Invoke(Stat);
     }
 
     public void RemoveAttackDamage(bool isFlat, float value)
     {
         stat.RemoveAttackDamage(isFlat, value);
-        OnStatChange?.Invoke();
+        GameEvent.OnStatChange?.Invoke(Stat);
     }
 
     public void RemoveDefense(bool isFlat, float value)
     {
         stat.RemoveDefense(isFlat, value);
-        OnStatChange?.Invoke();
+        GameEvent.OnStatChange?.Invoke(Stat);
     }
 
     public void RemoveMoveSpeed(float value)
     {
         stat.RemoveMoveSpeed(value);
-        OnStatChange?.Invoke();
+        GameEvent.OnStatChange?.Invoke(Stat);
     }
 
     public void RemoveAttackSpeed(float value)
     {
         stat.RemoveAttackSpeed(value);
-        OnStatChange?.Invoke();
+        GameEvent.OnStatChange?.Invoke(Stat);
     }
 
     public void RemoveDownPower(float value)
     {
         stat.RemoveDownPower(value);
-        OnStatChange?.Invoke();
+        GameEvent.OnStatChange?.Invoke(Stat);
     }
 
     public void RemoveCirticalChance(float value)
     {
         stat.RemoveCirticalChance(value);
-        OnStatChange?.Invoke();
+        GameEvent.OnStatChange?.Invoke(Stat);
     }
 
     public void RemoveCirticalDamage(float value)
     {
         stat.RemoveCirticalDamage(value);
-        OnStatChange?.Invoke();
+        GameEvent.OnStatChange?.Invoke(Stat);
     }
     #endregion
 }

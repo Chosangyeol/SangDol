@@ -9,4 +9,7 @@ public static class GameEvent
     public static Action<string> OnGetItem;
     public static Action<string> OnTalkNpc;
 
+    public static Action<CharacterStat> OnStatChange;
+    public static Action OnQuestStateChange;
+
 }

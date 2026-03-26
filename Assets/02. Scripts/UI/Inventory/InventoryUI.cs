@@ -3,7 +3,6 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class InventoryUI : MonoBehaviour
-    
 {
     [SerializeField] InventorySlot slotPrefab;
     [SerializeField] Transform slotParent;
@@ -56,6 +55,7 @@ public class InventoryUI : MonoBehaviour
     public void Toggle()
     {
         gameObject.SetActive(!gameObject.activeSelf);
+        tooltip.gameObject.SetActive(false);
     }
 
     #region UI 이동

@@ -8,10 +8,10 @@ public class C_Enums
         W,
         E,
         R,
-        A,
-        S,
-        D,
-        F
+        //A,
+        //S,
+        //D,
+        //F
     }
 
     public enum UseSlot
