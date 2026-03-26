@@ -183,6 +183,17 @@
                 },
                 {
                     "name": "",
+                    "id": "50c8b0c4-0b54-4a36-bf89-69c91e71b7ef",
+                    "path": "<Keyboard>/p",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "UI",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "199ca1a7-aae6-491d-8286-12b987af74d7",
                     "path": "<Pointer>/position",
                     "interactions": "",

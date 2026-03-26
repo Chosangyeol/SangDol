@@ -31,22 +31,30 @@ public class QuestUI : MonoBehaviour
             slot.gameObject.SetActive(false);
         }
 
-
+        preview.gameObject.SetActive(false);
     }
 
     public void Toggle()
     {
         gameObject.SetActive(!gameObject.activeSelf);
+        preview.gameObject.SetActive(false);
         UpdateQuestList();
     }
 
     private void UpdateQuestList()
     {
+        currentQuestList.Clear();   
+
         foreach (var quest in QuestManager.Instance.questStateDict)
         {
-            if (quest.Value == QuestState.InProgress && !currentQuestList.Contains(quest.Key))
+            if (quest.Value == QuestState.InProgress || quest.Value == QuestState.CanClear)
+            {
                 currentQuestList.Add(quest.Key);
+            }
         }
+
+        for (int i = 0; i < slots.Count; i++)
+            slots[i].gameObject.SetActive(false);
 
         for (int i = 0; i < currentQuestList.Count; i++)
         {

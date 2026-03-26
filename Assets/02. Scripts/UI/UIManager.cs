@@ -8,6 +8,7 @@ public class UIManager : MonoBehaviour
     public InventoryUI inventoryUI;
     public SkillTreeUI skillTreeUI;
     public StatusUI statusUI;
+    public QuestUI questUI;
 
     void Awake()
     {
@@ -25,6 +26,7 @@ public class UIManager : MonoBehaviour
         inventoryUI.Init(character.Inventory, character.Equipment);
         skillTreeUI.Init(character.SkillSystem, character);
         statusUI.Init(character.Stat, character.Equipment, character.SpecialStat);
+        questUI.Init();
     }
 
     void Start()
@@ -42,9 +44,13 @@ public class UIManager : MonoBehaviour
         {
             skillTreeUI.Toggle();
         }
-         else if (ui == C_Enums.UIList.Status)
+        else if (ui == C_Enums.UIList.Status)
         {
             statusUI.Toggle();
+        }
+        else if (ui == C_Enums.UIList.Quest)
+        {
+            questUI.Toggle();
         }
     }
 

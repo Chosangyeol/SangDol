@@ -76,6 +76,7 @@ public class PlayerInputs : MonoBehaviour
             if (key.keyCode == Key.I) model.PlayerInput.OnUIInput(C_Enums.UIList.Inventory);
             if (key.keyCode == Key.K) model.PlayerInput.OnUIInput(C_Enums.UIList.SkillTree);
             if (key.keyCode == Key.L) model.PlayerInput.OnUIInput(C_Enums.UIList.Status);
+            if (key.keyCode == Key.P) model.PlayerInput.OnUIInput(C_Enums.UIList.Quest);
         }
     }
 

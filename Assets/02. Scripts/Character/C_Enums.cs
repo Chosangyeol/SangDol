@@ -27,7 +27,8 @@ public class C_Enums
     {
         Inventory,
         SkillTree,
-        Status
+        Status,
+        Quest
     }
 
     public enum CharacterStat
