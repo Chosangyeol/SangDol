@@ -107,8 +107,15 @@ public class StatusUI : MonoBehaviour
         _statS5Text.text = $"{_special._currentStatState[SpecialStat.S5]} 포인트";
     }
 
-    public void Toggle()
+    public void Toggle(bool onlyFalse = false)
     {
+        if (onlyFalse)
+        {
+            gameObject.SetActive(false);
+            specialStat.SetActive(false);
+            return;
+        }
+
         gameObject.SetActive(!gameObject.activeSelf);
         specialStat.SetActive(false);
         RefreshStatus(_stat.Stat);

@@ -34,16 +34,22 @@ public class QuestUI : MonoBehaviour
         preview.gameObject.SetActive(false);
     }
 
-    public void Toggle()
+    public void Toggle(bool onlyFalse = false)
     {
+        if (onlyFalse)
+        {
+            gameObject.SetActive(false);
+            return;
+        }
+
         gameObject.SetActive(!gameObject.activeSelf);
-        preview.gameObject.SetActive(false);
+        preview.Toggle();
         UpdateQuestList();
     }
 
     private void UpdateQuestList()
     {
-        currentQuestList.Clear();   
+        currentQuestList.Clear();
 
         foreach (var quest in QuestManager.Instance.questStateDict)
         {
@@ -64,6 +70,4 @@ public class QuestUI : MonoBehaviour
             slot.SetQuestSlot(currentQuestList[i]);
         }
     }
-
-
 }

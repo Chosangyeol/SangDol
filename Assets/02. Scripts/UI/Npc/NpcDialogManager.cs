@@ -22,6 +22,8 @@ public class NpcDialogManager : MonoBehaviour
 
     public void OpenNpcUI(NpcSO npc)
     {
+        GameEvent.OnUIInvisable?.Invoke();
+
         npcDialogPanel.SetActive(true);
         buttonGroup.gameObject.SetActive(true);
         DialogManager.Instance.StartDialogue(npc.defaultDialogID);

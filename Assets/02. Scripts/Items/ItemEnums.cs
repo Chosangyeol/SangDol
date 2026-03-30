@@ -8,9 +8,8 @@ public class ItemEnums
     public enum ItemType
     {
         Equip,
-        Quest,
-        Use,
-        Etc
+        Normal,
+        Use
     }
 
     /// <summary>

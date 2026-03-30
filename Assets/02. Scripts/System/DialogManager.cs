@@ -204,6 +204,8 @@ public class DialogManager : MonoBehaviour
     {
         dialoguePanel.SetActive(false);
         choicePanel.SetActive(false);
+
+        GameEvent.OnMainUIviable?.Invoke(); // 대화 종료 시 메인 UI 다시 보이도록 이벤트 호출
         Debug.Log("대화가 종료되었습니다.");
 
         // 시네머신 카메라 우선순위 원상복구 로직 호출 위치

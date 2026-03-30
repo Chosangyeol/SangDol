@@ -27,6 +27,17 @@ public class UIManager : MonoBehaviour
         skillTreeUI.Init(character.SkillSystem, character);
         statusUI.Init(character.Stat, character.Equipment, character.SpecialStat);
         questUI.Init();
+
+        GameEvent.OnUIInvisable += () =>
+        {
+            mainUI.Toggle(true);
+            inventoryUI.Toggle(true);
+            skillTreeUI.Toggle(true);
+            statusUI.Toggle(true);
+            questUI.Toggle(true);
+        };
+
+        GameEvent.OnMainUIviable += () => mainUI.Toggle(false);
     }
 
     void Start()

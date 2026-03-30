@@ -52,8 +52,15 @@ public class InventoryUI : MonoBehaviour
             slot.Refresh();
     }
 
-    public void Toggle()
+    public void Toggle(bool onlyFalse = false)
     {
+        if (onlyFalse)
+        {
+            gameObject.SetActive(false);
+            tooltip.gameObject.SetActive(false);
+            return;
+        }
+
         gameObject.SetActive(!gameObject.activeSelf);
         tooltip.gameObject.SetActive(false);
     }

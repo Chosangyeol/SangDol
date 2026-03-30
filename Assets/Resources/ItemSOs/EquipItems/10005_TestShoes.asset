@@ -18,9 +18,10 @@ MonoBehaviour:
   itemType: 0
   itemRarity: 4
   itemDesc: "\uD14C\uC2A4\uD2B8\uC6A9 \uC7A5\uBE44 \uC2E0\uBC1C"
+  itemPrice: 140
   stackable: 0
   maxStack: 1
   equipItemType: 4
-  statToIncrease: 4
+  statToIncrease: 5
   isFlat: 0
   value: 0.3

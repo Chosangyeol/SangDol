@@ -39,8 +39,14 @@ public class SkillTreeUI : MonoBehaviour
             slot.Refresh();
     }
 
-    public void Toggle()
+    public void Toggle(bool onlyFalse = false)
     {
+        if (onlyFalse)
+        {
+            gameObject.SetActive(false);
+            return;
+        }
+
         gameObject.SetActive(!gameObject.activeSelf);
     }
 }

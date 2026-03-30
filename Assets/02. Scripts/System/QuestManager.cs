@@ -41,6 +41,9 @@ public class QuestManager : MonoBehaviour
     public Dictionary<string, int> questItemProgressDict = new Dictionary<string, int>();
     public Dictionary<string, bool> questTalkProgressDict = new Dictionary<string, bool>();
 
+    public Dictionary<string, bool> questTrackDict = new Dictionary<string, bool>(); // 추적(체크) 여부 저장
+    public event Action OnQuestProgressUpdated;
+
     private CharacterModel _model;
 
     [Header("퀘스트 미리보기")]
@@ -149,19 +152,16 @@ public class QuestManager : MonoBehaviour
 
     private void HandleCountMonsterKill(string targetMonsterID)
     {
-        // 💡 1. 에러 방지를 위해 임시 리스트로 복사! (가장 안전한 questStateDict 기준)
         List<string> activeQuests = new List<string>(questStateDict.Keys);
 
         foreach (var questID in activeQuests)
         {
-            // 💡 2. 퀘스트가 '진행 중'일 때만 검사! (이미 깬 퀘스트는 무시)
             if (questStateDict[questID] == QuestState.InProgress)
             {
                 QuestData data = questDict[questID];
 
                 if (data.questType == "Kill" && data.questTarget == targetMonsterID)
                 {
-                    // 딕셔너리에 값이 없다면 0으로 안전하게 초기화
                     if (!questKillProgressDict.ContainsKey(questID))
                         questKillProgressDict[questID] = 0;
 
@@ -177,6 +177,8 @@ public class QuestManager : MonoBehaviour
                 }
             }
         }
+
+        OnQuestProgressUpdated?.Invoke();
     }
 
     private void HandleCountItem(string targetItemID)
@@ -187,7 +189,6 @@ public class QuestManager : MonoBehaviour
         {
             QuestData data = questDict[questID];
 
-            // 💡 최적화: 수집 퀘스트이고, 지금 변동된 아이템이 퀘스트 목표와 일치할 때만 검사
             if (data.questType == "Item" && data.questTarget == targetItemID)
             {
                 int currentItemCount = _model.Inventory.GetTotalItemCount(data.questTarget);
@@ -212,6 +213,7 @@ public class QuestManager : MonoBehaviour
                 }
             }
         }
+        OnQuestProgressUpdated?.Invoke();
     }
 
     private void HandleTalkNpc(string targetNpcID)
@@ -220,7 +222,6 @@ public class QuestManager : MonoBehaviour
 
         foreach (var questID in activeQuests)
         {
-            // 💡 진행 중인 대화 퀘스트만 검사
             if (questStateDict[questID] == QuestState.InProgress)
             {
                 QuestData data = questDict[questID];
@@ -234,6 +235,7 @@ public class QuestManager : MonoBehaviour
                 }
             }
         }
+        OnQuestProgressUpdated?.Invoke();
     }
 
     public QuestState GetQuestState(string questID)
@@ -280,7 +282,10 @@ public class QuestManager : MonoBehaviour
                 Debug.Log(questTalkProgressDict[questID]);
             }
 
+            questTrackDict[questID] = true;
+
             questPreview.SetActive(false);
+            OnQuestProgressUpdated?.Invoke();
         }
     }
 
@@ -324,6 +329,7 @@ public class QuestManager : MonoBehaviour
         {
             Debug.LogWarning("아직 퀘스트 완료 조건을 달성하지 못했습니다.");
         }
+        OnQuestProgressUpdated?.Invoke();
     }
 
     public QuestData GetQuestData(string questID)
@@ -337,5 +343,12 @@ public class QuestManager : MonoBehaviour
         questPreview.SetActive(true);
         questNameText.text = GetQuestName(questID);
         questDialogText.text = questDict[questID].questDialog;
+    }
+
+    public void SetQuestTracking(string questID, bool isTracked)
+    {
+        questID = questID.Trim();
+        questTrackDict[questID] = isTracked;
+        OnQuestProgressUpdated?.Invoke(); // UI 갱신 신호 발송
     }
 }

@@ -1,0 +1,3 @@
+﻿ID,Name,NameKr,Icon,Rarity,Desc,MaxStack,Price,UseType,Effected_Stat,IsFlat,Amount,Duration,CoolDown
+20001,hpPotion_Basic,초급 회복 포션,20001,Common,초급 회복 포션이다.,99,100,Potion,MaxHp,FALSE,10,0,0
+20002,Normal_Test,테스트용 일반아이템,20002,Common,테스트용 일반 아이템,99,2,,,,,,

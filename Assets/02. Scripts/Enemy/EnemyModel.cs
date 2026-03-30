@@ -201,6 +201,8 @@ public class EnemyModel : MonoBehaviour
 
         _isDead = true;
 
+        GameEvent.OnMonsterKill?.Invoke(statSO.enemyID);
+
         curState = EState.Die;
         stateMachine.ChangeState(new DieState(this));
 
@@ -211,7 +213,6 @@ public class EnemyModel : MonoBehaviour
             // 아이템 드랍 처리
         }
 
-        GameEvent.OnMonsterKill?.Invoke(statSO.enemyID);
         // 적 사망 처리
         Debug.Log($"{_stat.enemyName}이(가) 사망했습니다.");
     }

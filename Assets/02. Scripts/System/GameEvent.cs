@@ -12,4 +12,6 @@ public static class GameEvent
     public static Action<CharacterStat> OnStatChange;
     public static Action OnQuestStateChange;
 
+    public static Action OnUIInvisable;
+    public static Action OnMainUIviable;
 }

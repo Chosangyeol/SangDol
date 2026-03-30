@@ -70,5 +70,15 @@ public class MainUI : MonoBehaviour
         tmpPlayerHp.text = $"{stat.curHp} | {stat.maxHp.GetValue()}";
     }
 
+    public void Toggle(bool onlyFalse = false)
+    {
+        if (onlyFalse)
+        {
+            gameObject.SetActive(false);
+            return;
+        }
+
+        gameObject.SetActive(!gameObject.activeSelf);
+    }
 
 }
