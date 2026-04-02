@@ -44,7 +44,7 @@ public class C_Controller
 
     public void RequestMove(Vector3 dest)
     {
-        RotateTo(dest);
+        FaceTo(dest);
 
         if (agent != null)
         {
