@@ -18,6 +18,9 @@ public class CharacterModel : MonoBehaviour
     public LayerMask interactableLayer;
     public float interactableDistance = 3f;
 
+    private Animator anim;
+    public Animator Anim => anim;
+
     [SerializeField]
     public List<Item> testItems;
 
@@ -40,6 +43,8 @@ public class CharacterModel : MonoBehaviour
     private void Awake()
     {
         if (mainCam == null) mainCam = Camera.main;
+
+        anim = GetComponent<Animator>();
 
         stat = new C_Stat(this, characterStatSO);
         specialStat = new C_SpecialStat(this);
@@ -72,7 +77,43 @@ public class CharacterModel : MonoBehaviour
         StartCoroutine(routine);
     }
 
+    public void OnComboStart()
+    {
+        if (playerController.nextAttackReady)
+            playerController.StartAttackCombo();
+    }
 
+    public void OnAttackEnd()
+    {
+        playerController.isAttacking = false;
+        playerController.canMove = false;
+        playerController.currentCombo = 0;
+    }
+
+    public void OnAttackHit()
+    {
+        Collider[] targets = Physics.OverlapSphere(transform.position, 4f);
+
+        foreach (Collider target in targets)
+        {
+            if (target.TryGetComponent<EnemyModel>(out EnemyModel enemy))
+            {
+                Vector3 dir = (enemy.transform.position - transform.position).normalized;
+
+                dir.y = 0;
+                Vector3 myForward = transform.forward;
+                myForward.y = 0;
+
+                float angle = Vector3.Angle(myForward, dir);
+
+                if (angle <= 90 / 2f)
+                    enemy.Damaged(GetCritical(Stat.Stat.attackDamage.FinalValue), gameObject);
+                else
+                    enemy.Damaged(Stat.Stat.attackDamage.FinalValue, gameObject);
+            }
+        }
+        playerController.canMove = true;
+    }
 
     #region 캐릭터 스탯 관리
     public void Damaged(float damage)

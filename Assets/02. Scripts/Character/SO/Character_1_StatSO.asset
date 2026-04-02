@@ -15,8 +15,8 @@ MonoBehaviour:
   maxHp: 500
   attackDamage: 100
   defense: 5
-  moveSpeed: 1
+  moveSpeed: 2
   attackSpeed: 1
   downPower: 1
-  cirticalChance: 0.3
-  cirticalDamage: 1.5
+  criticalChance: 0.3
+  criticalDamage: 1.5
