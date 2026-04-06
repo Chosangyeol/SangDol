@@ -17,11 +17,11 @@ public class C_Controller
     [Header("공격")]
     public int currentCombo = 0;
     public float lastAttackTime = 0f;
-    public float comboResetTime = 1f;
+    public float comboResetTime = 2.5f;
     public bool isAttacking = false;
     public bool nextAttackReady = false;
-    public bool canMove = false;
     public Vector3 attackDir;
+    public bool isAttackHeld = false;
 
     public C_Controller(CharacterModel model)
     {
@@ -73,9 +73,14 @@ public class C_Controller
     {
         if (isAttacking)
         {
-            if (canMove)
+            if (_model.canMove)
                 CancelAttack();
             else
+                return;
+        }
+        else
+        {
+            if (!_model.canMove)
                 return;
         }
 
@@ -99,31 +104,37 @@ public class C_Controller
         _model.TryInteract();
     }
 
-    public void RequestBasicAttack(Vector3 dest)
+    public void RequestBasicAttack(bool isHeld,Vector3 dest)
     {
-        StopMove();
-        attackDir = dest;
+        isAttackHeld = isHeld; // 누르고 있으면 true, 떼면 false가 됨
 
-        if (Time.time - lastAttackTime > comboResetTime)
-            currentCombo = 0;
+        if (isAttackHeld)
+        {
+            // 꾹 누르고 있는 동안에는 타겟 방향을 마우스 위치로 계속 갱신
+            attackDir = dest;
 
-        if (!isAttacking)
-            StartAttackCombo();
-        else
-            nextAttackReady = true;
-       
+            // 현재 공격 중이 아니라면 (서 있거나 달리는 중이라면) 즉시 1타 공격 시작
+            if (!isAttacking)
+            {
+                StopMove();
+                FaceTo(dest);
+                StartAttackCombo();
+            }
+            // (이미 공격 중이라면 애니메이션 이벤트가 알아서 다음 타수를 이어줍니다!)
+        }
+
     }
 
     public void StartAttackCombo()
     {
         isAttacking = true;
         nextAttackReady = false;
-        canMove = false;
+        _model.canMove = false;
         lastAttackTime = Time.time;
 
         currentCombo++;
 
-        if (currentCombo > 4) currentCombo = 1;
+        if (currentCombo > 4) currentCombo = 0;
 
         if (_model.Anim != null)
         {
@@ -136,8 +147,9 @@ public class C_Controller
 
     private void CancelAttack()
     {
+
         isAttacking = false;
-        canMove = false;
+        _model.canMove = false;
         nextAttackReady = false;
         currentCombo = 0;
 
@@ -168,7 +180,7 @@ public class C_Controller
         UIManager.Instance.ToggleUI(ui);
     }
 
-    private void StopMove()
+    public void StopMove()
     {
         if (agent != null)
         {
@@ -182,7 +194,7 @@ public class C_Controller
         }
     }
 
-    private void RotateTo(Vector3 target)
+    public void RotateTo(Vector3 target)
     {
         Vector3 dir = target - tr.position;
         dir.y = 0f;

@@ -68,6 +68,9 @@ public class CharacterStat
     public float maxExp;
     public float currentExp;
 
+    public float idenMax;
+    public float idenCurrent;
+
     public StatValue maxHp;
     public float curHp;
 
@@ -76,6 +79,8 @@ public class CharacterStat
 
     public StatValue moveSpeed;
     public StatValue attackSpeed;
+
+    public StatValue idenBonus;
     public StatValue downPower;
 
     public StatValue criticalChance;
@@ -90,6 +95,9 @@ public class CharacterStat
         this.currentLevel = 1;
         this.maxExp = 100;
 
+        this.idenMax = 100;
+        this.idenCurrent = 100;
+
         this.maxHp = new StatValue(statSO.maxHp);
         this.curHp = maxHp.FinalValue;
 
@@ -98,6 +106,8 @@ public class CharacterStat
 
         this.moveSpeed = new StatValue(statSO.moveSpeed);
         this.attackSpeed = new StatValue(statSO.attackSpeed);
+
+        this.idenBonus = new StatValue(statSO.idenBonus);
         this.downPower = new StatValue(statSO.downPower);
 
         this.criticalChance = new StatValue(statSO.criticalChance);
@@ -119,6 +129,18 @@ public class CharacterStat
         curHp += amount;
         if (curHp > maxHp.FinalValue)
             curHp = maxHp.FinalValue;
+    }
+
+    public void GainIden(float amount)
+    {
+        idenCurrent += amount * idenBonus.FinalValue;
+        if (idenCurrent >= idenMax)
+            idenCurrent = idenMax;
+    }
+
+    public void ResetIden()
+    {
+        idenCurrent = 0;
     }
 
     public void GainGold(int amount)

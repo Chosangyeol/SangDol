@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
 using static C_Enums;
 
 public class CharacterModel : MonoBehaviour
@@ -17,6 +18,10 @@ public class CharacterModel : MonoBehaviour
     public int inventorySlotSize = 30;
     public LayerMask interactableLayer;
     public float interactableDistance = 3f;
+
+    [Header("스킬 설정")]
+    public Skill_ZSO skill_ZSO;
+    public Skill_SpaceSO skill_SpaceSO;
 
     private Animator anim;
     public Animator Anim => anim;
@@ -40,6 +45,11 @@ public class CharacterModel : MonoBehaviour
     public C_SkillSystem SkillSystem => skillSystem;
     private C_SkillSystem skillSystem;
 
+    private C_Buff buff;
+    public C_Buff Buff => buff;
+
+    public bool canMove = true;
+
     private void Awake()
     {
         if (mainCam == null) mainCam = Camera.main;
@@ -53,6 +63,7 @@ public class CharacterModel : MonoBehaviour
         playerController = new C_Controller(this);
         playerInput = new C_Input(this, playerController);
         skillSystem = new C_SkillSystem(this);
+        buff = new C_Buff(this);
 
     }
 
@@ -69,6 +80,7 @@ public class CharacterModel : MonoBehaviour
     private void Update()
     {
         playerController.Tick();
+        buff.UpdateBuff(Time.deltaTime);
         skillSystem.UpdateSkills(Time.deltaTime);
     }
 
@@ -77,43 +89,108 @@ public class CharacterModel : MonoBehaviour
         StartCoroutine(routine);
     }
 
+    public void SetCanMove()
+    {
+        canMove = true;
+    }
+
+    #region 일반 공격
     public void OnComboStart()
     {
-        if (playerController.nextAttackReady)
+        if (playerController.nextAttackReady || playerController.isAttackHeld)
             playerController.StartAttackCombo();
     }
 
     public void OnAttackEnd()
     {
-        playerController.isAttacking = false;
-        playerController.canMove = false;
-        playerController.currentCombo = 0;
+        if (playerController.isAttackHeld)
+        {
+            playerController.currentCombo = 0; // 콤보 초기화
+            playerController.StartAttackCombo();
+        }
+        else
+        {
+            // 마우스를 뗐다면 깔끔하게 공격 상태 완전 종료
+            playerController.isAttacking = false;
+            canMove = true;
+            playerController.nextAttackReady = false;
+            playerController.currentCombo = 0;
+        }
     }
 
     public void OnAttackHit()
     {
-        Collider[] targets = Physics.OverlapSphere(transform.position, 4f);
+        float hitRadius = 3f;
+        float hitAngle = 90f;
+        float damageMultiplier = 1f;
+
+        switch (playerController.currentCombo)
+        {
+            case 1:
+                hitRadius = 3f;
+                hitAngle = 90f;
+                damageMultiplier = 1f; // 첫 번째 공격은 기본 데미지
+                break;
+            case 2:
+                hitRadius = 3f;
+                hitAngle = 90f;
+                damageMultiplier = 1f; // 두 번째 공격은 20% 증가
+                break;
+            case 3:
+                hitRadius = 4f;
+                hitAngle = 90f;
+                damageMultiplier = 1.2f; // 세 번째 공격은 50% 증가
+                break;
+            default:
+                damageMultiplier = 1.5f;
+                HandleBasicAttack4(damageMultiplier);
+                return;
+        }
+
+        Collider[] targets = Physics.OverlapSphere(transform.position, hitRadius);
 
         foreach (Collider target in targets)
         {
-            if (target.TryGetComponent<EnemyModel>(out EnemyModel enemy))
+            if (target.TryGetComponent<EnemyBase>(out EnemyBase enemy))
             {
                 Vector3 dir = (enemy.transform.position - transform.position).normalized;
-
                 dir.y = 0;
                 Vector3 myForward = transform.forward;
                 myForward.y = 0;
 
                 float angle = Vector3.Angle(myForward, dir);
 
-                if (angle <= 90 / 2f)
-                    enemy.Damaged(GetCritical(Stat.Stat.attackDamage.FinalValue), gameObject);
-                else
-                    enemy.Damaged(Stat.Stat.attackDamage.FinalValue, gameObject);
+                if (angle <= hitAngle / 2f)
+                {
+                    float baseDmg = Stat.Stat.attackDamage.FinalValue * damageMultiplier;
+                    enemy.Damaged(GetCritical(baseDmg), gameObject);
+                }
+                // else문 제거: 부채꼴 밖의 적은 때리지 않음
             }
         }
-        playerController.canMove = true;
+        canMove = true;
+
     }
+
+    private void HandleBasicAttack4(float damageMultiplier)
+    {
+        Vector3 size = new Vector3(2f, 2f, 3f);
+
+        Vector3 center = transform.position + transform.forward * size.z;
+        center.y += 0.5f;
+
+        Collider[] targets = Physics.OverlapBox(center, size, transform.rotation);
+
+        foreach (Collider target in targets)
+        {
+            if (target.TryGetComponent<EnemyBase>(out EnemyBase enemy))
+            {
+                float baseDmg = Stat.Stat.attackDamage.FinalValue * damageMultiplier;
+                enemy.Damaged(GetCritical(baseDmg), gameObject);
+            }
+        }
+    }
+    #endregion
 
     #region 캐릭터 스탯 관리
     public void Damaged(float damage)
@@ -134,6 +211,16 @@ public class CharacterModel : MonoBehaviour
     public void Heal(float healAmount)
     {
         Stat.Heal(healAmount);
+    }
+
+    public void GainIden(float amount)
+    {
+        Stat.GainIden(amount);
+    }
+
+    public void ResetIden()
+    {
+        Stat.ResetIden();
     }
 
     public void GainExp(float amount)
@@ -277,7 +364,9 @@ public class CharacterModel : MonoBehaviour
         Handles.DrawLine(origin, origin + rightBoundary * 90);
 
         Gizmos.color = new Color(1, 0, 0, 0.3f);
-        Gizmos.DrawWireSphere(transform.position, 4f);   
+        Gizmos.DrawWireSphere(transform.position, 3f); 
+        
+        Gizmos.DrawCube(transform.position + transform.forward * 3f, new Vector3(2f, 2f, 6f));
     }
 #endif
 }

@@ -6,8 +6,11 @@ using UnityEngine.UI;
 
 public class MainUI : MonoBehaviour
 {
-    [SerializeField] Transform slotParent;
+    [Header("스킬 슬룻")]
     public List<SkillSlot> skillSlots;
+    public SkillSlot spaceSlot;
+
+    [Header("소모품 슬롯")]
     public List<UseItemSlot> useItemSlots;
     public ItemTooltip tooltip;
 
@@ -20,6 +23,7 @@ public class MainUI : MonoBehaviour
     [SerializeField] private TMP_Text tmpPlayerHp;
     [SerializeField] private TMP_Text tmpPlayerLevel;
     [SerializeField] private Slider slPlayerExp;
+    [SerializeField] private Image idenImage;
 
     public void Init(C_SkillSystem skillSystem,C_Inventory inventory, CharacterModel model)
     {
@@ -27,19 +31,21 @@ public class MainUI : MonoBehaviour
         _inventory = inventory;
         _model = model;
 
+        BindEvents();
+
         foreach (var slot in skillSlots)
         {
             slot.Init(skillSystem);
-            slot.Refresh();
         }
+
+        spaceSlot.Init(skillSystem);
 
         foreach (var slot in useItemSlots)
         {
             slot.Init(inventory, tooltip);
-            slot.Refresh();
         }
 
-        BindEvents();
+        RefreshAll();
     }
 
     private void BindEvents()
@@ -68,7 +74,11 @@ public class MainUI : MonoBehaviour
 
         tmpPlayerLevel.text = $"Lv.{stat.currentLevel}";
         tmpPlayerHp.text = $"{stat.curHp} | {stat.maxHp.GetValue()}";
+
+        idenImage.fillAmount = stat.idenCurrent / stat.idenMax;
     }
+
+
 
     public void Toggle(bool onlyFalse = false)
     {

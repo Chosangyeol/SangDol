@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class UIManager : MonoBehaviour
@@ -9,6 +10,7 @@ public class UIManager : MonoBehaviour
     public SkillTreeUI skillTreeUI;
     public StatusUI statusUI;
     public QuestUI questUI;
+    public BuffList buffUI;
 
     void Awake()
     {
@@ -27,6 +29,7 @@ public class UIManager : MonoBehaviour
         skillTreeUI.Init(character.SkillSystem, character);
         statusUI.Init(character.Stat, character.Equipment, character.SpecialStat);
         questUI.Init();
+        buffUI.Init(character.Buff, character);
 
         GameEvent.OnUIInvisable += () =>
         {

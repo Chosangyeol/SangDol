@@ -17,7 +17,12 @@ public abstract class SkillBase
     {
         _model = model;
         this.skillData = skillData;
-        skillLevel = 0;
+
+        if (skillData.maxLevel == 1)
+            skillLevel = 1;
+        else
+            skillLevel = 0;
+
         this.coolTime = skillData.skillCool;
         isSelected = false;
         canUse = true;

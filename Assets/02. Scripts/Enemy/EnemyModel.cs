@@ -12,50 +12,34 @@ enum EState
     Die
 }
 
-public class EnemyModel : MonoBehaviour
+public class EnemyModel : EnemyBase
 {
-    [Header("적 기본 설정")]
-    public EnemyStatSO statSO;
-    [SerializeField] private LayerMask _playerLayer;
-
     [SerializeField] private Transform spawnPoint;
     public Transform SpawnPoint => spawnPoint;
-
-    private bool _isDead = false;
-
-    private CharacterModel _target;
-    public CharacterModel Target => _target;
 
     private NavMeshAgent _agent;
     public NavMeshAgent Agent => _agent;
 
-    private Animator _anim;
-    public Animator Anim => _anim;
-
-    private EnemyStat _stat;
-    public EnemyStat Stat => _stat;
 
     private StateMachine stateMachine;
     private EState curState;
 
-    private void Awake()
+    protected override void Awake()
     {
-        _stat = new EnemyStat(statSO);
+        base.Awake();
+
         stateMachine = new StateMachine(this);
 
         curState = EState.Idle;
         stateMachine.ChangeState(new IdleState(this));
     }
 
-    private void Start()
+    protected override void Start()
     {
-        _target = FindAnyObjectByType<CharacterModel>();
+        base.Start();
 
         _agent = GetComponent<NavMeshAgent>();
         _agent.speed = _stat.moveSpeed;
-
-        _anim = GetComponent<Animator>();
-
     }
 
     private void Update()
@@ -71,8 +55,6 @@ public class EnemyModel : MonoBehaviour
         bool canChase = dist <= _stat.detactRange;
         bool canAttack = dist <= _stat.attackRange;
         bool canReturn = dist >= _stat.detactRange + 5f;
-
-        Debug.Log($"canChase: {canChase}, canAttack: {canAttack}, curState: {curState}");
 
         switch (curState)
         {
@@ -172,21 +154,7 @@ public class EnemyModel : MonoBehaviour
     }
 
 
-    public void Damaged(float damage, GameObject source = null)
-    {
-        if (_isDead) return;
-
-        _stat.Damaged(damage);
-        if (_stat.down <= 0)
-        {
-            Debug.Log("무력화");
-        }
-
-        if (_stat.curHp <= 0)
-        {
-            Die(source);
-        }
-    }
+    
 
     public void Heal(float healAmount)
     {
@@ -195,7 +163,7 @@ public class EnemyModel : MonoBehaviour
         _stat.Heal(healAmount);
     }
 
-    public void Die(GameObject source)
+    protected override void Die(GameObject source)
     {
         if (_isDead) return;
 

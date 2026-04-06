@@ -4,14 +4,13 @@ public class C_Enums
 {
     public enum SkillSlot
     {
+        Z,
         Q,
         W,
         E,
         R,
-        //A,
-        //S,
-        //D,
-        //F
+        Space,
+        V
     }
 
     public enum UseSlot

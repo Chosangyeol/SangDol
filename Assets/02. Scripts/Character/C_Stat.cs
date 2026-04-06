@@ -39,6 +39,16 @@ public class C_Stat
         GameEvent.OnStatChange?.Invoke(Stat);
     }
 
+    public void GainIden(float amount)
+    {
+        Stat.GainIden(amount);
+    }
+
+    public void ResetIden()
+    {
+        Stat.ResetIden();
+    }
+
     public void GainExp(float amount)
     {
         stat.GainExp(amount);

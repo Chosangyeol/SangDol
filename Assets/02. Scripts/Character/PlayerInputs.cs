@@ -13,9 +13,25 @@ public class PlayerInputs : MonoBehaviour
     [SerializeField] private InputActionReference uiAction;
     [SerializeField] private InputActionReference pointerPos;
 
+    private bool isAttackHeld = false;
+    private bool isMoveHeld = false;
+
     private void Awake()
     {
         if (model == null) model = GetComponent<CharacterModel>();
+    }
+
+    private void Update()
+    {
+        if (model != null && model.PlayerInput != null)
+        {
+            model.PlayerInput.OnAttackClick(isAttackHeld, GetPointerScreenPos());
+
+            if (isMoveHeld)
+            {
+                model.PlayerInput.OnMoveClick(GetPointerScreenPos());
+            }
+        }
     }
 
     private void OnEnable()
@@ -28,9 +44,16 @@ public class PlayerInputs : MonoBehaviour
         uiAction.action.Enable();
         pointerPos.action.Enable();
 
-        moveAction.action.performed += OnMove;
+        moveAction.action.started += OnMoveStarted;
+        moveAction.action.canceled += OnMoveCanceled;
+
+
         interactActon.action.performed += OnInteract;
-        attackAction.action.performed += OnBasicAttack;
+
+        attackAction.action.started += OnAttackStarted;
+        attackAction.action.canceled += OnAttackCanceled;
+
+
         skillSlotAction.action.performed += OnSkillSlot;
         useItemSlotAction.action.performed += OnUseItemSlot;
         uiAction.action.performed += OnUIInput;
@@ -38,9 +61,12 @@ public class PlayerInputs : MonoBehaviour
 
     private void OnDisable()
     {
-        moveAction.action.performed -= OnMove;
+        moveAction.action.started -= OnMoveStarted;
+        moveAction.action.canceled -= OnMoveCanceled;
+
         interactActon.action.performed -= OnInteract;
-        attackAction.action.performed -= OnBasicAttack;
+        attackAction.action.started -= OnAttackStarted;
+        attackAction.action.canceled -= OnAttackCanceled;
         skillSlotAction.action.performed -= OnSkillSlot;
         useItemSlotAction.action.performed -= OnUseItemSlot;
         uiAction.action.performed -= OnUIInput;
@@ -49,14 +75,14 @@ public class PlayerInputs : MonoBehaviour
     private Vector2 GetPointerScreenPos()
         => pointerPos.action.ReadValue<Vector2>();
 
-    private void OnMove(InputAction.CallbackContext ctx)
-        => model.PlayerInput.OnMoveClick(GetPointerScreenPos());
+    private void OnMoveStarted(InputAction.CallbackContext ctx) => isMoveHeld = true;
+    private void OnMoveCanceled(InputAction.CallbackContext ctx) => isMoveHeld = false;
 
     private void OnInteract(InputAction.CallbackContext ctx)
         => model.PlayerInput.OnInteract();
 
-    private void OnBasicAttack(InputAction.CallbackContext ctx)
-        => model.PlayerInput.OnAttackClick(GetPointerScreenPos());
+    private void OnAttackStarted(InputAction.CallbackContext ctx) => isAttackHeld = true;
+    private void OnAttackCanceled(InputAction.CallbackContext ctx) => isAttackHeld = false;
 
     private void OnSkillSlot(InputAction.CallbackContext ctx)
     {
@@ -84,10 +110,13 @@ public class PlayerInputs : MonoBehaviour
     {
         if (ctx.control is KeyControl key)
         {
+            if (key.keyCode == Key.Z) return C_Enums.SkillSlot.Z;
             if (key.keyCode == Key.Q) return C_Enums.SkillSlot.Q;
             if (key.keyCode == Key.W) return C_Enums.SkillSlot.W;
             if (key.keyCode == Key.E) return C_Enums.SkillSlot.E;
             if (key.keyCode == Key.R) return C_Enums.SkillSlot.R;
+            if (key.keyCode == Key.Space) return C_Enums.SkillSlot.Space;
+            if (key.keyCode == Key.V) return C_Enums.SkillSlot.V;
             //if (key.keyCode == Key.A) return C_Enums.SkillSlot.A;
             //if (key.keyCode == Key.S) return C_Enums.SkillSlot.S;
             //if (key.keyCode == Key.D) return C_Enums.SkillSlot.D;

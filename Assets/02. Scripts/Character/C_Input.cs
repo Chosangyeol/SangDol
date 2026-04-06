@@ -21,12 +21,16 @@ public class C_Input
         _controller.RequestMove(point);
     }
 
-    public void OnAttackClick(Vector2 screenPos)
+    public void OnAttackClick(bool isHeld, Vector2 screenPos)
     {
-        if (!GetMouseInput(screenPos, out var point))
-            return;
-    
-        _controller.RequestBasicAttack(point);
+        Vector3 point = Vector3.zero;
+
+        if (isHeld)
+        {
+            if (!GetMouseInput(screenPos, out point)) return;
+        }
+
+        _controller.RequestBasicAttack(isHeld,point);
     }
 
     public void OnInteract()

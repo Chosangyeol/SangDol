@@ -13,14 +13,13 @@ public class C_SkillSystem
     protected Dictionary<C_Enums.SkillSlot, SkillBase> activeSkills = 
         new Dictionary<C_Enums.SkillSlot, SkillBase>()
         {
+            { C_Enums.SkillSlot.Z, null },
             { C_Enums.SkillSlot.Q, null },
             { C_Enums.SkillSlot.W, null },
             { C_Enums.SkillSlot.E, null },
             { C_Enums.SkillSlot.R, null },
-            //{ C_Enums.SkillSlot.A, null },
-            //{ C_Enums.SkillSlot.S, null },
-            //{ C_Enums.SkillSlot.D, null },
-            //{ C_Enums.SkillSlot.F, null }
+            { C_Enums.SkillSlot.Space, null},
+            { C_Enums.SkillSlot.V, null  }
         };
 
     public event Action OnSkillDataChanged;
@@ -28,6 +27,18 @@ public class C_SkillSystem
     public C_SkillSystem(CharacterModel model)
     {
         _model = model;
+
+        SkillBase iden = _model.skill_ZSO.SkillInit(_model);
+        RegisterSkill(iden);
+        RegisterSkillToSlot(C_Enums.SkillSlot.Z, iden);
+
+        SkillBase space = _model.skill_SpaceSO.SkillInit(_model);
+        RegisterSkill(space);
+        RegisterSkillToSlot(C_Enums.SkillSlot.Space, space);
+
+        Debug.Log(activeSkills[C_Enums.SkillSlot.Z]);
+        Debug.Log(activeSkills[C_Enums.SkillSlot.Space]);
+
         return;
     }
 
@@ -49,6 +60,7 @@ public class C_SkillSystem
     {
         if (activeSkills.ContainsKey(slot))
         {
+            Debug.Log(activeSkills[slot]);
             return activeSkills[slot];
         }
         return null;
