@@ -43,7 +43,7 @@ public class QuestUI : MonoBehaviour
         }
 
         gameObject.SetActive(!gameObject.activeSelf);
-        preview.Toggle();
+        preview.Toggle(true);
         UpdateQuestList();
     }
 

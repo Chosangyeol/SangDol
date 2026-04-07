@@ -18,8 +18,6 @@ public class PatrolState : State
             _owner.Agent.SetDestination(targetPoint);
             isPatrolling = true;
         }
-
-        Debug.Log("순찰 상태로 진입");
     }
 
     public override void UpdateState()
@@ -33,13 +31,11 @@ public class PatrolState : State
                 isPatrolling = false;
             }
         }
-        Debug.Log("순찰 상태 업데이트");
     }
 
     public override void ExitState()
     {
         _owner.Agent.isStopped = false;
-        Debug.Log("순찰 상태에서 벗어남");
     }
 
     private bool SetRandomPatrolPoint(out Vector3 target)

@@ -7,8 +7,8 @@ public class EnemyBase : MonoBehaviour
 {
     [Header("적 기본 설정")]
     public EnemyStatSO statSO;
-    [SerializeField] private LayerMask _playerLayer;
-
+    [SerializeField] protected LayerMask _playerLayer;
+    [SerializeField] protected LayerMask _groundLayer;
 
     protected bool _isDead = false;
 
