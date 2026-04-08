@@ -66,7 +66,7 @@ public class MainUI : MonoBehaviour
 
     public void UpdatePlayerUI(CharacterStat stat)
     {
-        slPlayerHp.value = stat.maxHp.GetValue() / stat.curHp;
+        slPlayerHp.value = stat.curHp / stat.maxHp.GetValue();
 
         if (stat.currentExp != 0)
             slPlayerExp.value = stat.maxExp / stat.currentExp;

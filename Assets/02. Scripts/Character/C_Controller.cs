@@ -28,7 +28,7 @@ public class C_Controller
         _model = model;
         tr = _model.transform;
 
-        agent = _model.GetComponent<NavMeshAgent>();
+        agent = _model.Navmesh;
 
         agent.updateRotation = false;
         return;
@@ -71,6 +71,8 @@ public class C_Controller
 
     public void RequestMove(Vector3 dest)
     {
+        if (_model.IsStun) return;
+
         if (isAttacking)
         {
             if (_model.canMove)
@@ -101,11 +103,15 @@ public class C_Controller
 
     public void RequestInteract()
     {
+        if (_model.IsStun) return;
+
         _model.TryInteract();
     }
 
     public void RequestBasicAttack(bool isHeld,Vector3 dest)
     {
+        if (_model.IsStun) return;
+
         isAttackHeld = isHeld; // 누르고 있으면 true, 떼면 false가 됨
 
         if (isAttackHeld)
@@ -127,6 +133,8 @@ public class C_Controller
 
     public void StartAttackCombo()
     {
+        if (_model.IsStun) return;
+
         isAttacking = true;
         nextAttackReady = false;
         _model.canMove = false;
@@ -147,6 +155,7 @@ public class C_Controller
 
     private void CancelAttack()
     {
+        if (_model.IsStun) return;
 
         isAttacking = false;
         _model.canMove = false;
@@ -159,6 +168,8 @@ public class C_Controller
 
     public void RequsetSkill(C_Enums.SkillSlot skillSlot, Vector3 dest)
     {
+        if (_model.IsStun) return;
+
         StopMove();
 
         FaceTo(dest);
@@ -169,6 +180,8 @@ public class C_Controller
 
     public void RequestUseItem(C_Enums.UseSlot useSlot)
     {
+        if (_model.IsStun) return;
+
         Debug.Log("아이템 " + useSlot + " 사용 시도");
         _model.Inventory.UseItem(useSlot);
     }

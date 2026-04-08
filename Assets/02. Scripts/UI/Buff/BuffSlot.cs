@@ -10,6 +10,7 @@ public class BuffSlot : MonoBehaviour
     [SerializeField] private Image iconImage;
     [SerializeField] private Image remainOverlay;
     [SerializeField] private TMP_Text remainTimeText;
+    [SerializeField] private TMP_Text stackText;
 
     private Canvas rootCanvas;
 
@@ -38,7 +39,13 @@ public class BuffSlot : MonoBehaviour
         remainTimeText.text = currentBuff.remainSecond.ToString("F1") + "초";
 
         if (currentBuff.remainSecond > 0)
+        {
             remainOverlay.fillAmount = 1 - currentBuff.remainSecond / currentBuff.duration;
+            if (currentBuff.currentStack > 1)
+                stackText.text = "x" + currentBuff.currentStack;
+            else
+                stackText.text = "";
+        }
         else
         {
             remainOverlay.fillAmount = 1f;

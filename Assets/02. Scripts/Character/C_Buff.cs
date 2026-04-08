@@ -27,10 +27,49 @@ public class C_Buff
     public void AddBuff(SBuff buff)
     {
         ActionBeforeAddBuff?.Invoke(ref buff);
-        buff.act.OnEnable();
-        _listBuff.Add(buff);
+
+        // 1. 이미 적용 중인 버프 중에서 똑같은 BuffSO를 가진 버프가 있는지 찾습니다.
+        int existingIndex = _listBuff.FindIndex(x => x.act.buffSO == buff.act.buffSO);
+
+        if (existingIndex != -1) // 같은 버프를 찾았다면!
+        {
+            SBuff existingBuff = _listBuff[existingIndex];
+
+            // 2. 그 버프가 스택 가능한(isStackable) 버프인지 확인합니다.
+            if (existingBuff.act.isStackable)
+            {
+                // 기존 버프의 스택을 쌓고(시간 갱신 포함) 함수를 종료합니다. 
+                // (새로 리스트에 추가하지 않음!)
+                existingBuff.act.Stack();
+
+                // 스택이 쌓였음을 UI 등에 알리기 위해 이벤트 호출
+                ActionAfterAddBuff?.Invoke(existingBuff);
+                return;
+            }
+        }
+
+        // --- 여기부터는 [처음 걸리는 버프] 거나 [스택 불가능해서 따로 적용해야 하는 버프]일 때의 로직입니다 ---
+
+        if (buff.act.buffSO.isBuff)
+        {
+            buff.act.OnEnable();
+            _listBuff.Add(buff);
+        }
+        else // 디버프일 경우
+        {
+            if (!_model.isImmunity) // 면역이 아닐 때만 적용
+            {
+                buff.act.OnEnable();
+                _listBuff.Add(buff);
+            }
+            else
+            {
+                // 면역이라서 디버프가 튕겨나갔다면, 추가 적용(ActionAfterAddBuff)도 안 하는 것이 맞습니다.
+                return;
+            }
+        }
+
         ActionAfterAddBuff?.Invoke(buff);
-        return;
     }
 
     public bool UpdateBuff(float delta)

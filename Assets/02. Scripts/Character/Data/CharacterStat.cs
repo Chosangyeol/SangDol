@@ -116,12 +116,23 @@ public class CharacterStat
         statPoint = 0;
     }
 
-    public void Damaged(float damage)
+    public void Damaged(float damage, bool isPercent)
     {
-        curHp -= damage;
+        int finalDamage = 0;
+
+        if (!isPercent)
+        {
+            finalDamage = Mathf.RoundToInt(damage);
+        }
+        else
+        {
+            finalDamage = Mathf.RoundToInt(maxHp.FinalValue * damage);
+        }
+
+        curHp -= finalDamage;
+
         if (curHp <= 0)
             curHp = 0;
-
     }
 
     public void Heal(float amount)
@@ -214,14 +225,20 @@ public class CharacterStat
             defense.AddPercent(value);
     }
 
-    public void AddMoveSpeed(float value)
+    public void AddMoveSpeed(bool isFlat, float value)
     {
-        moveSpeed.AddFlat(value);
+        if (isFlat)
+            moveSpeed.AddFlat(value);
+        else
+            moveSpeed.AddPercent(value);
     }
 
-    public void AddAttackSpeed(float value)
+    public void AddAttackSpeed(bool isFlat, float value)
     {
-        attackSpeed.AddFlat(value);
+        if (isFlat)
+            attackSpeed.AddFlat(value);
+        else
+            attackSpeed.AddPercent(value);
     }
 
     public void AddDownPower(float value)
@@ -265,14 +282,20 @@ public class CharacterStat
             defense.RemovePercent(value);
     }
 
-    public void RemoveMoveSpeed(float value)
+    public void RemoveMoveSpeed(bool isFlat, float value)
     {
-        moveSpeed.RemoveFlat(value);
+        if (isFlat)
+            moveSpeed.RemoveFlat(value);
+        else
+            moveSpeed.RemovePercent(value);
     }
 
-    public void RemoveAttackSpeed(float value)
+    public void RemoveAttackSpeed(bool isFlat, float value)
     {
-        attackSpeed.RemoveFlat(value);
+        if (isFlat)
+            attackSpeed.RemoveFlat(value);
+        else
+            attackSpeed.RemovePercent(value);
     }
 
     public void RemoveDownPower(float value)

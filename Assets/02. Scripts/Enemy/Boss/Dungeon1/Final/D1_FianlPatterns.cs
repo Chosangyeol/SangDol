@@ -60,7 +60,8 @@ public class D1_Final_Normal1 : BossPatternBase
             {
                 index++;
                 // 추후 풀로 바꿔야함
-                GameObject.Instantiate(box, hit.point, Quaternion.identity);
+                GameObject gbBox = GameObject.Instantiate(box, hit.point, Quaternion.identity);
+                gbBox.GetComponent<D1_Box>().Init(boss.Target);
             }
             else
             {
@@ -74,10 +75,16 @@ public class D1_Final_Normal1 : BossPatternBase
 
 public class D1_Final_Normal2 : BossPatternBase
 {
-    public GameObject knife;
-    public int count;
+    private GameObject knife;
+    private BuffSO slowDebuffSO;
+    private int count;
+    private float damagePercent;
+    private float slowPercent;
+    private float slowDuration;
+    private Transform center;
 
-    public D1_Final_Normal2(GameObject knife, int count)
+    public D1_Final_Normal2(GameObject knife,BuffSO debuffSO, int count, 
+        float damagePercent,float slowPercent,float slowDuration, Transform center)
     {
         patternName = "Normal2";
         cooldown = 20f;
@@ -85,7 +92,12 @@ public class D1_Final_Normal2 : BossPatternBase
         range = 15f;
 
         this.knife = knife;
+        this.slowDebuffSO = debuffSO;
         this.count = count;
+        this.damagePercent = damagePercent;
+        this.slowPercent = slowPercent;
+        this.slowDuration = slowDuration;
+        this.center = center;
     }
 
     public override void Execute(BossModel boss)
@@ -110,7 +122,8 @@ public class D1_Final_Normal2 : BossPatternBase
 
             Quaternion randomRot = Quaternion.Euler(0f,randomAngle, 0f);
 
-            GameObject.Instantiate(knife, center, randomRot);
+            GameObject gbKnife =  GameObject.Instantiate(knife, center, randomRot);
+            gbKnife.GetComponent<D1_Knife>().Init(slowDebuffSO,damagePercent,slowPercent,slowDuration,boss.Target, boss.transform, this.center);
 
             yield return new WaitForSeconds(0.2f);
         }

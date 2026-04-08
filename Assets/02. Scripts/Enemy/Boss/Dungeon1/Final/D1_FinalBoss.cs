@@ -4,19 +4,28 @@ using UnityEngine;
 
 public class D1_FinalBoss : BossModel
 {
-    [Header("일반 패턴 변수")]
+    [Header("일반 패턴 공용 변수")]
     public Transform center;
-    public GameObject normal1;
-    public GameObject normal2;
     public GameObject normal4Warning1;
     public GameObject normal4Warning2;
+
+    [Header("일반 패턴1 변수")]
+    public GameObject normal1;
+
+    [Header("일반 패턴2 변수")]
+    public GameObject normal2;
+    public BuffSO slowDebuffSO;
+    public int knifeCount = 20;
+    public float damagePercent = 0.1f;
+    public float slowPercent = 0.2f;
+    public float slowDuration = 5f;
 
     protected override void Start()
     {
         base.Start();
 
-        normalPatterns.Add(new D1_Final_Normal1(normal1, _groundLayer, 3, 10, center));
-        normalPatterns.Add(new D1_Final_Normal2(normal2, 20));
+        normalPatterns.Add(new D1_Final_Normal1(normal1, _groundLayer, 3, 30, center));
+        normalPatterns.Add(new D1_Final_Normal2(normal2, slowDebuffSO, 20,damagePercent,slowPercent,slowDuration,center));
         normalPatterns.Add(new D1_Final_Normal3());
         normalPatterns.Add(new D1_Final_Normal4(normal4Warning1, normal4Warning2));
     }

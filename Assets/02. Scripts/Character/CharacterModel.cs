@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.Rendering;
 using static C_Enums;
 
@@ -23,8 +24,18 @@ public class CharacterModel : MonoBehaviour
     public Skill_ZSO skill_ZSO;
     public Skill_SpaceSO skill_SpaceSO;
 
+    [Header("캐릭터 상태")]
+    public bool canMove = true;
+    public bool isImmunity = false;
+
+    private bool isStun = false;
+    public bool IsStun => isStun;
+
     private Animator anim;
     public Animator Anim => anim;
+
+    private NavMeshAgent navMesh;
+    public NavMeshAgent Navmesh => navMesh;
 
     [SerializeField]
     public List<Item> testItems;
@@ -48,12 +59,12 @@ public class CharacterModel : MonoBehaviour
     private C_Buff buff;
     public C_Buff Buff => buff;
 
-    public bool canMove = true;
 
     private void Awake()
     {
         if (mainCam == null) mainCam = Camera.main;
 
+        navMesh = GetComponent<NavMeshAgent>();
         anim = GetComponent<Animator>();
 
         stat = new C_Stat(this, characterStatSO);
@@ -82,6 +93,12 @@ public class CharacterModel : MonoBehaviour
         playerController.Tick();
         buff.UpdateBuff(Time.deltaTime);
         skillSystem.UpdateSkills(Time.deltaTime);
+
+        if (isStun)
+        {
+            playerController.StopMove();
+            return;
+        }  
     }
 
     public void SkillCorutaine(IEnumerator routine)
@@ -192,10 +209,34 @@ public class CharacterModel : MonoBehaviour
     }
     #endregion
 
-    #region 캐릭터 스탯 관리
-    public void Damaged(float damage)
+    #region 캐릭터 상태
+    public void StunEnable()
     {
-        Stat.Damaged(damage);
+        isStun = true;
+        Anim.SetBool("isStun", true);
+    }
+
+    public void StunDisable()
+    {
+        isStun = false;
+        Anim.SetBool("isStun", false);
+    }
+
+    public void ImmunityEnable()
+    {
+        isImmunity = true;
+    }
+
+    public void ImmunityDisable()
+    {
+        isImmunity = false;
+    }
+    #endregion
+
+    #region 캐릭터 스탯 관리
+    public void Damaged(float damage,bool isPercent)
+    {
+        Stat.Damaged(damage,isPercent);
         if (stat.Stat.curHp <= 0)
         {
             // 캐릭터 사망 처리
@@ -254,11 +295,11 @@ public class CharacterModel : MonoBehaviour
         }
         else if (statType == C_Enums.CharacterStat.MoveSpeed)
         {
-            Stat.AddMoveSpeed(value);
+            Stat.AddMoveSpeed(isFlat,value);
         }
         else if (statType == C_Enums.CharacterStat.AttackSpeed)
         {
-            Stat.AddAttackSpeed(value);
+            Stat.AddAttackSpeed(isFlat,value);
         }
         else if (statType == C_Enums.CharacterStat.DownPower)
         {
@@ -272,6 +313,8 @@ public class CharacterModel : MonoBehaviour
         {
             Stat.AddCirticalDamage(value);
         }
+
+        navMesh.speed = Stat.Stat.moveSpeed.FinalValue;
     }
 
     public void RemoveStat(C_Enums.CharacterStat statType, bool isFlat, float value)
@@ -290,11 +333,11 @@ public class CharacterModel : MonoBehaviour
         }
         else if (statType == C_Enums.CharacterStat.MoveSpeed)
         {
-            Stat.RemoveMoveSpeed(value);
+            Stat.RemoveMoveSpeed(isFlat, value);
         }
         else if (statType == C_Enums.CharacterStat.AttackSpeed)
         {
-            Stat.RemoveAttackSpeed(value);
+            Stat.RemoveAttackSpeed(isFlat, value);
         }
         else if (statType == C_Enums.CharacterStat.DownPower)
         {
@@ -308,6 +351,9 @@ public class CharacterModel : MonoBehaviour
         {
             Stat.RemoveCirticalDamage(value);
         }
+
+        navMesh.speed = Stat.Stat.moveSpeed.FinalValue;
+
     }
 
     #endregion

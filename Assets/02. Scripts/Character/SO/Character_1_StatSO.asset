@@ -15,8 +15,9 @@ MonoBehaviour:
   maxHp: 500
   attackDamage: 100
   defense: 5
-  moveSpeed: 2
+  moveSpeed: 7
   attackSpeed: 1
+  idenBonus: 1
   downPower: 1
   criticalChance: 0.3
   criticalDamage: 1.5

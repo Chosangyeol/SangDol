@@ -22,9 +22,9 @@ public class C_Stat
         return;
     }
 
-    public void Damaged(float damage)
+    public void Damaged(float damage,bool isPercent)
     {
-        stat.Damaged(damage);
+        stat.Damaged(damage,isPercent);
         GameEvent.OnStatChange?.Invoke(Stat);
     }
 
@@ -92,15 +92,15 @@ public class C_Stat
 
     }
 
-    public void AddMoveSpeed(float value)
+    public void AddMoveSpeed(bool isFlat, float value)
     {
-        stat.AddMoveSpeed(value);
+        stat.AddMoveSpeed(isFlat,value);
         GameEvent.OnStatChange?.Invoke(Stat);
     }
 
-    public void AddAttackSpeed(float value)
+    public void AddAttackSpeed(bool isFlat, float value)
     {
-        stat.AddAttackSpeed(value);
+        stat.AddAttackSpeed(isFlat,value);
         GameEvent.OnStatChange?.Invoke(Stat);
     }
 
@@ -142,15 +142,15 @@ public class C_Stat
         GameEvent.OnStatChange?.Invoke(Stat);
     }
 
-    public void RemoveMoveSpeed(float value)
+    public void RemoveMoveSpeed(bool isFlat, float value)
     {
-        stat.RemoveMoveSpeed(value);
+        stat.RemoveMoveSpeed(isFlat,value);
         GameEvent.OnStatChange?.Invoke(Stat);
     }
 
-    public void RemoveAttackSpeed(float value)
+    public void RemoveAttackSpeed(bool isFlat, float value)
     {
-        stat.RemoveAttackSpeed(value);
+        stat.RemoveAttackSpeed(isFlat, value);
         GameEvent.OnStatChange?.Invoke(Stat);
     }
 
