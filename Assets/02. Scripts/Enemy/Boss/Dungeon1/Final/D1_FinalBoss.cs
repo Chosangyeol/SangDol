@@ -31,13 +31,17 @@ public class D1_FinalBoss : BossModel
     public float n3damagePercent = 0.2f;
 
     [Header("일반 패턴4 변수")]
+    public float n4DamagePercent = 0.2f;
     public GameObject normal4Warning1;
     public GameObject normal4Warning2;
     public float n4damagePercent = 0.15f;
 
 
     [Header("일반 패턴5 변수")]
+    public GameObject hat;
+    public float n5DamagePercent;
     public GameObject normal5Bullet;
+    public GameObject normal5Warning;
 
 
     protected override void Start()
@@ -47,8 +51,8 @@ public class D1_FinalBoss : BossModel
         normalPatterns.Add(new D1_Final_Normal1(normal1, _groundLayer, boxCount, spawnRadius, center, stunDebuffSO, stunDuration));
         normalPatterns.Add(new D1_Final_Normal2(normal2, slowDebuffSO, 20, n2DamagePercent, slowPercent,slowDuration,center));
         normalPatterns.Add(new D1_Final_Normal3(normal3Swing,n3damagePercent, jumpCurve, normal3Warning1,normal3Warning2));
-        normalPatterns.Add(new D1_Final_Normal4(normal4Warning1, normal4Warning2));
-
+        normalPatterns.Add(new D1_Final_Normal4(n4DamagePercent,normal4Warning1, normal4Warning2));
+        normalPatterns.Add(new D1_Final_Normal5(n5DamagePercent, normal5Bullet, normal5Warning, hat));
     }
 
     protected override void StartSpecialPattern(BossSpecialPattern pattern)

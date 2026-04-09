@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
+using System.Linq;
 using UnityEngine;
-using UnityEngine.UIElements;
+using UnityEngine.Rendering;
 
 public class D1_FianlPatterns : MonoBehaviour
 {
@@ -252,6 +252,15 @@ public class D1_Final_Normal3 : BossPatternBase
         landPos.y = 0.5f;
         boss.transform.position = landPos;
 
+        int playerLayer = LayerMask.GetMask("Player");
+
+        Collider[] hit = Physics.OverlapSphere(boss.transform.position, 6f, playerLayer);
+        foreach(Collider c in hit)
+        {
+            CharacterModel model = c.GetComponent<CharacterModel>();
+            model.Damaged(damagePercent, true);
+        }
+
         landPos.y = 0f;
 
         GameObject warning2 = GameObject.Instantiate(normal3Warning2, landPos, Quaternion.identity);
@@ -259,6 +268,17 @@ public class D1_Final_Normal3 : BossPatternBase
         yield return new WaitForSeconds(1f);
 
         GameObject.Destroy(warning2);
+
+        hit = Physics.OverlapSphere(boss.transform.position, 12f, playerLayer);
+        Collider[] safe = Physics.OverlapSphere(boss.transform.position, 6f, playerLayer);
+
+        var finalHits = hit.Except(safe);
+
+        foreach (Collider c in finalHits)
+        {
+            CharacterModel model = c.GetComponent<CharacterModel>();
+            model.Damaged(damagePercent, true);
+        }
 
         yield return new WaitForSeconds(1f);
 
@@ -271,16 +291,18 @@ public class D1_Final_Normal3 : BossPatternBase
 
 public class D1_Final_Normal4 : BossPatternBase
 {
+    public float damagePercent;
     public GameObject warning1;
     public GameObject warning2;
 
-    public D1_Final_Normal4(GameObject warning1, GameObject warning2)
+    public D1_Final_Normal4(float damagePercent, GameObject warning1, GameObject warning2)
     {
         patternName = "Normal4";
         cooldown = 15f;
         weight = 30f;
         range = 8f;
 
+        this.damagePercent = damagePercent;
         this.warning1 = warning1;
         this.warning2 = warning2;
     }
@@ -302,11 +324,53 @@ public class D1_Final_Normal4 : BossPatternBase
 
         yield return new WaitForSeconds(1.5f);
 
+        Vector3 center = boss.transform.position;
+        Quaternion rot = boss.transform.rotation;
+
+        Vector3 forwardBox = new Vector3(3.25f, 2.5f, 15f);
+        Vector3 sideBox = new Vector3(15f, 2.5f, 3.25f);
+
+        int playerLayer = LayerMask.GetMask("Player");
+
+        Collider[] forward = Physics.OverlapBox(center,forwardBox,rot,playerLayer);
+        Collider[] side = Physics.OverlapBox(center,sideBox,rot,playerLayer);
+
+        HashSet<Collider> uniqueTargets = new HashSet<Collider>();
+
+        foreach (Collider hit in forward) uniqueTargets.Add(hit);
+        foreach (Collider hit in side) uniqueTargets.Add(hit);
+
+        foreach(Collider hit in uniqueTargets)
+        {
+            CharacterModel model = hit.GetComponent<CharacterModel>();
+            if (model != null)
+                model.Damaged(damagePercent, true);
+        }
+
         GameObject.Destroy(gwarning1);
+
+        yield return new WaitForSeconds(0.5f);
 
         GameObject gwarning2 = GameObject.Instantiate(warning2, boss.transform.position, boss.transform.rotation); ;
 
         yield return new WaitForSeconds(1.5f);
+
+        rot = boss.transform.rotation * Quaternion.Euler(0f, 45f, 0f);
+
+        forward = Physics.OverlapBox(center, forwardBox, rot, playerLayer);
+        side = Physics.OverlapBox(center, sideBox, rot, playerLayer);
+
+        uniqueTargets = new HashSet<Collider>();
+
+        foreach (Collider hit in forward) uniqueTargets.Add(hit);
+        foreach (Collider hit in side) uniqueTargets.Add(hit);
+
+        foreach (Collider hit in uniqueTargets)
+        {
+            CharacterModel model = hit.GetComponent<CharacterModel>();
+            if (model != null)
+                model.Damaged(damagePercent, true);
+        }
 
         GameObject.Destroy(gwarning2);
 
@@ -316,11 +380,99 @@ public class D1_Final_Normal4 : BossPatternBase
 
 public class D1_Final_Normal5 : BossPatternBase
 {
-    public D1_Final_Normal5()
+    public GameObject hat;
+    public GameObject normal5Bullet;
+    public GameObject normal5Warning;
+    public float damagePercent;
+
+
+    public D1_Final_Normal5(float damage, GameObject bullet, GameObject warning, GameObject hat)
     {
         patternName = "Normal5";
         cooldown = 60f;
         weight = 30f;
         range = 50f;
+
+        this.hat = hat;
+        damagePercent = damage;
+        normal5Bullet = bullet;
+        normal5Warning = warning;
+    }
+
+    public override void Execute(BossModel boss)
+    {
+        base.Execute(boss);
+
+        boss.StartCoroutine(HatShot(boss));
+    }
+
+    private IEnumerator HatShot(BossModel boss)
+    {
+        int shotCount = 0;
+
+        Vector3 dir = (boss.Target.transform.position - hat.transform.position).normalized;
+
+        while (shotCount < 3)
+        {
+            GameObject warning = GameObject.Instantiate(normal5Warning, hat.transform.position, Quaternion.identity);
+
+            float timer = 0;
+
+            while (timer < 2f)
+            {
+                timer += Time.deltaTime;
+                Vector3 lookTarget = boss.Target.transform.position;
+
+                // ⭐️ 2. 타겟의 Y(높이) 값을 경고장판의 Y(높이) 값과 똑같이 덮어씌웁니다.
+                lookTarget.y = warning.transform.position.y;
+
+                // ⭐️ 3. 수평이 맞춰진 가짜 목표점을 바라보게 합니다!
+                warning.transform.LookAt(lookTarget);
+
+                yield return null;
+            }
+
+            yield return new WaitForSeconds(0.5f);
+
+            GameObject bullet = GameObject.Instantiate(normal5Bullet, hat.transform.position, warning.transform.rotation);
+            bullet.GetComponent<D1_Bullet>().Init(damagePercent, boss.Target, true);
+            GameObject.Destroy(warning);
+
+            yield return new WaitForSeconds(0.5f);
+
+            shotCount++;
+        }
+
+        GameObject bosswarning = GameObject.Instantiate(normal5Warning, hat.transform.position, Quaternion.identity);
+
+        float bosstimer = 0;
+
+        while (bosstimer < 2f)
+        {
+            bosstimer += Time.deltaTime;
+            Vector3 lookTarget = boss.transform.position;
+
+            // ⭐️ 2. 타겟의 Y(높이) 값을 경고장판의 Y(높이) 값과 똑같이 덮어씌웁니다.
+            lookTarget.y = bosswarning.transform.position.y;
+
+            // ⭐️ 3. 수평이 맞춰진 가짜 목표점을 바라보게 합니다!
+            bosswarning.transform.LookAt(lookTarget);
+
+            yield return null;
+        }
+
+        yield return new WaitForSeconds(0.5f);
+
+        GameObject bossBullet = GameObject.Instantiate(normal5Bullet, hat.transform.position, bosswarning.transform.rotation);
+        bossBullet.GetComponent<D1_Bullet>().Init(damagePercent, boss.Target, false);
+
+        GameObject.Destroy(bosswarning);
+
+        yield return new WaitForSeconds(0.5f);
+
+
+
+
+        boss.OnPatternEnd();
     }
 }
