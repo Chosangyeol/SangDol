@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3552020090788299709}
   - component: {fileID: 9074890263800242222}
   m_Layer: 0
-  m_Name: Normal2Knife
+  m_Name: D1_Final_N2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

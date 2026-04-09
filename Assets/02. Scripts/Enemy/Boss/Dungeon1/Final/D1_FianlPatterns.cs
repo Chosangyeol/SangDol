@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class D1_FianlPatterns : MonoBehaviour
 {
@@ -15,8 +16,10 @@ public class D1_Final_Normal1 : BossPatternBase
     public int count;
     public float radius;
     public Transform center;
+    public BuffSO stunDebuffSO;
+    public float stunDuration;
 
-    public D1_Final_Normal1(GameObject box, LayerMask layer, int count, float radius, Transform center)
+    public D1_Final_Normal1(GameObject box, LayerMask layer, int count, float radius, Transform center, BuffSO stunDebuffSO, float stunDuration)
     {
         patternName = "Normal1";
         cooldown = 30f;
@@ -28,6 +31,8 @@ public class D1_Final_Normal1 : BossPatternBase
         this.count = count;
         this.radius = radius;
         this.center = center;
+        this.stunDebuffSO = stunDebuffSO;
+        this.stunDuration = stunDuration;
     }
 
     public override void Execute(BossModel boss)
@@ -61,7 +66,7 @@ public class D1_Final_Normal1 : BossPatternBase
                 index++;
                 // 추후 풀로 바꿔야함
                 GameObject gbBox = GameObject.Instantiate(box, hit.point, Quaternion.identity);
-                gbBox.GetComponent<D1_Box>().Init(boss.Target);
+                gbBox.GetComponent<D1_Box>().Init(boss.Target, stunDebuffSO, stunDuration);
             }
             else
             {
@@ -134,12 +139,25 @@ public class D1_Final_Normal2 : BossPatternBase
 
 public class D1_Final_Normal3 : BossPatternBase
 {
-    public D1_Final_Normal3()
+    public GameObject normal3Swing;
+    public float damagePercent;
+    public AnimationCurve jumpCurve;
+    public GameObject normal3Warning1;
+    public GameObject normal3Warning2;
+
+    public D1_Final_Normal3(GameObject normal3Swing, float damagePercent, AnimationCurve curve,
+        GameObject warning1, GameObject warning2)
     {
         patternName = "Normal3";
         cooldown = 60f;
         weight = 30f;
         range = 10f;
+
+        this.jumpCurve = curve;
+        this.normal3Swing = normal3Swing;
+        this.damagePercent = damagePercent;
+        this.normal3Warning1 = warning1;
+        this.normal3Warning2 = warning2;
     }
 
     public override void Execute(BossModel boss)
@@ -152,20 +170,76 @@ public class D1_Final_Normal3 : BossPatternBase
     private IEnumerator JumpUp(BossModel boss)
     {
         //boss.Anim.SetTrigger(patternName);
+        GameObject swing = GameObject.Instantiate(
+            normal3Swing,
+            boss.transform.position + (boss.transform.forward * 3f), // 위치 수정
+            boss.transform.rotation
+            );
 
+        boss.patternObjects.Add(swing);
+
+        boss.EnableCounter();
         yield return new WaitForSeconds(2f);
+        boss.DisableCounter();
 
         if (boss.Agent != null) boss.Agent.enabled = false;
+
+        Vector3 startPos = boss.transform.position;
+        Vector3 targetPos = swing.transform.position + Vector3.up * 2.5f;
+
+        float time = 0f;
+        while (time < 1.5f)
+        {
+            time += Time.deltaTime;
+
+            // 1. 진행도 (0.0 ~ 1.0)
+            float t = time / 1.5f;
+
+            // 2. 앞으로 나아가는 '속도' 조절 (이징)
+            float curveT = jumpCurve.Evaluate(t);
+
+            // 3. 직선 위치 계산 (Base Position)
+            Vector3 basePos = Vector3.Lerp(startPos, targetPos, curveT);
+
+            // ⭐️ 4. 포물선 높이 계산 (Sine 함수 사용)
+            // t가 0일때 0, 0.5(중간)일때 최고점(1 * Height), 1일때 다시 0이 됩니다.
+            float arc = Mathf.Sin(t * Mathf.PI) * 2.5f;
+
+            // 5. 직선 위치에 포물선 높이(Y축)를 더해서 최종 위치 적용!
+            boss.transform.position = basePos + new Vector3(0f, arc, 0f);
+
+            yield return null;
+        }
+
+        boss.transform.position = targetPos;
+
+        yield return new WaitForSeconds(0.5f);
 
         while (boss.transform.position.y < 20)
         {
             boss.transform.Translate(Vector3.up * 60 * Time.deltaTime, Space.World);
+            swing.transform.Translate(Vector3.up * 60 * Time.deltaTime, Space.World);
             yield return null;
         }
 
-        boss.transform.position += boss.transform.forward * 3f;
+        GameObject.Destroy(swing);
 
-        yield return new WaitForSeconds(1f);
+        Vector3 dropPos = boss.Target.transform.position;
+
+        dropPos.y = boss.transform.position.y;
+
+        boss.transform.position = dropPos;
+
+        yield return new WaitForSeconds(0.5f);
+
+        Vector3 warning1pos = boss.transform.position;
+        warning1pos.y = 0f;
+
+        GameObject warning1 = GameObject.Instantiate(normal3Warning1, warning1pos,  Quaternion.identity);
+
+        yield return new WaitForSeconds(2f);
+
+        GameObject.Destroy(warning1);
 
         while (boss.transform.position.y > 0)
         {
@@ -178,6 +252,16 @@ public class D1_Final_Normal3 : BossPatternBase
         landPos.y = 0.5f;
         boss.transform.position = landPos;
 
+        landPos.y = 0f;
+
+        GameObject warning2 = GameObject.Instantiate(normal3Warning2, landPos, Quaternion.identity);
+
+        yield return new WaitForSeconds(1f);
+
+        GameObject.Destroy(warning2);
+
+        yield return new WaitForSeconds(1f);
+
         if (boss.Agent != null) boss.Agent.enabled = true;
 
         boss.OnPatternEnd();
@@ -189,7 +273,6 @@ public class D1_Final_Normal4 : BossPatternBase
 {
     public GameObject warning1;
     public GameObject warning2;
-
 
     public D1_Final_Normal4(GameObject warning1, GameObject warning2)
     {

@@ -180,7 +180,23 @@ public class CharacterModel : MonoBehaviour
                 if (angle <= hitAngle / 2f)
                 {
                     float baseDmg = Stat.Stat.attackDamage.FinalValue * damageMultiplier;
-                    enemy.Damaged(GetCritical(baseDmg), gameObject);
+                    bool isCritical = GetCritical();
+                    
+                    if (isCritical)
+                        baseDmg *= Stat.Stat.criticalDamage.FinalValue;
+
+                    SDamageInfo info = new SDamageInfo()
+                    {
+                        damage = baseDmg,
+                        source = this.gameObject,
+                        knockDownPower = 1,
+                        isCounterable = false,
+                        isCritical = isCritical,
+                        isHeadattack = false,
+                        isBackattack = true
+                    };
+
+                    enemy.Damaged(info);
                 }
                 // else문 제거: 부채꼴 밖의 적은 때리지 않음
             }
@@ -203,7 +219,24 @@ public class CharacterModel : MonoBehaviour
             if (target.TryGetComponent<EnemyBase>(out EnemyBase enemy))
             {
                 float baseDmg = Stat.Stat.attackDamage.FinalValue * damageMultiplier;
-                enemy.Damaged(GetCritical(baseDmg), gameObject);
+
+                bool isCritical = GetCritical();
+
+                if (isCritical)
+                    baseDmg *= Stat.Stat.criticalDamage.FinalValue;
+
+                SDamageInfo info = new SDamageInfo()
+                {
+                    damage = baseDmg,
+                    source = this.gameObject,
+                    knockDownPower = 1,
+                    isCounterable = true,
+                    isCritical = isCritical,
+                    isHeadattack = true,
+                    isBackattack = false
+                };
+
+                enemy.Damaged(info);
             }
         }
     }
@@ -274,9 +307,9 @@ public class CharacterModel : MonoBehaviour
         Stat.GainGold(amount);
     }
 
-    public float GetCritical(float baseDamage)
+    public bool GetCritical()
     {
-        return (Stat.GetCritical(baseDamage));
+        return (Stat.GetCritical());
     }
 
     public void AddStat(C_Enums.CharacterStat statType,bool isFlat, float value)

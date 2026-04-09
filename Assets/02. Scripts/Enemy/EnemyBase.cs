@@ -32,19 +32,14 @@ public class EnemyBase : MonoBehaviour
         _anim = GetComponent<Animator>();
     }
 
-    public void Damaged(float damage, GameObject source = null)
+    public virtual void Damaged(SDamageInfo info)
     {
         if (_isDead) return;
 
-        _stat.Damaged(damage);
-        if (_stat.down <= 0)
-        {
-            Debug.Log("무력화");
-        }
-
+        _stat.Damaged(info);
         if (_stat.curHp <= 0)
         {
-            Die(source);
+            Die(info.source);
         }
     }
 

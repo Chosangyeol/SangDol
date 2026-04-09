@@ -5,25 +5,28 @@ using UnityEngine;
 public class D1_Box : MonoBehaviour
 {
     [Header("깜짝 박스 설정")]
-    public BuffSO stunDeBuffSO;
     public SphereCollider SphereCollider;
     public GameObject spawnObject;
     public GameObject activeObject;
 
+    private BuffSO stunDeBuffSO;
     private SBuff sBuff;
+    private float stunDuration;
     private CharacterModel _model;
 
     private bool isActive = false;
 
 
-    public void Init(CharacterModel model)
+    public void Init(CharacterModel model, BuffSO debuffSO, float stunDuration)
     {
         _model = model;
+        stunDeBuffSO = debuffSO;
+        this.stunDuration = stunDuration;
 
         sBuff = new SBuff(
             this.gameObject,
             _model.gameObject,
-            new StunDeBuff(_model, stunDeBuffSO, 1.5f)
+            new StunDeBuff(_model, stunDeBuffSO, stunDuration)
             );
         StartCoroutine(Invisable());
     }
@@ -44,12 +47,6 @@ public class D1_Box : MonoBehaviour
         if (other.gameObject.CompareTag("Player"))
         {
             activeObject.SetActive(true);
-
-            if (_model == null)
-            {
-                _model = other.gameObject.GetComponent<CharacterModel>();
-                Init(_model);
-            }
             
             _model.Buff.AddBuff(sBuff);
             SphereCollider.enabled = false;

@@ -28,9 +28,9 @@ public class C_Stat
         GameEvent.OnStatChange?.Invoke(Stat);
     }
 
-    public float GetCritical(float baseDamage)
+    public bool GetCritical()
     {
-        return stat.GetCritical(baseDamage);
+        return stat.GetCritical();
     }
 
     public void Heal(float amount)

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -22,6 +23,9 @@ public class BossModel : EnemyBase
 
     [Header("특수 기믹 체력확인")]
     public List<BossSpecialPattern> specialPatterns;
+
+    public List<GameObject> patternObjects = new List<GameObject>();
+
 
     protected List<BossPatternBase> normalPatterns = new List<BossPatternBase>();
     protected BossPatternBase currentPattern = null;
@@ -56,6 +60,43 @@ public class BossModel : EnemyBase
             }
         }
     }
+
+    #region 피격 & 백헤드
+    public override void Damaged(SDamageInfo info)
+    {
+        if (_isDead) return;
+
+        if (canCounter && info.isCounterable)
+        {
+            if (CheckAttackDir() == 1)
+            {
+                OnCounterSuccess();
+            }
+        }
+
+        base.Damaged(info);
+    }
+
+    public int CheckAttackDir()
+    {
+        Vector3 dir = (Target.transform.position - transform.position).normalized;
+        float dot = Vector3.Dot(transform.forward, dir);
+
+        if (dot > 0.6f)
+        {
+            Debug.Log("헤드");
+            return 1;
+        }
+        else if (dot < -0.6f)
+        {
+            Debug.Log("백");
+            return 2;
+        }
+
+        return 0;
+    }
+
+    #endregion
 
     private void HandleCheckSpecial()
     {
@@ -156,6 +197,7 @@ public class BossModel : EnemyBase
 
     public void OnCounterSuccess()
     {
+        Debug.Log("카운터 성공");
         canCounter = false;
 
         ForceStopCurrentAction();
@@ -178,8 +220,61 @@ public class BossModel : EnemyBase
 
         currentPattern = null;
         canCounter = false;
+
+        foreach (GameObject obj in patternObjects)
+        {
+            if (obj != null) Destroy(obj);
+        }
+
+        patternObjects.Clear();
+
         Anim.Play("Idle");
         Anim.SetBool("Move", false);
 
     }
+
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        // 1. 보스의 현재 위치와 전방 벡터 확보
+        Vector3 pos = transform.position;
+        Vector3 forward = transform.forward;
+        Vector3 up = transform.up;
+
+        // --- 헤드 (전방) 영역 시각화 ---
+        // 임계값 0.85를 각도로 변환
+        float headAngle = Mathf.Acos(0.6f) * Mathf.Rad2Deg;
+
+        // 초록색 계열의 반투명한 부채꼴 그리기
+        Handles.color = new Color(0f, 1f, 0f, 0.5f);
+        // 매개변수: 시작위치, 회전축, 그리기시작방향, 총각도, 반지름
+        Handles.DrawSolidArc(
+            pos,
+            up,
+            Quaternion.AngleAxis(-headAngle, up) * forward, // 좌측 경계선
+            headAngle * 2f, // 총 각도
+            3f
+        );
+
+        // --- 백 (후방) 영역 시각화 ---
+        // 임계값 -0.85를 전방 기준 각도로 변환
+        float backBoundaryAngle = Mathf.Acos(-0.6f) * Mathf.Rad2Deg;
+        // 정후면 기준 실제 부채꼴 반반 각도
+        float backHalfAngle = 180f - backBoundaryAngle;
+
+        // 빨간색 계열의 반투명한 부채꼴 그리기
+        Handles.color = new Color(1f, 0f, 0f, 0.5f);
+        Handles.DrawSolidArc(
+            pos,
+            up,
+            Quaternion.AngleAxis(180f - backHalfAngle, up) * forward, // 좌측 경계선
+            backHalfAngle * 2f, // 총 각도
+            3f
+        );
+
+        // (기본) 보스 전방 벡터 와이어 기즈모 추가
+        Gizmos.color = Color.blue;
+        Gizmos.DrawRay(pos, forward * 3f * 1.2f);
+    }
+#endif
 }

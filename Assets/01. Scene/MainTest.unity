@@ -5815,7 +5815,7 @@ GameObject:
   - component: {fileID: 727278851}
   - component: {fileID: 727278852}
   m_Layer: 7
-  m_Name: TestBoss
+  m_Name: Jester
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5856,7 +5856,7 @@ NavMeshAgent:
   m_Acceleration: 8
   avoidancePriority: 1
   m_AngularSpeed: 120
-  m_StoppingDistance: 0
+  m_StoppingDistance: 0.5
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
@@ -5980,18 +5980,56 @@ MonoBehaviour:
   - patternName: "\uC6B4\uBA85\uC758 \uC810"
     hpPercent: 0.9
     hasDone: 0
+  patternObjects: []
   center: {fileID: 1965451643}
+  normal1: {fileID: 4180240025578160927, guid: 7a1160249b27e5043894801d617af700, type: 3}
+  boxCount: 3
+  spawnRadius: 30
+  stunDebuffSO: {fileID: 11400000, guid: c029c3d867fe76549ab78fd424165bce, type: 2}
+  stunDuration: 1.5
+  normal2: {fileID: 8472125673359237679, guid: 3d1bb4732d8364148b83da17a32faf08, type: 3}
+  slowDebuffSO: {fileID: 11400000, guid: de6cb8b419e8883459b74cc39075575e, type: 2}
+  knifeCount: 20
+  n2DamagePercent: 0.1
+  slowPercent: 0.2
+  slowDuration: 5
+  normal3Swing: {fileID: 8840616156945978918, guid: c6e5c1c8d2c0dd64b8c412d0f48a957c,
+    type: 3}
+  normal3Warning1: {fileID: 6723533839379181503, guid: c49231318d320d444a8c989611df764f,
+    type: 3}
+  normal3Warning2: {fileID: 5214885690410384664, guid: 4b4d105131747184aad635def27ddd2e,
+    type: 3}
+  jumpCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  n3damagePercent: 0.2
   normal4Warning1: {fileID: 2403169642111090254, guid: 2299572776eb07d4aa488fc394923bb7,
     type: 3}
   normal4Warning2: {fileID: 3338519333612958456, guid: e0d3cbdd81b10c446bc6775ea3f200df,
     type: 3}
-  normal1: {fileID: 4180240025578160927, guid: 7a1160249b27e5043894801d617af700, type: 3}
-  normal2: {fileID: 8472125673359237679, guid: 3d1bb4732d8364148b83da17a32faf08, type: 3}
-  slowDebuffSO: {fileID: 11400000, guid: de6cb8b419e8883459b74cc39075575e, type: 2}
-  knifeCount: 20
-  damagePercent: 0.1
-  slowPercent: -0.2
-  slowDuration: 5
+  n4damagePercent: 0.15
+  normal5Bullet: {fileID: 0}
 --- !u!54 &727278852
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -8843,8 +8881,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotPrefab: {fileID: 6194119761591505796, guid: 804b5112cd35f264d94b689c5dd68431,
     type: 3}
-  buffSlotParent: {fileID: 1669996449}
-  deBuffSlotParent: {fileID: 922843456}
+  buffSlotParent: {fileID: 0}
+  deBuffSlotParent: {fileID: 0}
 --- !u!1 &1021043458
 GameObject:
   m_ObjectHideFlags: 0

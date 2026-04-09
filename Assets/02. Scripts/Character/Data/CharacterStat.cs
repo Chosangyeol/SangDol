@@ -165,13 +165,13 @@ public class CharacterStat
         gold -= amount;
     }
 
-    public float GetCritical(float baseDamage)
+    public bool GetCritical()
     {
         int random = UnityEngine.Random.Range(1, 101);
         if (random <= criticalChance.FinalValue * 100)
-            return baseDamage * criticalDamage.FinalValue;
+            return true;
         else
-            return baseDamage;
+            return false;
     }
 
     #region Level & Exp

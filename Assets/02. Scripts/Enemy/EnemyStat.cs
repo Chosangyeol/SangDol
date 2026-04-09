@@ -32,19 +32,25 @@ public class EnemyStat
         attackRange = statSO.attackRange;
     }
 
-    public void Damaged(float damage, float downPower = 0f)
+    public void Damaged(SDamageInfo info)
     {
-        curHp -= damage;
+        float finalDamage = info.damage;
+
+        if (info.isHeadattack || info.isBackattack)
+            finalDamage *= 1.1f;
+
+        curHp -= finalDamage;
+
         if (canDown)
         {
-            down -= downPower;
+            down -= info.knockDownPower;
             if (down <= 0)
                 down = 0;
         }
         if (curHp <= 0)
             curHp = 0;
 
-        Debug.Log($"받은 피해량 : {damage} /  몬스터 남은 채력 : {curHp}");
+        Debug.Log($"받은 피해량 : {finalDamage} /  몬스터 남은 채력 : {curHp}");
     }
 
     public void Heal(float healAmount)
