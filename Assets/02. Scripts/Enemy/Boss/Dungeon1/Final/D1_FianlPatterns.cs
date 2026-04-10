@@ -19,20 +19,20 @@ public class D1_Final_Normal1 : BossPatternBase
     public BuffSO stunDebuffSO;
     public float stunDuration;
 
-    public D1_Final_Normal1(GameObject box, LayerMask layer, int count, float radius, Transform center, BuffSO stunDebuffSO, float stunDuration)
+    public D1_Final_Normal1(D1_Final_Normal1Data data, Transform center)
     {
         patternName = "Normal1";
         cooldown = 30f;
         weight = 30f;
         range = 20f;
 
-        this.box = box;
-        this.groundMask = layer;
-        this.count = count;
-        this.radius = radius;
+        this.box = data.prefab;
+        this.groundMask = data.groundLayer;
+        this.count = data.boxCount;
+        this.radius = data.spawnRadius;
         this.center = center;
-        this.stunDebuffSO = stunDebuffSO;
-        this.stunDuration = stunDuration;
+        this.stunDebuffSO = data.stunDebuffSO;
+        this.stunDuration = data.stunDuration;
     }
 
     public override void Execute(BossModel boss)
@@ -88,20 +88,19 @@ public class D1_Final_Normal2 : BossPatternBase
     private float slowDuration;
     private Transform center;
 
-    public D1_Final_Normal2(GameObject knife,BuffSO debuffSO, int count, 
-        float damagePercent,float slowPercent,float slowDuration, Transform center)
+    public D1_Final_Normal2(D1_Final_Normal2Data data, Transform center)
     {
         patternName = "Normal2";
         cooldown = 20f;
         weight = 20f;
         range = 15f;
 
-        this.knife = knife;
-        this.slowDebuffSO = debuffSO;
-        this.count = count;
-        this.damagePercent = damagePercent;
-        this.slowPercent = slowPercent;
-        this.slowDuration = slowDuration;
+        this.knife = data.prefab;
+        this.slowDebuffSO = data.slowDebuffSO;
+        this.count = data.knifeCount;
+        this.damagePercent = data.damagePercent;
+        this.slowPercent = data.slowPercent;
+        this.slowDuration = data.slowDuration;
         this.center = center;
     }
 
@@ -145,19 +144,18 @@ public class D1_Final_Normal3 : BossPatternBase
     public GameObject normal3Warning1;
     public GameObject normal3Warning2;
 
-    public D1_Final_Normal3(GameObject normal3Swing, float damagePercent, AnimationCurve curve,
-        GameObject warning1, GameObject warning2)
+    public D1_Final_Normal3(D1_Final_Normal3Data data)
     {
         patternName = "Normal3";
         cooldown = 60f;
         weight = 30f;
         range = 10f;
 
-        this.jumpCurve = curve;
-        this.normal3Swing = normal3Swing;
-        this.damagePercent = damagePercent;
-        this.normal3Warning1 = warning1;
-        this.normal3Warning2 = warning2;
+        this.jumpCurve = data.jumpCurve;
+        this.normal3Swing = data.swingPrefab;
+        this.damagePercent = data.damagePercent;
+        this.normal3Warning1 = data.warning1;
+        this.normal3Warning2 = data.warning2;
     }
 
     public override void Execute(BossModel boss)
@@ -172,7 +170,7 @@ public class D1_Final_Normal3 : BossPatternBase
         //boss.Anim.SetTrigger(patternName);
         GameObject swing = GameObject.Instantiate(
             normal3Swing,
-            boss.transform.position + (boss.transform.forward * 3f), // 위치 수정
+            boss.transform.position + new Vector3(0,20f,3f), // 위치 수정
             boss.transform.rotation
             );
 
@@ -181,6 +179,14 @@ public class D1_Final_Normal3 : BossPatternBase
         boss.EnableCounter();
         yield return new WaitForSeconds(2f);
         boss.DisableCounter();
+
+        while (swing.transform.position.y > 3)
+        {
+            swing.transform.Translate(Vector3.down * 30 * Time.deltaTime, Space.World);
+            yield return null;
+        }
+
+        yield return new WaitForSeconds(0.5f);
 
         if (boss.Agent != null) boss.Agent.enabled = false;
 
@@ -295,16 +301,16 @@ public class D1_Final_Normal4 : BossPatternBase
     public GameObject warning1;
     public GameObject warning2;
 
-    public D1_Final_Normal4(float damagePercent, GameObject warning1, GameObject warning2)
+    public D1_Final_Normal4(D1_Final_Normal4Data data)
     {
         patternName = "Normal4";
         cooldown = 15f;
         weight = 30f;
         range = 8f;
 
-        this.damagePercent = damagePercent;
-        this.warning1 = warning1;
-        this.warning2 = warning2;
+        this.damagePercent = data.damagePercent;
+        this.warning1 = data.warning1;
+        this.warning2 = data.warning2;
     }
 
     public override void Execute(BossModel boss)
@@ -386,17 +392,17 @@ public class D1_Final_Normal5 : BossPatternBase
     public float damagePercent;
 
 
-    public D1_Final_Normal5(float damage, GameObject bullet, GameObject warning, GameObject hat)
+    public D1_Final_Normal5(D1_Final_Normal5Data data)
     {
         patternName = "Normal5";
         cooldown = 60f;
         weight = 30f;
         range = 50f;
 
-        this.hat = hat;
-        damagePercent = damage;
-        normal5Bullet = bullet;
-        normal5Warning = warning;
+        this.hat = data.hat;
+        damagePercent = data.damagePercent;
+        normal5Bullet = data.bulletPrefab;
+        normal5Warning = data.warningPrefab;
     }
 
     public override void Execute(BossModel boss)
@@ -435,7 +441,9 @@ public class D1_Final_Normal5 : BossPatternBase
             yield return new WaitForSeconds(0.5f);
 
             GameObject bullet = GameObject.Instantiate(normal5Bullet, hat.transform.position, warning.transform.rotation);
-            bullet.GetComponent<D1_Bullet>().Init(damagePercent, boss.Target, true);
+            boss.patternObjects.Add(bullet);
+            
+            bullet.GetComponent<D1_Bullet>().Init(damagePercent,50f, boss.Target, true);
             GameObject.Destroy(warning);
 
             yield return new WaitForSeconds(0.5f);
@@ -464,14 +472,11 @@ public class D1_Final_Normal5 : BossPatternBase
         yield return new WaitForSeconds(0.5f);
 
         GameObject bossBullet = GameObject.Instantiate(normal5Bullet, hat.transform.position, bosswarning.transform.rotation);
-        bossBullet.GetComponent<D1_Bullet>().Init(damagePercent, boss.Target, false);
+        bossBullet.GetComponent<D1_Bullet>().Init(damagePercent,80f, boss.Target, false);
 
         GameObject.Destroy(bosswarning);
 
-        yield return new WaitForSeconds(0.5f);
-
-
-
+        yield return new WaitForSeconds(2f);
 
         boss.OnPatternEnd();
     }

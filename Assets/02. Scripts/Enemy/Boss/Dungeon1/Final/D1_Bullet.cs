@@ -11,9 +11,10 @@ public class D1_Bullet : MonoBehaviour
 
     private bool isActive = true;
 
-    public void Init(float damage, CharacterModel model, bool isActive)
+    public void Init(float damage,float speed, CharacterModel model, bool isActive)
     {
         this.damage = damage;
+        this.speed = speed;
         _model = model;
         this.isActive = isActive;
     }
@@ -47,5 +48,15 @@ public class D1_Bullet : MonoBehaviour
 
             Destroy(this.gameObject);
         }
+
+        if (!isActive)
+        {
+            if (other.gameObject.CompareTag("Boss"))
+            {
+                BossModel _boss = other.GetComponent<D1_FinalBoss>();
+                _boss.StartCoroutine(_boss.Counter(10f));
+                Destroy(this.gameObject);
+            }
+        }  
     }
 }

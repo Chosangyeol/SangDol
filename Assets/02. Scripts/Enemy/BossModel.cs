@@ -70,7 +70,7 @@ public class BossModel : EnemyBase
         {
             if (CheckAttackDir() == 1)
             {
-                OnCounterSuccess();
+                OnCounterSuccess(5f);
             }
         }
 
@@ -109,6 +109,7 @@ public class BossModel : EnemyBase
             if (!pattern.hasDone && curHpPercent <= pattern.hpPercent)
             {
                 pattern.hasDone = true;
+                isDoingSpecial = true;
                 StartSpecialPattern(pattern);
                 break;
             }
@@ -195,21 +196,21 @@ public class BossModel : EnemyBase
         canCounter = false;
     }
 
-    public void OnCounterSuccess()
+    public void OnCounterSuccess(float duration)
     {
         Debug.Log("카운터 성공");
         canCounter = false;
 
         ForceStopCurrentAction();
 
-        StartCoroutine(Counter());
+        StartCoroutine(Counter(duration));
     }
 
-    IEnumerator Counter()
+    public IEnumerator Counter(float duration)
     {
         isKnockDown = true;
 
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(duration);
 
         isKnockDown = false;
     }
