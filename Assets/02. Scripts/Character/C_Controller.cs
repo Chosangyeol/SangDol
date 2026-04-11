@@ -55,14 +55,20 @@ public class C_Controller
         // 2. NavMeshAgent 도착 여부 체크 로직 추가
         if (agent != null && !agent.pathPending) // 경로 계산이 끝났고
         {
-            if (agent.remainingDistance <= agent.stoppingDistance) // 목적지에 도달했거나 멈출 거리에 진입했다면
+            if (agent != null && agent.isActiveAndEnabled && agent.isOnNavMesh)
             {
-                if (!agent.hasPath || agent.velocity.sqrMagnitude == 0f) // 경로가 없거나 속도가 0이라면 (완전히 멈춤)
+                if (agent.remainingDistance < 0.5f)
                 {
-                    // 이동 애니메이션이 켜져 있을 때만 꺼주기 (매 프레임 불필요한 호출 방지)
-                    if (_model.Anim.GetBool("Move"))
+                    if (agent.remainingDistance <= agent.stoppingDistance) // 목적지에 도달했거나 멈출 거리에 진입했다면
                     {
-                        StopMove();
+                        if (!agent.hasPath || agent.velocity.sqrMagnitude == 0f) // 경로가 없거나 속도가 0이라면 (완전히 멈춤)
+                        {
+                            // 이동 애니메이션이 켜져 있을 때만 꺼주기 (매 프레임 불필요한 호출 방지)
+                            if (_model.Anim.GetBool("Move"))
+                            {
+                                StopMove();
+                            }
+                        }
                     }
                 }
             }

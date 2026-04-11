@@ -13,13 +13,16 @@ public class BossSpecialPattern
     public bool hasDone;
 }
 
-public class BossModel : EnemyBase
+public class BossModel : EnemyBase, ICounterable
 {
     [Header("기믹 / 무력화 / 카운터 상태")]
     public bool isStatic = false;
+    public bool isImmunity = true;
     public bool isDoingSpecial = false;
     public bool isKnockDown = false;
-    public bool canCounter = false;
+    private bool canCounter = false;
+    public bool CanCounter => canCounter;
+    public float couterDuration = 5f;
 
     [Header("특수 기믹 체력확인")]
     public List<BossSpecialPattern> specialPatterns;
@@ -66,13 +69,7 @@ public class BossModel : EnemyBase
     {
         if (_isDead) return;
 
-        if (canCounter && info.isCounterable)
-        {
-            if (CheckAttackDir() == 1)
-            {
-                OnCounterSuccess(5f);
-            }
-        }
+        if (isImmunity) return;
 
         base.Damaged(info);
     }
@@ -188,7 +185,6 @@ public class BossModel : EnemyBase
     public void EnableCounter()
     {
         canCounter = true;
-
     }
 
     public void DisableCounter()
@@ -196,14 +192,25 @@ public class BossModel : EnemyBase
         canCounter = false;
     }
 
-    public void OnCounterSuccess(float duration)
+    public void OnCounterSuccess(SDamageInfo info)
     {
+        // 1. 몬스터가 카운터 가능한 상태가 아니거나, 공격이 카운터 속성이 아니면 즉시 취소!
+        if (!canCounter || !info.isCounterable)
+        {
+            return;
+        }
+
+        // 2. 공격 방향이 헤드(1)가 아니면 즉시 취소!
+        if (CheckAttackDir() != 1)
+        {
+            return;
+        }
+
+        // --- 여기까지 무사히 넘어왔다면 진짜 카운터 성공 ---
         Debug.Log("카운터 성공");
         canCounter = false;
-
         ForceStopCurrentAction();
-
-        StartCoroutine(Counter(duration));
+        StartCoroutine(Counter(1));
     }
 
     public IEnumerator Counter(float duration)
@@ -232,6 +239,11 @@ public class BossModel : EnemyBase
         Anim.Play("Idle");
         Anim.SetBool("Move", false);
 
+    }
+
+    public void SetImmunity(bool immunity)
+    {
+        isImmunity = immunity;
     }
 
 #if UNITY_EDITOR

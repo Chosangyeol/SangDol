@@ -65,10 +65,31 @@ public class D1_Final_Special2Data
 {
     public GameObject prefab;
 }
+
+[System.Serializable]
+public class D1_Final_Special3Data
+{
+    public GameObject prefab;
+}
+
+[System.Serializable]
+public class D1_Final_Special4Data
+{
+    public GameObject prefab;
+}
+
+[System.Serializable]
+public class D1_Final_Special5Data
+{
+    public D1_Chess prefab;
+}
+
 public class D1_FinalBoss : BossModel
 {
     [Header("일반 패턴 공용 변수")]
     public Transform center;
+    public Transform playerStartPos;
+
 
     [Header("각 일반 패턴 변수")]
     public D1_Final_Normal1Data pattern1;
@@ -80,6 +101,9 @@ public class D1_FinalBoss : BossModel
     [Header("각 특수 패턴 변수")]
     public D1_Final_Special1Data Special1;
     public D1_Final_Special2Data Special2;
+    public D1_Final_Special3Data Special3;
+    public D1_Final_Special4Data Special4;
+    public D1_Final_Special5Data Special5;
 
 
     private MeshRenderer[] bossMeshs;
@@ -102,9 +126,15 @@ public class D1_FinalBoss : BossModel
         Debug.Log($"🚨 [기믹 발동] {pattern.patternName} 시작!");
 
         if (pattern.patternName == "쇼타임")
-            StartCoroutine(Special_ShowTime());
+            StartCoroutine(Special_Chess());
         else if (pattern.patternName == "운명의 점")
             StartCoroutine(Special_Aracna());
+        else if (pattern.patternName == "칩막기")
+            StartCoroutine(Special_Chip());
+        else if (pattern.patternName == "야바위")
+            StartCoroutine(Special_Mix());
+        else if (pattern.patternName == "체크메이트")
+            StartCoroutine(Special_Chess());
     }
 
     #region 특수 패턴
@@ -281,12 +311,51 @@ public class D1_FinalBoss : BossModel
 
     IEnumerator Special_Aracna()
     {
-
         yield return StartCoroutine(ReadyForSpecial());
 
         Vector3 spawnPos = center.position + new Vector3(0, -1.43f, 0);
         GameObject special = Instantiate(Special2.prefab, spawnPos, Quaternion.identity);
         special.GetComponentInChildren<SurvivalPattern1>().Init(this);
+    }
+
+    IEnumerator Special_Chip()
+    {
+        yield return StartCoroutine(ReadyForSpecial());
+
+        yield return new WaitForSeconds(1f);
+
+        yield return StartCoroutine(EndSpecial());
+
+        isDoingSpecial = false;
+    }
+
+    IEnumerator Special_Mix()
+    {
+        yield return StartCoroutine(ReadyForSpecial());
+
+        yield return new WaitForSeconds(1f);
+
+        yield return StartCoroutine(EndSpecial());
+
+        isDoingSpecial = false;
+    }
+    IEnumerator Special_Chess()
+    {
+        yield return new WaitForSeconds(2f);
+
+        yield return StartCoroutine(ReadyForSpecial());
+
+        yield return new WaitForSeconds(1f);
+
+        Target.Navmesh.enabled = false;
+
+        Target.transform.position = Special5.prefab.startPos.position;
+
+        Target.Navmesh.enabled = true;
+
+        yield return new WaitForSeconds(1f);
+
+        Special5.prefab.StartCheckmate(this);
     }
 
     #endregion

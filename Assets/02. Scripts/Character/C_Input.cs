@@ -65,11 +65,26 @@ public class C_Input
 
         Ray ray = _model.mainCam.ScreenPointToRay(screenPos);
 
+        // 1. 먼저 실제 땅(groundLayer)이나 적중할 만한 오브젝트에 맞는지 검사 (기존 방식 유지)
         if (Physics.Raycast(ray, out RaycastHit hit, 200f, _model.groundLayer))
         {
             point = hit.point;
             return true;
         }
-        return false;
+
+        // 2. 만약 허공을 클릭했다면? 가상의 평면(Plane)을 만들어 교차점을 찾음
+        // 캐릭터의 Y축 높이를 지나는 무한한 평면 생성 (보통 높이 0 또는 캐릭터 발밑)
+        float characterY = _model.transform.position.y;
+        Plane virtualGroundPlane = new Plane(Vector3.up, new Vector3(0, characterY, 0));
+
+        // 광선이 이 가상 평면과 만나는 거리를 계산
+        if (virtualGroundPlane.Raycast(ray, out float enterDistance))
+        {
+            // 거리를 바탕으로 교차점(포인트) 획득
+            point = ray.GetPoint(enterDistance);
+            return true;
+        }
+
+        return false; // 카메라가 하늘을 보고 있어서 바닥을 아예 안 쏠 때만 false
     }
 }

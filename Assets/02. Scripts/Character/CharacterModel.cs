@@ -1,3 +1,4 @@
+using Cinemachine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,12 +8,14 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Rendering;
 using static C_Enums;
+using static UnityEngine.EventSystems.EventTrigger;
 
 public class CharacterModel : MonoBehaviour
 {
     [Header("카메라 설정")]
     public Camera mainCam;
     public LayerMask groundLayer;
+    public CinemachineVirtualCamera[] cams;
 
     [Header("캐릭터 기본 설정")]
     public CharacterStatSO characterStatSO;
@@ -76,6 +79,7 @@ public class CharacterModel : MonoBehaviour
         skillSystem = new C_SkillSystem(this);
         buff = new C_Buff(this);
 
+        ChangeCam(0);
     }
 
     private void Start()
@@ -109,6 +113,16 @@ public class CharacterModel : MonoBehaviour
     public void SetCanMove()
     {
         canMove = true;
+    }
+
+    public void ChangeCam(int index)
+    {
+        for (int i = 0; i < cams.Length; i++)
+        {
+            cams[i].Priority = 0;
+            if (i == index)
+                cams[i].Priority = 10;
+        }
     }
 
     #region 일반 공격
@@ -166,6 +180,23 @@ public class CharacterModel : MonoBehaviour
 
         Collider[] targets = Physics.OverlapSphere(transform.position, hitRadius);
 
+        float baseDmg = Stat.Stat.attackDamage.FinalValue * damageMultiplier;
+        bool isCritical = GetCritical();
+
+        if (isCritical)
+            baseDmg *= Stat.Stat.criticalDamage.FinalValue;
+
+        SDamageInfo info = new SDamageInfo()
+        {
+            damage = baseDmg,
+            source = this.gameObject,
+            knockDownPower = 1,
+            isCounterable = true,
+            isCritical = isCritical,
+            isHeadattack = false,
+            isBackattack = true
+        };
+
         foreach (Collider target in targets)
         {
             if (target.TryGetComponent<EnemyBase>(out EnemyBase enemy))
@@ -179,28 +210,26 @@ public class CharacterModel : MonoBehaviour
 
                 if (angle <= hitAngle / 2f)
                 {
-                    float baseDmg = Stat.Stat.attackDamage.FinalValue * damageMultiplier;
-                    bool isCritical = GetCritical();
-                    
-                    if (isCritical)
-                        baseDmg *= Stat.Stat.criticalDamage.FinalValue;
-
-                    SDamageInfo info = new SDamageInfo()
-                    {
-                        damage = baseDmg,
-                        source = this.gameObject,
-                        knockDownPower = 1,
-                        isCounterable = false,
-                        isCritical = isCritical,
-                        isHeadattack = false,
-                        isBackattack = true
-                    };
-
-                    enemy.Damaged(info);
+                    enemy.Damaged(info);                 
                 }
-                // else문 제거: 부채꼴 밖의 적은 때리지 않음
+            }
+
+            if (target.TryGetComponent<ICounterable>(out ICounterable counterable))
+            {
+                // (선택 사항) 플레이어가 허공에 칼을 휘둘렀는데 뒤에 있던 룩이 카운터 맞는 것을 방지하려면,
+                // 카운터도 공격 범위(부채꼴) 안에 있을 때만 발동하도록 각도 검사를 해주는 것이 좋습니다.
+                Vector3 dir = (target.transform.position - transform.position).normalized;
+                dir.y = 0;
+                float angle = Vector3.Angle(transform.forward, dir);
+
+                if (angle <= hitAngle / 2f)
+                {
+                    counterable.OnCounterSuccess(info);
+                }
             }
         }
+
+       
         canMove = true;
 
     }
@@ -214,29 +243,34 @@ public class CharacterModel : MonoBehaviour
 
         Collider[] targets = Physics.OverlapBox(center, size, transform.rotation);
 
+        float baseDmg = Stat.Stat.attackDamage.FinalValue * damageMultiplier;
+
+        bool isCritical = GetCritical();
+
+        if (isCritical)
+            baseDmg *= Stat.Stat.criticalDamage.FinalValue;
+
+        SDamageInfo info = new SDamageInfo()
+        {
+            damage = baseDmg,
+            source = this.gameObject,
+            knockDownPower = 1,
+            isCounterable = true,
+            isCritical = isCritical,
+            isHeadattack = true,
+            isBackattack = false
+        };
+
         foreach (Collider target in targets)
         {
             if (target.TryGetComponent<EnemyBase>(out EnemyBase enemy))
             {
-                float baseDmg = Stat.Stat.attackDamage.FinalValue * damageMultiplier;
-
-                bool isCritical = GetCritical();
-
-                if (isCritical)
-                    baseDmg *= Stat.Stat.criticalDamage.FinalValue;
-
-                SDamageInfo info = new SDamageInfo()
-                {
-                    damage = baseDmg,
-                    source = this.gameObject,
-                    knockDownPower = 1,
-                    isCounterable = true,
-                    isCritical = isCritical,
-                    isHeadattack = true,
-                    isBackattack = false
-                };
-
                 enemy.Damaged(info);
+            }
+
+            if (target.TryGetComponent<ICounterable>(out ICounterable counterable))
+            {
+                counterable.OnCounterSuccess(info);
             }
         }
     }
