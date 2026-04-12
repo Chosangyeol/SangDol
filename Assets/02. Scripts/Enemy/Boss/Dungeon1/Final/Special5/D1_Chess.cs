@@ -86,6 +86,7 @@ public class D1_Chess : MonoBehaviour
     private IEnumerator ReturnStage()
     {
         _boss.Target.ChangeCam(0);
+
         yield return new WaitForSeconds(2f);
 
         _boss.Target.Navmesh.enabled = false;
@@ -121,17 +122,36 @@ public class D1_Chess : MonoBehaviour
             // 길 열고
             OpenRow(row);
 
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(1f);
 
             // 룩 소환
             SpawnRook();
             // 돌진 대기
-            yield return new WaitForSeconds(2f);
+
+            yield return new WaitForSeconds(3f);
+
+            if (row == 1)
+                StartCoroutine(BishopAttack(0));
+            StartCoroutine(BishopAttack(row));
         }
 
         yield return StartCoroutine(CounterRook());
 
         king.GetComponent<D1_King>().SetImmunity(false);
+
+        yield return new WaitForSeconds(2f);
+
+        _boss.Target.ChangeCam(0);
+
+        yield return new WaitForSeconds(3f);
+
+        for (int x = 0; x < 8; x++)
+        {
+            for (int y = 0; y < 8; y++)
+            {
+                tiles[x,y].UnActiveBishop();
+            }
+        }
 
         StartCoroutine(PawnAttack());
     }
@@ -144,18 +164,28 @@ public class D1_Chess : MonoBehaviour
         {
             if (i == safe) continue;
 
-            GameObject rook = Instantiate(rookPrefab, tiles[i, 7].gameObject.transform);
+            GameObject rook = Instantiate(rookPrefab, tiles[i, 7].gameObject.transform.position + Vector3.up * 30,Quaternion.identity);
             rookList[i] = rook;
             rook.GetComponent<D1_Rook>().Init(false);
         }
     }
 
+    // 다음 줄 오픈
     private void OpenRow(int row)
     {
         for (int x = 0; x < 8; x++)
             tiles[x,row].OpenPath(false);
     }
 
+    IEnumerator BishopAttack(int row)
+    {
+        yield return new WaitForSeconds(1f);
+
+        for (int x = 0; x < 8; x++)
+            tiles[x, row].ActiveBishopAttack();
+    }
+
+    // 마지막 줄에서 카운터 가능한 룩 생성
     IEnumerator CounterRook()
     {
         OpenRow(6);
@@ -166,15 +196,15 @@ public class D1_Chess : MonoBehaviour
         {
             if (i == safe)
             {
-                GameObject safeRook = Instantiate(rookPrefab, tiles[i, 7].gameObject.transform);
-                safeRook.GetComponent<MeshRenderer>().material.color = Color.blue;
+                GameObject safeRook = Instantiate(rookPrefab, tiles[i, 7].gameObject.transform.position + Vector3.up * 30, Quaternion.identity);
+                safeRook.GetComponentInChildren<MeshRenderer>().material.color = Color.blue;
                 rookList[i] = safeRook;
                 safeRook.GetComponent<D1_Rook>().Init(true,true);
 
                 continue;
             }
 
-            GameObject rook = Instantiate(rookPrefab, tiles[i, 7].gameObject.transform);
+            GameObject rook = Instantiate(rookPrefab, tiles[i, 7].gameObject.transform.position + Vector3.up * 30, Quaternion.identity);
             rookList[i] = rook;
             rook.GetComponent<D1_Rook>().Init(false,true);
 
@@ -182,12 +212,13 @@ public class D1_Chess : MonoBehaviour
 
         yield return new WaitForSeconds(1f);
         OpenRow(7);
+
         yield return new WaitForSeconds(2f);
 
-        _boss.Target.ChangeCam(0);
-
+        StartCoroutine(BishopAttack(6));
     }
 
+    // 룩 카운터 이후 폰 공격 시작
     IEnumerator PawnAttack()
     {
         while (isDoing)
@@ -199,11 +230,17 @@ public class D1_Chess : MonoBehaviour
                 allTiles[i].SetHighlight(true);
             }
 
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(1.5f);
 
             for (int i = 0; i < allTiles.Count;i++)
             {
                 allTiles[i].SetHighlight(false);
+            }
+
+            
+            for (int i = 0; i < allTiles.Count; i++)
+            {
+                allTiles[i].SpawnPawnAndAttack();
             }
 
             yield return new WaitForSeconds(1f);

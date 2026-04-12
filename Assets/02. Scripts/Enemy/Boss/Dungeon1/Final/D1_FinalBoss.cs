@@ -76,6 +76,8 @@ public class D1_Final_Special3Data
 public class D1_Final_Special4Data
 {
     public GameObject prefab;
+    public int shuffleCount = 5;
+    public float swapDuration = 1.5f;
 }
 
 [System.Serializable]
@@ -126,7 +128,7 @@ public class D1_FinalBoss : BossModel
         Debug.Log($"🚨 [기믹 발동] {pattern.patternName} 시작!");
 
         if (pattern.patternName == "쇼타임")
-            StartCoroutine(Special_Chess());
+            StartCoroutine(Special_Mix());
         else if (pattern.patternName == "운명의 점")
             StartCoroutine(Special_Aracna());
         else if (pattern.patternName == "칩막기")
@@ -147,7 +149,9 @@ public class D1_FinalBoss : BossModel
             pattern3.swingPrefab,
             transform.position + (transform.forward * 3f) + new Vector3(0f, 60f, 0), // 위치 수정
             transform.rotation
-            ); 
+            );
+
+        patternObjects.Add(swing);
 
         while (swing.transform.position.y > 2)
         {
@@ -210,6 +214,8 @@ public class D1_FinalBoss : BossModel
             Quaternion.identity
             );
 
+        patternObjects.Add(swing);
+
         transform.position = swing.transform.position + Vector3.up * 2.5f;
         transform.rotation = Quaternion.identity;
 
@@ -270,6 +276,7 @@ public class D1_FinalBoss : BossModel
         yield return new WaitForSeconds(2f);
 
         GameObject warning1 = Instantiate(Special1.warning1, center);
+        patternObjects.Add(warning1);
 
         yield return new WaitForSeconds(2f);   
 
@@ -287,6 +294,7 @@ public class D1_FinalBoss : BossModel
         yield return new WaitForSeconds(0.2f);
 
         GameObject warning2 = Instantiate(Special1.warning2, center);
+        patternObjects.Add(warning2);
 
         yield return new WaitForSeconds(2f);
 
@@ -315,6 +323,7 @@ public class D1_FinalBoss : BossModel
 
         Vector3 spawnPos = center.position + new Vector3(0, -1.43f, 0);
         GameObject special = Instantiate(Special2.prefab, spawnPos, Quaternion.identity);
+        patternObjects.Add(special);
         special.GetComponentInChildren<SurvivalPattern1>().Init(this);
     }
 
@@ -335,9 +344,10 @@ public class D1_FinalBoss : BossModel
 
         yield return new WaitForSeconds(1f);
 
-        yield return StartCoroutine(EndSpecial());
+        GameObject yabawi = Instantiate(Special4.prefab, center.transform.position - new Vector3(0, 0, 4),Quaternion.identity);
+        patternObjects.Add(yabawi);
 
-        isDoingSpecial = false;
+        yabawi.GetComponent<D1_Yabawe>().StartYabawi(this);
     }
     IEnumerator Special_Chess()
     {

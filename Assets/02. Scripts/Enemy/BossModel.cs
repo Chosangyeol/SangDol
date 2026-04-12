@@ -40,7 +40,7 @@ public class BossModel : EnemyBase, ICounterable
     {
         base.Start();
         _agent = GetComponent<NavMeshAgent>();
-
+        GameEvent.OnPlayerDie += ResetBossState;
     }
 
     private void Update()
@@ -244,6 +244,11 @@ public class BossModel : EnemyBase, ICounterable
     public void SetImmunity(bool immunity)
     {
         isImmunity = immunity;
+    }
+
+    public void ResetBossState()
+    {
+        Debug.Log("플레이어 사망. 대청소 시작");
     }
 
 #if UNITY_EDITOR

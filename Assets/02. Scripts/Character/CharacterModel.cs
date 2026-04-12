@@ -314,6 +314,8 @@ public class CharacterModel : MonoBehaviour
     private void Die()
     {
         Debug.Log("캐릭터가 사망했습니다.");
+
+        GameEvent.OnPlayerDie?.Invoke();
     }
 
     public void Heal(float healAmount)

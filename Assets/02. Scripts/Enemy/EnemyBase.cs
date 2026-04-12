@@ -29,7 +29,7 @@ public class EnemyBase : MonoBehaviour
     protected virtual void Start()
     {
         _target = FindAnyObjectByType<CharacterModel>();
-        _anim = GetComponent<Animator>();
+        _anim = GetComponentInChildren<Animator>();
     }
 
     public virtual void Damaged(SDamageInfo info)

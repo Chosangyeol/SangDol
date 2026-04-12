@@ -124,7 +124,12 @@ MonoBehaviour:
   gridY: 0
   obstacle: {fileID: 0}
   warning: {fileID: 2452869985536458560}
+  pawnPrefab: {fileID: 6706573952796891570, guid: 88a995829ee84eb40a61f6f0309b5443,
+    type: 3}
+  bishopEffect: {fileID: 7625233428920832533, guid: 0a5e6a71620d9ff45a41d385ed35424a,
+    type: 3}
   isHighlighted: 0
+  isBishopActive: 0
 --- !u!208 &3631022739227226617
 NavMeshObstacle:
   m_ObjectHideFlags: 0

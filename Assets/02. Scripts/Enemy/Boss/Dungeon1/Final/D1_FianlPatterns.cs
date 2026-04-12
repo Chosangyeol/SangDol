@@ -66,6 +66,7 @@ public class D1_Final_Normal1 : BossPatternBase
                 index++;
                 // 추후 풀로 바꿔야함
                 GameObject gbBox = GameObject.Instantiate(box, hit.point, Quaternion.identity);
+                boss.patternObjects.Add(gbBox);
                 gbBox.GetComponent<D1_Box>().Init(boss.Target, stunDebuffSO, stunDuration);
             }
             else
@@ -127,6 +128,7 @@ public class D1_Final_Normal2 : BossPatternBase
             Quaternion randomRot = Quaternion.Euler(0f,randomAngle, 0f);
 
             GameObject gbKnife =  GameObject.Instantiate(knife, center, randomRot);
+            boss.patternObjects.Add(gbKnife);
             gbKnife.GetComponent<D1_Knife>().Init(slowDebuffSO,damagePercent,slowPercent,slowDuration,boss.Target, boss.transform, this.center);
 
             yield return new WaitForSeconds(0.2f);
@@ -242,6 +244,7 @@ public class D1_Final_Normal3 : BossPatternBase
         warning1pos.y = 0f;
 
         GameObject warning1 = GameObject.Instantiate(normal3Warning1, warning1pos,  Quaternion.identity);
+        boss.patternObjects.Add(warning1);
 
         yield return new WaitForSeconds(2f);
 
@@ -270,6 +273,7 @@ public class D1_Final_Normal3 : BossPatternBase
         landPos.y = 0f;
 
         GameObject warning2 = GameObject.Instantiate(normal3Warning2, landPos, Quaternion.identity);
+        boss.patternObjects.Add(warning2);
 
         yield return new WaitForSeconds(1f);
 
@@ -327,6 +331,7 @@ public class D1_Final_Normal4 : BossPatternBase
         yield return new WaitForSeconds(0.5f);
 
         GameObject gwarning1 = GameObject.Instantiate(warning1, boss.transform.position, boss.transform.rotation); ;
+        boss.patternObjects.Add(gwarning1);
 
         yield return new WaitForSeconds(1.5f);
 
@@ -358,6 +363,7 @@ public class D1_Final_Normal4 : BossPatternBase
         yield return new WaitForSeconds(0.5f);
 
         GameObject gwarning2 = GameObject.Instantiate(warning2, boss.transform.position, boss.transform.rotation); ;
+        boss.patternObjects.Add(gwarning2);
 
         yield return new WaitForSeconds(1.5f);
 
@@ -421,6 +427,7 @@ public class D1_Final_Normal5 : BossPatternBase
         while (shotCount < 3)
         {
             GameObject warning = GameObject.Instantiate(normal5Warning, hat.transform.position, Quaternion.identity);
+            boss.patternObjects.Add(warning);
 
             float timer = 0;
 
@@ -452,6 +459,7 @@ public class D1_Final_Normal5 : BossPatternBase
         }
 
         GameObject bosswarning = GameObject.Instantiate(normal5Warning, hat.transform.position, Quaternion.identity);
+        boss.patternObjects.Add(bosswarning);
 
         float bosstimer = 0;
 
@@ -472,6 +480,7 @@ public class D1_Final_Normal5 : BossPatternBase
         yield return new WaitForSeconds(0.5f);
 
         GameObject bossBullet = GameObject.Instantiate(normal5Bullet, hat.transform.position, bosswarning.transform.rotation);
+        boss.patternObjects.Add(bossBullet);
         bossBullet.GetComponent<D1_Bullet>().Init(damagePercent,80f, boss.Target, false);
 
         GameObject.Destroy(bosswarning);

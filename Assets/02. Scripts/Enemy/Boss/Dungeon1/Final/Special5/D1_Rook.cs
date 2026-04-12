@@ -15,6 +15,8 @@ public class D1_Rook : MonoBehaviour, ICounterable
 
     public bool isRushing = false;
 
+    public bool hasAttack = false;
+
     public void Init(bool iscounterable, bool isLast = false)
     {
         isCounterable = iscounterable;
@@ -33,6 +35,17 @@ public class D1_Rook : MonoBehaviour, ICounterable
 
     IEnumerator Rush()
     {
+        while (transform.position.y > 0)
+        {
+            transform.position += Vector3.down * 40f * Time.deltaTime;
+            yield return null;
+        }
+
+        Vector3 pos = transform.position;
+        pos.y = 0;
+
+        transform.position = pos;
+
         if (!isLast)
             yield return new WaitForSeconds(2f);
         else
@@ -60,7 +73,7 @@ public class D1_Rook : MonoBehaviour, ICounterable
     public void DisableCounter()
     {
         canCounter = false;
-        this.GetComponent<Renderer>().material.color = Color.red;
+        this.GetComponentInChildren<Renderer>().material.color = Color.red;
     }
 
     public void OnCounterSuccess(SDamageInfo info)
@@ -113,9 +126,10 @@ public class D1_Rook : MonoBehaviour, ICounterable
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("Player"))
+        if (other.gameObject.CompareTag("Player") && !hasAttack)
         {
-            Debug.Log("넉백");
+            hasAttack = true;
+            other.transform.position -= new Vector3(0, 0, 10);
         }
     }
 
