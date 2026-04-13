@@ -5,6 +5,11 @@ TagManager:
   serializedVersion: 2
   tags:
   - Boss
+  - PlayerStart
+  - D1_Final_N5
+  - D1_Final_S5
+  - D1_Final_Cut2
+  - BossSpawnPos
   layers:
   - Default
   - TransparentFX

@@ -121,7 +121,7 @@ public class CharacterModel : MonoBehaviour
         {
             cams[i].Priority = 0;
             if (i == index)
-                cams[i].Priority = 10;
+                cams[i].Priority = 99;
         }
     }
 
@@ -210,7 +210,11 @@ public class CharacterModel : MonoBehaviour
 
                 if (angle <= hitAngle / 2f)
                 {
-                    enemy.Damaged(info);                 
+                    enemy.Damaged(info);
+                    if (target.TryGetComponent<BossModel>(out BossModel boss))
+                    {
+                        GameEvent.OnBossStateChange?.Invoke(boss);
+                    }
                 }
             }
 
@@ -266,6 +270,10 @@ public class CharacterModel : MonoBehaviour
             if (target.TryGetComponent<EnemyBase>(out EnemyBase enemy))
             {
                 enemy.Damaged(info);
+                if (target.TryGetComponent<BossModel>(out BossModel boss))
+                {
+                    GameEvent.OnBossStateChange?.Invoke(boss);
+                }
             }
 
             if (target.TryGetComponent<ICounterable>(out ICounterable counterable))

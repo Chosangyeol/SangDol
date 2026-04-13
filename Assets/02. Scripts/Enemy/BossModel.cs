@@ -15,11 +15,14 @@ public class BossSpecialPattern
 
 public class BossModel : EnemyBase, ICounterable
 {
+    public Transform bossSpawnPoint;
+
     [Header("기믹 / 무력화 / 카운터 상태")]
     public bool isStatic = false;
-    public bool isImmunity = true;
+    public bool isImmunity = false;
     public bool isDoingSpecial = false;
     public bool isKnockDown = false;
+    public bool isCutsceneFinished = false;
     private bool canCounter = false;
     public bool CanCounter => canCounter;
     public float couterDuration = 5f;
@@ -69,6 +72,8 @@ public class BossModel : EnemyBase, ICounterable
     {
         if (_isDead) return;
 
+        GameEvent.OnBossStateChange?.Invoke(this);
+
         if (isImmunity) return;
 
         base.Damaged(info);
@@ -98,6 +103,8 @@ public class BossModel : EnemyBase, ICounterable
     private void HandleCheckSpecial()
     {
         if (isDoingSpecial) return;
+
+        if (currentPattern != null) return;
 
         float curHpPercent = Stat.curHp / Stat.maxHp;
 
@@ -210,16 +217,20 @@ public class BossModel : EnemyBase, ICounterable
         Debug.Log("카운터 성공");
         canCounter = false;
         ForceStopCurrentAction();
-        StartCoroutine(Counter(1));
+        StartCoroutine(Counter(4f));
     }
 
     public IEnumerator Counter(float duration)
     {
         isKnockDown = true;
 
+        GameEvent.OnBossStateChange?.Invoke(this);
+
         yield return new WaitForSeconds(duration);
 
         isKnockDown = false;
+
+        GameEvent.OnBossStateChange?.Invoke(this);
     }
 
     public void ForceStopCurrentAction()
@@ -244,10 +255,22 @@ public class BossModel : EnemyBase, ICounterable
     public void SetImmunity(bool immunity)
     {
         isImmunity = immunity;
+
+        GameEvent.OnBossStateChange?.Invoke(this);
     }
 
     public void ResetBossState()
     {
+        ForceStopCurrentAction();
+
+        transform.position = bossSpawnPoint.position;
+
+        Stat.ResetState();
+
+        foreach(BossSpecialPattern pattern in specialPatterns)
+        {
+            pattern.hasDone = false;
+        }
         Debug.Log("플레이어 사망. 대청소 시작");
     }
 

@@ -10,7 +10,8 @@ public class EnemyStat
     public float moveSpeed;
     public float attackSpeed;
     public bool canDown;
-    public float down;
+    public float maxDown;
+    public float curDown;
 
     public float detactRange;
     public float attackRange;
@@ -26,7 +27,18 @@ public class EnemyStat
         moveSpeed = statSO.moveSpeed;
         attackSpeed = statSO.attackSpeed;
         canDown = statSO.canDown;
-        down = statSO.down;
+
+        if (statSO.canDown)
+        {
+            maxDown = statSO.down;
+            curDown = maxDown;
+        }
+        else
+        {
+            maxDown = 1;
+            curDown = 1;
+        }
+        
 
         detactRange = statSO.detactRange;
         attackRange = statSO.attackRange;
@@ -43,9 +55,9 @@ public class EnemyStat
 
         if (canDown)
         {
-            down -= info.knockDownPower;
-            if (down <= 0)
-                down = 0;
+            curDown -= info.knockDownPower;
+            if (curDown <= 0)
+                curDown = 0;
         }
         if (curHp <= 0)
             curHp = 0;
@@ -58,5 +70,12 @@ public class EnemyStat
         curHp += healAmount;
         if (curHp > maxHp)
             curHp = maxHp;
+    }
+
+    public void ResetState()
+    {
+        curHp = maxHp;
+        if (canDown)
+            curDown = maxDown;
     }
 }

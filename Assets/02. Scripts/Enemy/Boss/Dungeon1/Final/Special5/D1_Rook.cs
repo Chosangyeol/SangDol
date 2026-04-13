@@ -128,9 +128,41 @@ public class D1_Rook : MonoBehaviour, ICounterable
     {
         if (other.gameObject.CompareTag("Player") && !hasAttack)
         {
-            hasAttack = true;
-            other.transform.position -= new Vector3(0, 0, 10);
+            CharacterModel model = other.GetComponent<CharacterModel>();
+
+            if (model != null)
+            {
+                StartCoroutine(KnockBack(model));
+            }
         }
+    }
+
+    private IEnumerator KnockBack(CharacterModel model)
+    {
+        hasAttack = true;
+        model.PlayerController.StopMove();
+        model.canMove = false;
+
+        float timer = 0f;
+
+        Vector3 dir = model.transform.position - transform.position;
+        dir.y = 0f;
+
+        while (timer < 0.5f)
+        {
+            timer += Time.deltaTime;
+
+            Vector3 pushV = dir.normalized * 25f;
+            pushV.y = 0f;
+
+            model.Navmesh.velocity = pushV;
+
+            yield return null;
+        }
+
+        model.Navmesh.velocity = Vector3.zero;
+        model.canMove = true;
+
     }
 
 #if UNITY_EDITOR

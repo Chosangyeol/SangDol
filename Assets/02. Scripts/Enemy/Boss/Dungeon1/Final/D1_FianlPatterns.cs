@@ -170,6 +170,7 @@ public class D1_Final_Normal3 : BossPatternBase
     private IEnumerator JumpUp(BossModel boss)
     {
         //boss.Anim.SetTrigger(patternName);
+
         GameObject swing = GameObject.Instantiate(
             normal3Swing,
             boss.transform.position + new Vector3(0,20f,3f), // 위치 수정

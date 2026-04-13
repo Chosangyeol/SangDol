@@ -109,6 +109,13 @@ public class D1_Chess : MonoBehaviour
         king.GetComponent<D1_King>().SetImmunity(true);
         king.GetComponent<D1_King>().Init(this);
 
+        while (king.transform.position.y > 1)
+        {
+            king.transform.position += Vector3.down * 40 * Time.deltaTime;
+            yield return null;
+        }
+        
+
         yield return new WaitForSeconds(1f);
 
         _boss.Target.ChangeCam(1);
@@ -164,7 +171,7 @@ public class D1_Chess : MonoBehaviour
         {
             if (i == safe) continue;
 
-            GameObject rook = Instantiate(rookPrefab, tiles[i, 7].gameObject.transform.position + Vector3.up * 30,Quaternion.identity);
+            GameObject rook = Instantiate(rookPrefab, tiles[i, 7].gameObject.transform.position + Vector3.up * 30,Quaternion.Euler(new Vector3(0,180,0)));
             rookList[i] = rook;
             rook.GetComponent<D1_Rook>().Init(false);
         }
@@ -196,7 +203,7 @@ public class D1_Chess : MonoBehaviour
         {
             if (i == safe)
             {
-                GameObject safeRook = Instantiate(rookPrefab, tiles[i, 7].gameObject.transform.position + Vector3.up * 30, Quaternion.identity);
+                GameObject safeRook = Instantiate(rookPrefab, tiles[i, 7].gameObject.transform.position + Vector3.up * 30, Quaternion.Euler(new Vector3(0, 180, 0)));
                 safeRook.GetComponentInChildren<MeshRenderer>().material.color = Color.blue;
                 rookList[i] = safeRook;
                 safeRook.GetComponent<D1_Rook>().Init(true,true);
@@ -204,7 +211,7 @@ public class D1_Chess : MonoBehaviour
                 continue;
             }
 
-            GameObject rook = Instantiate(rookPrefab, tiles[i, 7].gameObject.transform.position + Vector3.up * 30, Quaternion.identity);
+            GameObject rook = Instantiate(rookPrefab, tiles[i, 7].gameObject.transform.position + Vector3.up * 30, Quaternion.Euler(new Vector3(0, 180, 0)));
             rookList[i] = rook;
             rook.GetComponent<D1_Rook>().Init(false,true);
 

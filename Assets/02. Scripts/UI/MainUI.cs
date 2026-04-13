@@ -25,6 +25,19 @@ public class MainUI : MonoBehaviour
     [SerializeField] private Slider slPlayerExp;
     [SerializeField] private Image idenImage;
 
+    [Header("Boss UI")]
+    public bool isBossFight = false;
+    public GameObject bossUI;
+    public TMP_Text bossNameText;
+    public Slider bossHpSlider;
+    public Image bossHpBack;
+    public TMP_Text bossHpText;
+    public TMP_Text bossHpGradeText;
+    public Slider bossKnockDownSlider;
+    public Image bossKnockDownBack;
+
+
+
     public void Init(C_SkillSystem skillSystem,C_Inventory inventory, CharacterModel model)
     {
         _skillSystem = skillSystem;
@@ -46,6 +59,8 @@ public class MainUI : MonoBehaviour
         }
 
         RefreshAll();
+
+        bossUI.SetActive(false);
     }
 
     private void BindEvents()
@@ -53,6 +68,7 @@ public class MainUI : MonoBehaviour
         _skillSystem.OnSkillDataChanged += RefreshAll;
         _inventory.OnInventoryUpdated += RefreshAll;
         GameEvent.OnStatChange += UpdatePlayerUI;
+        GameEvent.OnBossStateChange += UpdateBossUI;
     }
 
     private void RefreshAll()
@@ -78,7 +94,31 @@ public class MainUI : MonoBehaviour
         idenImage.fillAmount = stat.idenCurrent / stat.idenMax;
     }
 
+    public void UpdateBossUI(BossModel boss)
+    {
+        if (boss == null) return;
 
+        if (!isBossFight)
+        {
+            bossUI.SetActive(true);
+        }
+
+        bossNameText.text = boss.statSO.enemyName;
+        bossHpSlider.value = boss.Stat.curHp / boss.Stat.maxHp;
+        bossHpText.text = $"{boss.Stat.curHp} | {boss.Stat.maxHp}";
+        bossHpGradeText.text = $"{(boss.Stat.curHp / boss.Stat.maxHp) * 100:0}%";
+        bossKnockDownSlider.value = boss.Stat.curDown / boss.Stat.maxDown;
+
+        if (boss.isImmunity)
+            bossHpBack.color = Color.white;
+        else
+            bossHpBack.color = Color.red;
+
+        if (boss.isKnockDown)
+            bossKnockDownBack.color = Color.gray;
+        else
+            bossKnockDownBack.color = Color.blue;
+    }
 
     public void Toggle(bool onlyFalse = false)
     {

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.Playables;
 using UnityEngine;
 
 [System.Serializable]
@@ -84,6 +85,8 @@ public class D1_Final_Special4Data
 public class D1_Final_Special5Data
 {
     public D1_Chess prefab;
+    public GameObject cutSceneObj;
+    public AudioClip cutBGMClip;
 }
 
 public class D1_FinalBoss : BossModel
@@ -107,14 +110,23 @@ public class D1_FinalBoss : BossModel
     public D1_Final_Special4Data Special4;
     public D1_Final_Special5Data Special5;
 
-
-    private MeshRenderer[] bossMeshs;
+    public SkinnedMeshRenderer[] bossMeshs;
 
     protected override void Start()
     {
         base.Start();
 
-        bossMeshs = GetComponentsInChildren<MeshRenderer>();
+        center = GameObject.FindGameObjectWithTag("BossSpawnPos").transform;
+        playerStartPos = GameObject.FindGameObjectWithTag("PlayerStart").transform;
+        bossSpawnPoint = GameObject.FindGameObjectWithTag("BossSpawnPos").transform;
+
+        pattern5.hat = GameObject.FindGameObjectWithTag("D1_Final_N5");
+        Special5.prefab = GameObject.FindGameObjectWithTag("D1_Final_S5").GetComponent<D1_Chess>();
+        Special5.cutSceneObj = GameObject.FindGameObjectWithTag("D1_Final_Cut2");
+
+        Special5.cutSceneObj.SetActive(false);
+
+        bossMeshs = GetComponentsInChildren<SkinnedMeshRenderer>();
 
         normalPatterns.Add(new D1_Final_Normal1(pattern1, center));
         normalPatterns.Add(new D1_Final_Normal2(pattern2, center));
@@ -128,7 +140,7 @@ public class D1_FinalBoss : BossModel
         Debug.Log($"🚨 [기믹 발동] {pattern.patternName} 시작!");
 
         if (pattern.patternName == "쇼타임")
-            StartCoroutine(Special_Mix());
+            StartCoroutine(Special_ShowTime());
         else if (pattern.patternName == "운명의 점")
             StartCoroutine(Special_Aracna());
         else if (pattern.patternName == "칩막기")
@@ -144,6 +156,13 @@ public class D1_FinalBoss : BossModel
     IEnumerator ReadyForSpecial()
     {
         Agent.enabled = false;
+
+        Vector3 playerPos = Target.transform.position;
+
+        playerPos.x = 0;
+        playerPos.z = 0;
+
+        transform.Rotate(playerPos);
 
         GameObject swing = GameObject.Instantiate(
             pattern3.swingPrefab,
@@ -197,6 +216,11 @@ public class D1_FinalBoss : BossModel
             yield return null;
         }
 
+        foreach (SkinnedMeshRenderer mesh in bossMeshs)
+        {
+            mesh.enabled = false;
+        }
+
         Destroy(swing);
 
     }
@@ -208,6 +232,11 @@ public class D1_FinalBoss : BossModel
 
     IEnumerator EndSpecial()
     {
+        foreach (SkinnedMeshRenderer mesh in bossMeshs)
+        {
+            mesh.enabled = true;
+        }
+
         GameObject swing = GameObject.Instantiate(
             pattern3.swingPrefab,
             center.transform.position + new Vector3(0f, 20f, 3f), // 위치 수정
@@ -217,7 +246,13 @@ public class D1_FinalBoss : BossModel
         patternObjects.Add(swing);
 
         transform.position = swing.transform.position + Vector3.up * 2.5f;
-        transform.rotation = Quaternion.identity;
+
+        Vector3 centerPos = center.transform.position;
+
+        centerPos.x = 0;
+        centerPos.z = 0;
+
+        transform.Rotate(centerPos);
 
         yield return new WaitForSeconds(0.5f);
 
@@ -267,6 +302,8 @@ public class D1_FinalBoss : BossModel
             swing.transform.Translate(Vector3.up * 40 * Time.deltaTime, Space.World);
             yield return null;
         }
+
+        SetImmunity(false);
 
         Destroy(swing);
     }
@@ -319,6 +356,8 @@ public class D1_FinalBoss : BossModel
 
     IEnumerator Special_Aracna()
     {
+        SetImmunity(true);
+
         yield return StartCoroutine(ReadyForSpecial());
 
         Vector3 spawnPos = center.position + new Vector3(0, -1.43f, 0);
@@ -340,6 +379,8 @@ public class D1_FinalBoss : BossModel
 
     IEnumerator Special_Mix()
     {
+        SetImmunity(true);
+
         yield return StartCoroutine(ReadyForSpecial());
 
         yield return new WaitForSeconds(1f);
@@ -351,11 +392,31 @@ public class D1_FinalBoss : BossModel
     }
     IEnumerator Special_Chess()
     {
+        SetImmunity(true);
+
         yield return new WaitForSeconds(2f);
 
         yield return StartCoroutine(ReadyForSpecial());
 
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.5f);
+
+        Target.canMove = false;
+
+        yield return new WaitForSeconds(0.5f);
+
+        GameEvent.OnUIInvisable?.Invoke();
+
+        Special5.cutSceneObj.SetActive(true);
+        PlayableDirector director = Special5.cutSceneObj.GetComponent<PlayableDirector>();
+
+        yield return new WaitForSeconds(0.5f);
+
+        AudioManager.instance.PlayBGM(Special5.cutBGMClip);
+
+        if (director != null)
+            yield return new WaitUntil(() => director.state != PlayState.Playing);
+        else
+            yield return new WaitForSeconds(1f);
 
         Target.Navmesh.enabled = false;
 
@@ -363,7 +424,14 @@ public class D1_FinalBoss : BossModel
 
         Target.Navmesh.enabled = true;
 
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.5f);
+
+
+        Target.SetCanMove();
+        GameEvent.OnMainUIviable?.Invoke();
+
+
+        yield return new WaitForSeconds(0.5f);
 
         Special5.prefab.StartCheckmate(this);
     }
