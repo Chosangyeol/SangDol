@@ -2,6 +2,7 @@ using Cinemachine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
@@ -15,7 +16,9 @@ public class CharacterModel : MonoBehaviour
     [Header("카메라 설정")]
     public Camera mainCam;
     public LayerMask groundLayer;
+    public GameObject camContainer;
     public CinemachineVirtualCamera[] cams;
+    public Transform textPos;
 
     [Header("캐릭터 기본 설정")]
     public CharacterStatSO characterStatSO;
@@ -29,10 +32,8 @@ public class CharacterModel : MonoBehaviour
 
     [Header("캐릭터 상태")]
     public bool canMove = true;
-    public bool isImmunity = false;
-
-    private bool isStun = false;
-    public bool IsStun => isStun;
+    public bool canUse = true;
+    public bool isDie = false;
 
     private Animator anim;
     public Animator Anim => anim;
@@ -47,7 +48,6 @@ public class CharacterModel : MonoBehaviour
     private C_Stat stat;
     public C_SpecialStat SpecialStat => specialStat;
     private C_SpecialStat specialStat;
-
     public C_Inventory Inventory => inventory;
     private C_Inventory inventory;
     public C_Equipment Equipment => equipment;
@@ -79,6 +79,10 @@ public class CharacterModel : MonoBehaviour
         skillSystem = new C_SkillSystem(this);
         buff = new C_Buff(this);
 
+        DontDestroyOnLoad(this.gameObject);
+
+        DontDestroyOnLoad(camContainer);
+
         ChangeCam(0);
     }
 
@@ -94,11 +98,13 @@ public class CharacterModel : MonoBehaviour
 
     private void Update()
     {
+        if (isDie) return;
+
         playerController.Tick();
         buff.UpdateBuff(Time.deltaTime);
         skillSystem.UpdateSkills(Time.deltaTime);
 
-        if (isStun)
+        if (Buff.isStun)
         {
             playerController.StopMove();
             return;
@@ -284,27 +290,39 @@ public class CharacterModel : MonoBehaviour
     }
     #endregion
 
-    #region 캐릭터 상태
+    #region 캐릭터 상태 및 상태이상
     public void StunEnable()
     {
-        isStun = true;
+        Buff.StunEnable();
         Anim.SetBool("isStun", true);
     }
 
     public void StunDisable()
     {
-        isStun = false;
+        Buff.StunDisable();
         Anim.SetBool("isStun", false);
     }
 
     public void ImmunityEnable()
     {
-        isImmunity = true;
+        Buff.ImmunityEnable();
     }
 
     public void ImmunityDisable()
     {
-        isImmunity = false;
+        Buff.ImmunityDisable();
+    }
+
+    public void PanicEnable()
+    {
+        Buff.PanicEnable();
+        GameEvent.OnPlayerPanic?.Invoke(buff.isPanic);
+    }
+
+    public void PanicDisable()
+    {
+        Buff.PanicDisable();
+        GameEvent.OnPlayerPanic?.Invoke(buff.isPanic);
     }
     #endregion
 
@@ -312,7 +330,15 @@ public class CharacterModel : MonoBehaviour
     public void Damaged(float damage,bool isPercent)
     {
         Stat.Damaged(damage,isPercent);
-        if (stat.Stat.curHp <= 0)
+        
+        if (DamageTextManager.Instance != null)
+        {
+            float finalDamage = Stat.Stat.maxHp.FinalValue * damage;
+
+            DamageTextManager.Instance.SpawnDamageText(textPos.position, finalDamage, false, true);
+        }
+
+        if (stat.Stat.curHp <= 0 && !isDie)
         {
             // 캐릭터 사망 처리
             Die();
@@ -323,12 +349,26 @@ public class CharacterModel : MonoBehaviour
     {
         Debug.Log("캐릭터가 사망했습니다.");
 
+        canMove = false;
+        isDie = true;
+
+        skillSystem.ResetSkillCooldown();
+        buff.RemoveAllBuff();
+
         GameEvent.OnPlayerDie?.Invoke();
     }
 
     public void Heal(float healAmount)
     {
         Stat.Heal(healAmount);
+    }
+
+    public void Revive()
+    {
+        Heal(Stat.Stat.maxHp.FinalValue);
+        isDie = false;
+        canMove = true;
+
     }
 
     public void GainIden(float amount)

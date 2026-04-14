@@ -7,6 +7,7 @@ public class EnemyBase : MonoBehaviour
 {
     [Header("적 기본 설정")]
     public EnemyStatSO statSO;
+    public Transform textSpawnPos;
     [SerializeField] protected LayerMask _playerLayer;
     [SerializeField] protected LayerMask _groundLayer;
 
@@ -20,6 +21,7 @@ public class EnemyBase : MonoBehaviour
 
     protected EnemyStat _stat;
     public EnemyStat Stat => _stat;
+
 
     protected virtual void Awake()
     {
@@ -36,7 +38,14 @@ public class EnemyBase : MonoBehaviour
     {
         if (_isDead) return;
 
-        _stat.Damaged(info);
+        if (DamageTextManager.Instance != null)
+        {
+            DamageTextManager.Instance.SpawnDamageText(textSpawnPos.position, info.damage, info.isCritical);
+        }
+
+
+        _stat.Damaged(info);   
+
         if (_stat.curHp <= 0)
         {
             Die(info.source);

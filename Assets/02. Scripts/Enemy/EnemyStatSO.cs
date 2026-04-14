@@ -10,7 +10,7 @@ public class EnemyStatSO : ScriptableObject
     public bool canDown = false;
 
     [Header("Àû ½ºÅÈ")]
-    public float maxHp;
+    public int maxHp;
     public float level;
     public float attackDamage;
     public float moveSpeed = 1f;

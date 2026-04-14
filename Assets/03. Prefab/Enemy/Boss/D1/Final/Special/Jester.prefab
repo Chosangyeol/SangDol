@@ -34,6 +34,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6310982065649358086}
+  - {fileID: 5970802216446933232}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!195 &8542118476873613184
@@ -71,6 +72,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   statSO: {fileID: 11400000, guid: bae439f63324156419002a8df4642a92, type: 2}
+  textSpawnPos: {fileID: 5970802216446933232}
   _playerLayer:
     serializedVersion: 2
     m_Bits: 8
@@ -177,14 +179,28 @@ MonoBehaviour:
   Special3:
     prefab: {fileID: 0}
   Special4:
-    prefab: {fileID: 5587372566767514686, guid: 82e26ed3f0e47db469a6b7c02519bbf0,
+    yabawiPrefab: {fileID: 5587372566767514686, guid: 82e26ed3f0e47db469a6b7c02519bbf0,
       type: 3}
     shuffleCount: 10
     swapDuration: 1.5
+    crownPrefab: {fileID: 2309124957294787258, guid: f14f0d84c5a400d4ba9ca15577e08835,
+      type: 3}
+    bulletPrefab: {fileID: 7026260308762948157, guid: 9c3b4851b6b2edd46a3084393d7f0c30,
+      type: 3}
+    bulletSpeed: 15
+    panicBuffSO: {fileID: 11400000, guid: 0dee96cd5b064ff46bce13fc3be7e12c, type: 2}
+    stunBuffSO: {fileID: 11400000, guid: c029c3d867fe76549ab78fd424165bce, type: 2}
+    crownSpawnPos: {fileID: 301778484955297844, guid: b90663340d53e0848af6e583305fe410,
+      type: 3}
+    swingPrefab: {fileID: 8840616156945978918, guid: 297402c7d9cae7547964f53be1b86a82,
+      type: 3}
+    ballPrefab: {fileID: 5487812774476563304, guid: 9f64cd83e9598f34cb17b1a5a5ade9dd,
+      type: 3}
   Special5:
     prefab: {fileID: 0}
     cutSceneObj: {fileID: 0}
     cutBGMClip: {fileID: 8300000, guid: b37934402d3e15f49bf77374fecb289b, type: 3}
+  bossMeshs: []
 --- !u!54 &4293196031249674694
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -235,6 +251,37 @@ CapsuleCollider:
   m_Height: 6
   m_Direction: 1
   m_Center: {x: 0, y: 1.5, z: 0}
+--- !u!1 &6095543473076491775
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5970802216446933232}
+  m_Layer: 7
+  m_Name: TestSpawn
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5970802216446933232
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6095543473076491775}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 3.36, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8315713328757837798}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &5773515478753964781
 PrefabInstance:
   m_ObjectHideFlags: 0

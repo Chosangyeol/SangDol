@@ -5,12 +5,14 @@ using UnityEngine;
 
 public static class GameEvent
 {
+    [Header("퀘스트")]
     public static Action<string> OnMonsterKill;
     public static Action<string> OnGetItem;
     public static Action<string> OnTalkNpc;
+    public static Action OnQuestStateChange;
+
 
     public static Action<CharacterStat> OnStatChange;
-    public static Action OnQuestStateChange;
 
     public static Action<BossModel> OnBossStateChange;
 
@@ -18,4 +20,5 @@ public static class GameEvent
     public static Action OnMainUIviable;
 
     public static Action OnPlayerDie;
+    public static Action<bool> OnPlayerPanic;
 }

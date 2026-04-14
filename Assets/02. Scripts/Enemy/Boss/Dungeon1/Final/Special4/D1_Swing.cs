@@ -8,11 +8,6 @@ public class D1_Swing : MonoBehaviour
     public CharacterModel model;
     public bool isActive = false;
 
-    private void Start()
-    {
-        Init();
-    }
-
     public void Init()
     {
         StartCoroutine(Swing());

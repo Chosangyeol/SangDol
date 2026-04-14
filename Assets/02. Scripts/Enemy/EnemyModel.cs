@@ -156,7 +156,7 @@ public class EnemyModel : EnemyBase
 
     
 
-    public void Heal(float healAmount)
+    public void Heal(int healAmount)
     {
         if (_isDead) return;
 

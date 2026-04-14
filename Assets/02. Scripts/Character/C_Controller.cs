@@ -77,7 +77,7 @@ public class C_Controller
 
     public void RequestMove(Vector3 dest)
     {
-        if (_model.IsStun) return;
+        if (_model.Buff.isStun) return;
 
         if (isAttacking)
         {
@@ -109,14 +109,14 @@ public class C_Controller
 
     public void RequestInteract()
     {
-        if (_model.IsStun) return;
+        if (_model.Buff.isStun) return;
 
         _model.TryInteract();
     }
 
     public void RequestBasicAttack(bool isHeld,Vector3 dest)
     {
-        if (_model.IsStun) return;
+        if (_model.Buff.isStun) return;
 
         isAttackHeld = isHeld; // 누르고 있으면 true, 떼면 false가 됨
 
@@ -139,7 +139,7 @@ public class C_Controller
 
     public void StartAttackCombo()
     {
-        if (_model.IsStun) return;
+        if (_model.Buff.isStun) return;
 
         isAttacking = true;
         nextAttackReady = false;
@@ -161,7 +161,7 @@ public class C_Controller
 
     private void CancelAttack()
     {
-        if (_model.IsStun) return;
+        if (_model.Buff.isStun) return;
 
         isAttacking = false;
         _model.canMove = false;
@@ -174,7 +174,7 @@ public class C_Controller
 
     public void RequsetSkill(C_Enums.SkillSlot skillSlot, Vector3 dest)
     {
-        if (_model.IsStun) return;
+        if (_model.Buff.isStun) return;
 
         StopMove();
 
@@ -186,7 +186,7 @@ public class C_Controller
 
     public void RequestUseItem(C_Enums.UseSlot useSlot)
     {
-        if (_model.IsStun) return;
+        if (_model.Buff.isStun) return;
 
         Debug.Log("아이템 " + useSlot + " 사용 시도");
         _model.Inventory.UseItem(useSlot);

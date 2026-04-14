@@ -7,12 +7,6 @@ public class D1_Ball : MonoBehaviour
     public float speed;
     public AnimationCurve jumpCurve;
 
-    private void Start()
-    {
-        Init();
-
-    }
-
     public void Init()
     {
         StartCoroutine(Roll());

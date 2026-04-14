@@ -50,6 +50,12 @@ public abstract class SkillBase
         return;
     }
 
+    public virtual void ResetSkillCool()
+    {
+        nowCoolTime = 0f;
+        canUse = true;
+    }
+
     public virtual void LevelUpSkill()
     {
         if (skillLevel >= skillData.maxLevel) return;

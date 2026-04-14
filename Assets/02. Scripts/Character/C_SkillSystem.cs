@@ -68,6 +68,8 @@ public class C_SkillSystem
 
     public void UseSkill(C_Enums.SkillSlot slot, Vector3 targetPos)
     {
+        if (!_model.canMove) return;
+
         if (activeSkills[slot] != null)
             activeSkills[slot].UseSkill(targetPos);
         else
@@ -140,5 +142,17 @@ public class C_SkillSystem
             UnregisterSkill(targetSkill);
         
         OnSkillDataChanged?.Invoke();
+    }
+
+    public void ResetSkillCooldown()
+    {
+        foreach (var skill in activeSkills.Values)
+        {
+            // 슬롯에 스킬이 장착되어 있는 경우(null이 아닌 경우)에만 실행
+            if (skill != null)
+            {
+                skill.ResetSkillCool();
+            }
+        }
     }
 }

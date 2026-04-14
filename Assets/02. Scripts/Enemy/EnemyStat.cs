@@ -4,8 +4,8 @@ public class EnemyStat
 {
     public string enemyName;
     public int currentLevel;
-    public float maxHp;
-    public float curHp;
+    public int maxHp;
+    public int curHp;
     public float attackDamage;
     public float moveSpeed;
     public float attackSpeed;
@@ -15,7 +15,7 @@ public class EnemyStat
 
     public float detactRange;
     public float attackRange;
-    
+
 
     public EnemyStat(EnemyStatSO statSO)
     {
@@ -38,7 +38,7 @@ public class EnemyStat
             maxDown = 1;
             curDown = 1;
         }
-        
+
 
         detactRange = statSO.detactRange;
         attackRange = statSO.attackRange;
@@ -51,7 +51,9 @@ public class EnemyStat
         if (info.isHeadattack || info.isBackattack)
             finalDamage *= 1.1f;
 
-        curHp -= finalDamage;
+        int intFinalDamage = Mathf.RoundToInt(finalDamage);
+
+        curHp -= intFinalDamage;
 
         if (canDown)
         {
@@ -65,17 +67,10 @@ public class EnemyStat
         Debug.Log($"받은 피해량 : {finalDamage} /  몬스터 남은 채력 : {curHp}");
     }
 
-    public void Heal(float healAmount)
+    public void Heal(int healAmount)
     {
         curHp += healAmount;
         if (curHp > maxHp)
             curHp = maxHp;
-    }
-
-    public void ResetState()
-    {
-        curHp = maxHp;
-        if (canDown)
-            curDown = maxDown;
     }
 }

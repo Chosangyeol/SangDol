@@ -7,7 +7,8 @@ public enum EBuffType
     StatBuff,
     Dot,
     Hot,
-    Stun
+    Stun,
+    Panic
 }
 
 public abstract class BuffBase

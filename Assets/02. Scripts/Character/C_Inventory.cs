@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class C_Inventory
 {
-    private CharacterModel owner;
-    public CharacterModel Owner => owner;
+    private CharacterModel _model;
+    public CharacterModel Model => _model;
 
     private List<ItemBase> items;
     public List<ItemBase> Items => items;
@@ -38,7 +38,7 @@ public class C_Inventory
 
     public C_Inventory(CharacterModel model, int slotSize)
     {
-        owner = model;
+        _model = model;
         this.slotSize = slotSize;
         items = new List<ItemBase>(slotSize);
         for (int i = 0; i < slotSize; i++)
@@ -170,6 +170,8 @@ public class C_Inventory
 
     public void UseItem(C_Enums.UseSlot slot)
     {
+        if (!_model.canUse) return;
+
         if (slot == C_Enums.UseSlot.None) return;
 
         int index = useSlots[slot];
@@ -180,7 +182,7 @@ public class C_Inventory
 
         if (useItem == null) return;
 
-        if (useItem.UseItem(owner))
+        if (useItem.UseItem(_model))
         {
             Items[index].currentStack--;
             Debug.Log(Items[index].currentStack);

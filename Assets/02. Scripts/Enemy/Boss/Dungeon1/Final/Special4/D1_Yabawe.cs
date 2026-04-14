@@ -123,6 +123,18 @@ public class D1_Yabawe : MonoBehaviour
     {
         yield return new WaitForSeconds(2f);
 
+        for (int i = 0; i < hats.Count; i++)
+        {
+            hats[i].spawnChip.transform.position = transform.position;
+        }
+
+        while (transform.position.y > -10f)
+        {
+            transform.position += Vector3.down * 30 * Time.deltaTime;
+            yield return null;
+        }
         parent.Target.Damaged(2.0f, true);
+
+        parent.EndSpecialPattern();
     }
 }

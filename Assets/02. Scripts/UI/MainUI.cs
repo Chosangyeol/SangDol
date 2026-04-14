@@ -24,6 +24,7 @@ public class MainUI : MonoBehaviour
     [SerializeField] private TMP_Text tmpPlayerLevel;
     [SerializeField] private Slider slPlayerExp;
     [SerializeField] private Image idenImage;
+    public Image panicUI;
 
     [Header("Boss UI")]
     public bool isBossFight = false;
@@ -35,8 +36,6 @@ public class MainUI : MonoBehaviour
     public TMP_Text bossHpGradeText;
     public Slider bossKnockDownSlider;
     public Image bossKnockDownBack;
-
-
 
     public void Init(C_SkillSystem skillSystem,C_Inventory inventory, CharacterModel model)
     {
@@ -69,6 +68,7 @@ public class MainUI : MonoBehaviour
         _inventory.OnInventoryUpdated += RefreshAll;
         GameEvent.OnStatChange += UpdatePlayerUI;
         GameEvent.OnBossStateChange += UpdateBossUI;
+        GameEvent.OnPlayerPanic += TogglePanicUI;
     }
 
     private void RefreshAll()
@@ -96,7 +96,11 @@ public class MainUI : MonoBehaviour
 
     public void UpdateBossUI(BossModel boss)
     {
-        if (boss == null) return;
+        if (boss == null)
+        {
+            bossUI.SetActive(false);
+            return;
+        }
 
         if (!isBossFight)
         {
@@ -104,9 +108,9 @@ public class MainUI : MonoBehaviour
         }
 
         bossNameText.text = boss.statSO.enemyName;
-        bossHpSlider.value = boss.Stat.curHp / boss.Stat.maxHp;
+        bossHpSlider.value = (float)boss.Stat.curHp / boss.Stat.maxHp;
         bossHpText.text = $"{boss.Stat.curHp} | {boss.Stat.maxHp}";
-        bossHpGradeText.text = $"{(boss.Stat.curHp / boss.Stat.maxHp) * 100:0}%";
+        bossHpGradeText.text = $"{((float)boss.Stat.curHp / boss.Stat.maxHp) * 100:0}%";
         bossKnockDownSlider.value = boss.Stat.curDown / boss.Stat.maxDown;
 
         if (boss.isImmunity)
@@ -129,6 +133,11 @@ public class MainUI : MonoBehaviour
         }
 
         gameObject.SetActive(!gameObject.activeSelf);
+    }
+
+    public void TogglePanicUI(bool isPanic)
+    {
+        panicUI.gameObject.SetActive(isPanic);
     }
 
 }

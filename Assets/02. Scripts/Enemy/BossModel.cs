@@ -18,6 +18,7 @@ public class BossModel : EnemyBase, ICounterable
     public Transform bossSpawnPoint;
 
     [Header("기믹 / 무력화 / 카운터 상태")]
+    public bool isActive = false;
     public bool isStatic = false;
     public bool isImmunity = false;
     public bool isDoingSpecial = false;
@@ -49,6 +50,7 @@ public class BossModel : EnemyBase, ICounterable
     private void Update()
     {
         if (isKnockDown) return;
+        if (!isActive) return;
 
         HandleCheckSpecial();
 
@@ -72,11 +74,11 @@ public class BossModel : EnemyBase, ICounterable
     {
         if (_isDead) return;
 
-        GameEvent.OnBossStateChange?.Invoke(this);
-
         if (isImmunity) return;
 
         base.Damaged(info);
+
+        GameEvent.OnBossStateChange?.Invoke(this);
     }
 
     public int CheckAttackDir()
@@ -98,6 +100,11 @@ public class BossModel : EnemyBase, ICounterable
         return 0;
     }
 
+    protected override void Die(GameObject source = null)
+    {
+        GameEvent.OnBossStateChange(null);
+    }
+
     #endregion
 
     private void HandleCheckSpecial()
@@ -106,7 +113,7 @@ public class BossModel : EnemyBase, ICounterable
 
         if (currentPattern != null) return;
 
-        float curHpPercent = Stat.curHp / Stat.maxHp;
+        float curHpPercent = (float)Stat.curHp / Stat.maxHp;
 
         foreach (var pattern in specialPatterns)
         {
@@ -247,8 +254,8 @@ public class BossModel : EnemyBase, ICounterable
 
         patternObjects.Clear();
 
-        Anim.Play("Idle");
-        Anim.SetBool("Move", false);
+        //Anim.Play("Idle");
+        //Anim.SetBool("Move", false);
 
     }
 
@@ -263,15 +270,18 @@ public class BossModel : EnemyBase, ICounterable
     {
         ForceStopCurrentAction();
 
-        transform.position = bossSpawnPoint.position;
+        isActive = false;
 
-        Stat.ResetState();
-
-        foreach(BossSpecialPattern pattern in specialPatterns)
-        {
-            pattern.hasDone = false;
-        }
         Debug.Log("플레이어 사망. 대청소 시작");
+
+        StartCoroutine(Delay(5f));
+    }
+
+    private IEnumerator Delay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        Destroy(gameObject);
     }
 
 #if UNITY_EDITOR

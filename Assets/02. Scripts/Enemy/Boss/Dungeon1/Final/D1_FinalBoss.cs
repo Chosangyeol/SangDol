@@ -76,9 +76,17 @@ public class D1_Final_Special3Data
 [System.Serializable]
 public class D1_Final_Special4Data
 {
-    public GameObject prefab;
+    public GameObject yabawiPrefab;
     public int shuffleCount = 5;
     public float swapDuration = 1.5f;
+    public GameObject crownPrefab;
+    public GameObject bulletPrefab;
+    public float bulletSpeed;
+    public BuffSO panicBuffSO;
+    public BuffSO stunBuffSO;
+    public GameObject crownSpawnPos;
+    public GameObject swingPrefab;
+    public GameObject ballPrefab;
 }
 
 [System.Serializable]
@@ -121,6 +129,7 @@ public class D1_FinalBoss : BossModel
         bossSpawnPoint = GameObject.FindGameObjectWithTag("BossSpawnPos").transform;
 
         pattern5.hat = GameObject.FindGameObjectWithTag("D1_Final_N5");
+
         Special5.prefab = GameObject.FindGameObjectWithTag("D1_Final_S5").GetComponent<D1_Chess>();
         Special5.cutSceneObj = GameObject.FindGameObjectWithTag("D1_Final_Cut2");
 
@@ -143,8 +152,8 @@ public class D1_FinalBoss : BossModel
             StartCoroutine(Special_ShowTime());
         else if (pattern.patternName == "운명의 점")
             StartCoroutine(Special_Aracna());
-        else if (pattern.patternName == "칩막기")
-            StartCoroutine(Special_Chip());
+        else if (pattern.patternName == "야바위")
+            StartCoroutine(Special_Mix());
         else if (pattern.patternName == "야바위")
             StartCoroutine(Special_Mix());
         else if (pattern.patternName == "체크메이트")
@@ -223,6 +232,7 @@ public class D1_FinalBoss : BossModel
 
         Destroy(swing);
 
+        GameEvent.OnBossStateChange?.Invoke(null);
     }
 
     public void EndSpecialPattern()
@@ -236,6 +246,8 @@ public class D1_FinalBoss : BossModel
         {
             mesh.enabled = true;
         }
+
+        GameEvent.OnBossStateChange?.Invoke(this);
 
         GameObject swing = GameObject.Instantiate(
             pattern3.swingPrefab,
@@ -306,6 +318,8 @@ public class D1_FinalBoss : BossModel
         SetImmunity(false);
 
         Destroy(swing);
+
+
     }
 
     IEnumerator Special_ShowTime()
@@ -385,11 +399,175 @@ public class D1_FinalBoss : BossModel
 
         yield return new WaitForSeconds(1f);
 
-        GameObject yabawi = Instantiate(Special4.prefab, center.transform.position - new Vector3(0, 0, 4),Quaternion.identity);
+        GameObject yabawi = Instantiate(Special4.yabawiPrefab, center.transform.position - new Vector3(0, 0, 4),Quaternion.identity);
         patternObjects.Add(yabawi);
 
         yabawi.GetComponent<D1_Yabawe>().StartYabawi(this);
+
+        // 광대 생성
+        StartCoroutine(SpawnCrown());
+        StartCoroutine(SpawnSwing());
+        StartCoroutine(SpawnBall());
+
     }
+
+    private IEnumerator SpawnCrown()
+    {
+        GameObject crownSpawnPos = Instantiate(Special4.crownSpawnPos, center.transform.position, Quaternion.identity);
+        patternObjects.Add(crownSpawnPos);
+
+        int childCount = crownSpawnPos.transform.childCount;
+        Transform[] spawnPoints = new Transform[childCount];
+
+        for (int i = 0; i < childCount; i++)
+        {
+            spawnPoints[i] = crownSpawnPos.transform.GetChild(i);
+        }
+
+        // 4. 배열 무작위 섞기 (Fisher-Yates Shuffle)
+        for (int i = 0; i < spawnPoints.Length; i++)
+        {
+            // i부터 배열 끝 사이에서 무작위 인덱스 뽑기
+            int randomIndex = Random.Range(i, spawnPoints.Length);
+
+            // 현재 자리(i)와 무작위로 뽑힌 자리(randomIndex)의 값을 서로 교환(Swap)
+            Transform temp = spawnPoints[i];
+            spawnPoints[i] = spawnPoints[randomIndex];
+            spawnPoints[randomIndex] = temp;
+        }
+
+        for (int i = 0; i < spawnPoints.Length; i++)
+        {
+            GameObject crown = Instantiate(Special4.crownPrefab, spawnPoints[i].position, Quaternion.identity);
+            crown.GetComponent<D1_Crown>().Init(Special4.bulletPrefab, Special4.bulletSpeed, Special4.panicBuffSO, Special4.stunBuffSO, Target);
+            yield return new WaitForSeconds(1f);
+        }
+
+        Destroy(crownSpawnPos);
+    }
+
+    private IEnumerator SpawnSwing()
+    {
+        GameObject swingSpawnPos = Instantiate(Special4.crownSpawnPos, center.transform.position, Quaternion.identity);
+        patternObjects.Add(swingSpawnPos);
+
+        // 2. 자식들을 배열 대신 List에 담기 (넣고 빼기 쉽게 하기 위함)
+        int childCount = swingSpawnPos.transform.childCount;
+        List<Transform> availablePoints = new List<Transform>();
+
+        for (int i = 0; i < childCount; i++)
+        {
+            availablePoints.Add(swingSpawnPos.transform.GetChild(i));
+        }
+
+        // 3. 중복 없이 랜덤으로 3개 뽑기
+        int pickCount = Mathf.Min(3, availablePoints.Count); // 혹시 자식이 3개 미만일 때의 에러 방지용 안전장치
+        List<Transform> selectedPoints = new List<Transform>();
+
+        for (int i = 0; i < pickCount; i++)
+        {
+            // 남은 위치들 중에서 무작위로 하나 선택
+            int randomIndex = Random.Range(0, availablePoints.Count);
+
+            // 선택된 위치를 최종 타겟 리스트에 추가
+            selectedPoints.Add(availablePoints[randomIndex]);
+
+            // ⭐️ [핵심] 방금 뽑은 위치를 후보 리스트에서 아예 지워버림 (중복 절대 불가)
+            availablePoints.RemoveAt(randomIndex);
+        }
+
+        // 4. 뽑힌 3개의 위치에 각각 그네 생성 및 발사
+        foreach (Transform spawnPoint in selectedPoints)
+        {
+            Vector3 spawnPos = spawnPoint.position;
+            spawnPos.y = 0;
+
+            // [방향 설정 1] Center를 바라보는 방향 계산
+            Vector3 dirToCenter = center.transform.position - spawnPos;
+            dirToCenter.y = 0f; // 수평 비행을 위해 높이 차이 무시
+
+            Quaternion lookRotation = Quaternion.LookRotation(dirToCenter);
+
+            // [방향 설정 2] -22.5 ~ +22.5도 사이의 랜덤 오프셋
+            float randomAngle = Random.Range(-15f, 15f);
+            Quaternion randomOffset = Quaternion.Euler(0f, randomAngle, 0f);
+
+            // 최종 조준 각도 = 기본 방향 * 랜덤 오프셋
+            Quaternion finalRotation = lookRotation * randomOffset;
+
+            // 5. 그네 생성
+            GameObject swingObj = Instantiate(Special4.swingPrefab, spawnPos, finalRotation);
+            patternObjects.Add(swingObj);
+
+            swingObj.GetComponent<D1_Swing>().Init();
+
+            yield return new WaitForSeconds(2.5f);
+        }
+
+        Destroy(swingSpawnPos);
+    }
+
+    private IEnumerator SpawnBall()
+    {
+        GameObject ballSpawnPos = Instantiate(Special4.crownSpawnPos, center.transform.position, Quaternion.identity);
+        patternObjects.Add(ballSpawnPos);
+
+        // 2. 자식들을 배열 대신 List에 담기 (넣고 빼기 쉽게 하기 위함)
+        int childCount = ballSpawnPos.transform.childCount;
+        List<Transform> availablePoints = new List<Transform>();
+
+        for (int i = 0; i < childCount; i++)
+        {
+            availablePoints.Add(ballSpawnPos.transform.GetChild(i));
+        }
+
+        // 3. 중복 없이 랜덤으로 3개 뽑기
+        int pickCount = Mathf.Min(4, availablePoints.Count); // 혹시 자식이 3개 미만일 때의 에러 방지용 안전장치
+        List<Transform> selectedPoints = new List<Transform>();
+
+        for (int i = 0; i < pickCount; i++)
+        {
+            // 남은 위치들 중에서 무작위로 하나 선택
+            int randomIndex = Random.Range(0, availablePoints.Count);
+
+            // 선택된 위치를 최종 타겟 리스트에 추가
+            selectedPoints.Add(availablePoints[randomIndex]);
+
+            // ⭐️ [핵심] 방금 뽑은 위치를 후보 리스트에서 아예 지워버림 (중복 절대 불가)
+            availablePoints.RemoveAt(randomIndex);
+        }
+
+        // 4. 뽑힌 3개의 위치에 각각 그네 생성 및 발사
+        foreach (Transform spawnPoint in selectedPoints)
+        {
+            Vector3 spawnPos = spawnPoint.position;
+            spawnPos.y = 0;
+
+            // [방향 설정 1] Center를 바라보는 방향 계산
+            Vector3 dirToCenter = center.transform.position - spawnPos;
+            dirToCenter.y = 0f; // 수평 비행을 위해 높이 차이 무시
+
+            Quaternion lookRotation = Quaternion.LookRotation(dirToCenter);
+
+            // [방향 설정 2] -22.5 ~ +22.5도 사이의 랜덤 오프셋
+            float randomAngle = Random.Range(-22.5f, 22.5f);
+            Quaternion randomOffset = Quaternion.Euler(0f, randomAngle, 0f);
+
+            // 최종 조준 각도 = 기본 방향 * 랜덤 오프셋
+            Quaternion finalRotation = lookRotation * randomOffset;
+
+            // 5. 그네 생성
+            GameObject ball = Instantiate(Special4.ballPrefab, spawnPos, finalRotation);
+            patternObjects.Add(ball);
+
+            ball.GetComponent<D1_Ball>().Init();
+
+            yield return new WaitForSeconds(3.5f);
+        }
+
+        Destroy(ballSpawnPos);
+    }
+
     IEnumerator Special_Chess()
     {
         SetImmunity(true);

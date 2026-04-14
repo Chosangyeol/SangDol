@@ -12,6 +12,10 @@ public class C_Buff
 
     public delegate void BuffHandler(ref SBuff buff);
 
+    public bool isStun = false;
+    public bool isImmunity = false;
+    public bool isPanic = false;
+
     public event BuffHandler ActionBeforeAddBuff;
     public event Action<SBuff> ActionAfterAddBuff;
     public event BuffHandler ActionBeforeRemoveBuff;
@@ -57,8 +61,14 @@ public class C_Buff
         }
         else // 디버프일 경우
         {
-            if (!_model.isImmunity) // 면역이 아닐 때만 적용
+            if (!_model.Buff.isImmunity) // 면역이 아닐 때만 적용
             {
+                if (existingIndex != -1)
+                {
+                    _listBuff[existingIndex].act.OnDisable();
+                    _listBuff.RemoveAt(existingIndex);
+                }
+
                 buff.act.OnEnable();
                 _listBuff.Add(buff);
             }
@@ -92,5 +102,47 @@ public class C_Buff
         return (result);
     }
 
+    public void RemoveAllBuff()
+    {
+        for (int i = 0; i < _listBuff.Count; i++)
+        {
+            _listBuff[i].act.OnDisable();
+            
+        }
+        _listBuff.Clear();
+    }
 
+    #region 상태이상 부여
+
+    public void StunEnable()
+    {
+        isStun = true;
+    }
+
+    public void StunDisable()
+    {
+        isStun = false;
+    }
+
+    public void ImmunityEnable()
+    {
+        isImmunity = true;
+    }
+
+    public void ImmunityDisable()
+    {
+        isImmunity = false;
+    }
+
+    public void PanicEnable()
+    {
+        isPanic = true;
+    }
+
+    public void PanicDisable()
+    {
+        isPanic = false;
+    }
+
+    #endregion
 }
