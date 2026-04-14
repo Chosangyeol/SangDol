@@ -23,7 +23,9 @@ public class PlayerInputs : MonoBehaviour
 
     private void Update()
     {
-        if (model != null && model.PlayerInput != null)
+        if (model.isDie) return;
+
+        if (model != null && model.PlayerInput != null && model.canAttack)
         {
             model.PlayerInput.OnAttackClick(isAttackHeld, GetPointerScreenPos());
 

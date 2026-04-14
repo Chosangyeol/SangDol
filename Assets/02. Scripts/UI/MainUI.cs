@@ -37,6 +37,9 @@ public class MainUI : MonoBehaviour
     public Slider bossKnockDownSlider;
     public Image bossKnockDownBack;
 
+    [Header("알람 텍스트")]
+    public TMP_Text bossRoomEnterCount;
+
     public void Init(C_SkillSystem skillSystem,C_Inventory inventory, CharacterModel model)
     {
         _skillSystem = skillSystem;
@@ -60,6 +63,7 @@ public class MainUI : MonoBehaviour
         RefreshAll();
 
         bossUI.SetActive(false);
+        bossRoomEnterCount.gameObject.SetActive(false);
     }
 
     private void BindEvents()
@@ -68,6 +72,7 @@ public class MainUI : MonoBehaviour
         _inventory.OnInventoryUpdated += RefreshAll;
         GameEvent.OnStatChange += UpdatePlayerUI;
         GameEvent.OnBossStateChange += UpdateBossUI;
+        GameEvent.OnBossRoomEnterCount += BossCountdownAlarm;
         GameEvent.OnPlayerPanic += TogglePanicUI;
     }
 
@@ -138,6 +143,20 @@ public class MainUI : MonoBehaviour
     public void TogglePanicUI(bool isPanic)
     {
         panicUI.gameObject.SetActive(isPanic);
+    }
+
+    public void BossCountdownAlarm(bool isAlarm,float time)
+    {
+        if (isAlarm)
+        {
+            bossRoomEnterCount.gameObject.SetActive(true);
+            bossRoomEnterCount.text =
+                $"보스룸 입장 중 입니다. {time:F0}초 뒤에 입장합니다.";
+        }
+        else
+        {
+            bossRoomEnterCount.gameObject.SetActive(false);
+        }
     }
 
 }

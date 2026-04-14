@@ -33,6 +33,7 @@ public class CharacterModel : MonoBehaviour
     [Header("캐릭터 상태")]
     public bool canMove = true;
     public bool canUse = true;
+    public bool canAttack = true;
     public bool isDie = false;
 
     private Animator anim;
@@ -355,6 +356,10 @@ public class CharacterModel : MonoBehaviour
         skillSystem.ResetSkillCooldown();
         buff.RemoveAllBuff();
 
+        anim.SetTrigger("Die");
+
+        if (DungeonManager.instance != null)
+            DungeonManager.instance.ReplacePlayer();
         GameEvent.OnPlayerDie?.Invoke();
     }
 
@@ -366,8 +371,13 @@ public class CharacterModel : MonoBehaviour
     public void Revive()
     {
         Heal(Stat.Stat.maxHp.FinalValue);
+
+        Anim.SetTrigger("Revive");
+
+        Navmesh.enabled = true;
+        canUse = true;
+
         isDie = false;
-        canMove = true;
 
     }
 

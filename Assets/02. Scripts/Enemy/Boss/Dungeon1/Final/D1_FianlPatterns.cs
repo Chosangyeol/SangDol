@@ -169,7 +169,6 @@ public class D1_Final_Normal3 : BossPatternBase
 
     private IEnumerator JumpUp(BossModel boss)
     {
-        //boss.Anim.SetTrigger(patternName);
 
         GameObject swing = GameObject.Instantiate(
             normal3Swing,
@@ -191,12 +190,15 @@ public class D1_Final_Normal3 : BossPatternBase
 
         yield return new WaitForSeconds(0.5f);
 
-        if (boss.Agent != null) boss.Agent.enabled = false;
+        boss.Agent.enabled = false;
 
         Vector3 startPos = boss.transform.position;
         Vector3 targetPos = swing.transform.position + Vector3.up * 2.5f;
 
         float time = 0f;
+
+        boss.Anim.SetTrigger("Jump");
+
         while (time < 1.5f)
         {
             time += Time.deltaTime;
@@ -293,7 +295,7 @@ public class D1_Final_Normal3 : BossPatternBase
 
         yield return new WaitForSeconds(1f);
 
-        if (boss.Agent != null) boss.Agent.enabled = true;
+        boss.Agent.enabled = true;
 
         boss.OnPatternEnd();
     }

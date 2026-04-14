@@ -11,6 +11,7 @@ TagManager:
   - D1_Final_Cut2
   - BossSpawnPos
   - PlayerRevivePos
+  - DungeonPortal
   layers:
   - Default
   - TransparentFX

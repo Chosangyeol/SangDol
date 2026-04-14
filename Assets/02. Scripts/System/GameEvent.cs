@@ -15,6 +15,7 @@ public static class GameEvent
     public static Action<CharacterStat> OnStatChange;
 
     public static Action<BossModel> OnBossStateChange;
+    public static Action<bool,float> OnBossRoomEnterCount;
 
     public static Action OnUIInvisable;
     public static Action OnMainUIviable;
