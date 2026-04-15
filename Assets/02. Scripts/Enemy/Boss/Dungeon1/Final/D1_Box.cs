@@ -47,7 +47,9 @@ public class D1_Box : MonoBehaviour
         if (other.gameObject.CompareTag("Player"))
         {
             activeObject.SetActive(true);
-            
+
+            AudioManager.instance.PlaySFX(C_Enums.SFX_List.D1_Final_Box);
+
             _model.Buff.AddBuff(sBuff);
             SphereCollider.enabled = false;
             Destroy(this.gameObject, 2f);

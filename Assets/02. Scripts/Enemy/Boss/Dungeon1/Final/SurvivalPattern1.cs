@@ -86,7 +86,7 @@ public class SurvivalPattern1 : MonoBehaviour
     {
         if (currentPatternIndex == -1) return;
 
-        Collider[] target = Physics.OverlapBox(safeZones[currentPatternIndex].transform.position, new Vector3(3f, 1f, 4.5f), Quaternion.identity, LayerMask.GetMask("Player"));
+        Collider[] target = Physics.OverlapSphere(safeZones[currentPatternIndex].transform.position, 3f, LayerMask.GetMask("Player"));
 
 
         if (target.Length > 0)

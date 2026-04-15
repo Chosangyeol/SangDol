@@ -84,6 +84,8 @@ public class CharacterModel : MonoBehaviour
 
         DontDestroyOnLoad(camContainer);
 
+        UIManager.Instance.InitGameUIs();
+
         ChangeCam(0);
     }
 
@@ -361,6 +363,7 @@ public class CharacterModel : MonoBehaviour
         if (DungeonManager.instance != null)
             DungeonManager.instance.ReplacePlayer();
         GameEvent.OnPlayerDie?.Invoke();
+        GameEvent.OnBossStateChange?.Invoke(null);
     }
 
     public void Heal(float healAmount)

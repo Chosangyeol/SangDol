@@ -12,8 +12,7 @@ public class QuestTracker : MonoBehaviour
 
     private void Start()
     {
-        QuestManager.Instance.OnQuestProgressUpdated += UpdateTracker;
-        UpdateTracker();
+        
     }
 
     private void OnDestroy()
@@ -21,6 +20,12 @@ public class QuestTracker : MonoBehaviour
         // 이벤트 구독 해제
         if (QuestManager.Instance != null)
             QuestManager.Instance.OnQuestProgressUpdated -= UpdateTracker;
+    }
+
+    public void Init()
+    {
+        QuestManager.Instance.OnQuestProgressUpdated += UpdateTracker;
+        UpdateTracker();
     }
 
     public void UpdateTracker()

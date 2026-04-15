@@ -9,6 +9,8 @@ public class QuestUI : MonoBehaviour
     [SerializeField] QuestSlot slotPrefab;
     [SerializeField] Transform slotParent;
     [SerializeField] QuestPreview preview;
+    [SerializeField] QuestTracker tracker;
+
 
     private RectTransform rectTransform;
     private Canvas canvas;
@@ -21,6 +23,7 @@ public class QuestUI : MonoBehaviour
     {
         rectTransform = GetComponent<RectTransform>();
         canvas = GetComponentInParent<Canvas>();
+        tracker.Init();
 
         for (int i = 0; i < maxQuestCount; i++)
         {

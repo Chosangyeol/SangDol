@@ -101,6 +101,7 @@ public class PlayerInputs : MonoBehaviour
     {
         if (ctx.control is KeyControl key)
         {
+            if (key.keyCode == Key.Escape) model.PlayerInput.OnUIInput(C_Enums.UIList.Option);
             if (key.keyCode == Key.I) model.PlayerInput.OnUIInput(C_Enums.UIList.Inventory);
             if (key.keyCode == Key.K) model.PlayerInput.OnUIInput(C_Enums.UIList.SkillTree);
             if (key.keyCode == Key.L) model.PlayerInput.OnUIInput(C_Enums.UIList.Quest);

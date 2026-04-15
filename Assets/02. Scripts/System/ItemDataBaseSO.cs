@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
-using UnityEditorInternal.Profiling.Memory.Experimental;
 
 
 #if UNITY_EDITOR

@@ -65,6 +65,8 @@ public class D1_Final_Normal1 : BossPatternBase
             {
                 index++;
                 // 추후 풀로 바꿔야함
+                AudioManager.instance.PlaySFX(C_Enums.SFX_List.D1_Final_N1);
+
                 GameObject gbBox = GameObject.Instantiate(box, hit.point, Quaternion.identity);
                 boss.patternObjects.Add(gbBox);
                 gbBox.GetComponent<D1_Box>().Init(boss.Target, stunDebuffSO, stunDuration);
@@ -226,6 +228,8 @@ public class D1_Final_Normal3 : BossPatternBase
 
         yield return new WaitForSeconds(0.5f);
 
+        AudioManager.instance.PlaySFX(C_Enums.SFX_List.D1_Final_N3);
+
         while (boss.transform.position.y < 20)
         {
             boss.transform.Translate(Vector3.up * 60 * Time.deltaTime, Space.World);
@@ -332,6 +336,9 @@ public class D1_Final_Normal4 : BossPatternBase
         boss.Anim.SetTrigger(patternName);
 
         yield return new WaitForSeconds(0.5f);
+
+        AudioManager.instance.PlaySFX(C_Enums.SFX_List.D1_Final_N4);
+
 
         GameObject gwarning1 = GameObject.Instantiate(warning1, boss.transform.position, boss.transform.rotation); ;
         boss.patternObjects.Add(gwarning1);
@@ -456,6 +463,8 @@ public class D1_Final_Normal5 : BossPatternBase
             bullet.GetComponent<D1_Bullet>().Init(damagePercent,50f, boss.Target, true);
             GameObject.Destroy(warning);
 
+            AudioManager.instance.PlaySFX(C_Enums.SFX_List.D1_Final_N5);
+
             yield return new WaitForSeconds(0.5f);
 
             shotCount++;
@@ -481,6 +490,8 @@ public class D1_Final_Normal5 : BossPatternBase
         }
 
         yield return new WaitForSeconds(0.5f);
+
+        AudioManager.instance.PlaySFX(C_Enums.SFX_List.D1_Final_N5);
 
         GameObject bossBullet = GameObject.Instantiate(normal5Bullet, hat.transform.position, bosswarning.transform.rotation);
         boss.patternObjects.Add(bossBullet);

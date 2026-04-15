@@ -94,7 +94,6 @@ public class D1_Final_Special5Data
 {
     public D1_Chess prefab;
     public GameObject cutSceneObj;
-    public AudioClip cutBGMClip;
 }
 
 public class D1_FinalBoss : BossModel
@@ -140,6 +139,10 @@ public class D1_FinalBoss : BossModel
         normalPatterns.Add(new D1_Final_Normal3(pattern3));
         normalPatterns.Add(new D1_Final_Normal4(pattern4));
         normalPatterns.Add(new D1_Final_Normal5(pattern5));
+
+        AudioManager.instance.PlayBGM(C_Enums.BGM_List.D1_Final_BGM2);
+        AudioManager.instance.PlaySFX(C_Enums.SFX_List.D1_Final_Enter);
+
     }
 
     protected override void StartSpecialPattern(BossSpecialPattern pattern)
@@ -147,11 +150,11 @@ public class D1_FinalBoss : BossModel
         Debug.Log($"🚨 [기믹 발동] {pattern.patternName} 시작!");
 
         if (pattern.patternName == "쇼타임")
-            StartCoroutine(Special_Mix());
+            StartCoroutine(Special_ShowTime());
         else if (pattern.patternName == "운명의 점")
             StartCoroutine(Special_Aracna());
-        else if (pattern.patternName == "야바위")
-            StartCoroutine(Special_Mix());
+        else if (pattern.patternName == "칩막기")
+            StartCoroutine(Special_Chip());
         else if (pattern.patternName == "야바위")
             StartCoroutine(Special_Mix());
         else if (pattern.patternName == "체크메이트")
@@ -382,6 +385,7 @@ public class D1_FinalBoss : BossModel
         GameObject special = Instantiate(Special2.prefab, spawnPos, Quaternion.identity);
         patternObjects.Add(special);
         special.GetComponentInChildren<SurvivalPattern1>().Init(this);
+        AudioManager.instance.PlaySFX(C_Enums.SFX_List.D1_Final_S2);
     }
 
     IEnumerator Special_Chip()
@@ -405,6 +409,8 @@ public class D1_FinalBoss : BossModel
 
         GameObject yabawi = Instantiate(Special4.yabawiPrefab, center.transform.position - new Vector3(0, 0, 4),Quaternion.identity);
         patternObjects.Add(yabawi);
+
+        AudioManager.instance.PlaySFX(C_Enums.SFX_List.D1_Final_S4);
 
         yabawi.GetComponent<D1_Yabawe>().StartYabawi(this);
 
@@ -594,7 +600,7 @@ public class D1_FinalBoss : BossModel
 
         yield return new WaitForSeconds(0.5f);
 
-        AudioManager.instance.PlayBGM(Special5.cutBGMClip);
+        AudioManager.instance.PlayBGM(C_Enums.BGM_List.D1_Final_BGM3);
 
         if (director != null)
             yield return new WaitUntil(() => director.state != PlayState.Playing);

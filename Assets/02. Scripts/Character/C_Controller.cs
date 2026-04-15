@@ -156,6 +156,14 @@ public class C_Controller
 
             _model.Anim.SetInteger("Combo", currentCombo);
             _model.Anim.SetTrigger("Attack");
+
+            if (currentCombo < 3)
+                AudioManager.instance.PlaySFX(C_Enums.SFX_List.Player_Attack1);
+            else if (currentCombo == 3)
+                AudioManager.instance.PlaySFX(C_Enums.SFX_List.Player_Attack2);
+            else if (currentCombo == 4)
+                AudioManager.instance.PlaySFX(C_Enums.SFX_List.Player_Attack4);
+
         }
     }
 

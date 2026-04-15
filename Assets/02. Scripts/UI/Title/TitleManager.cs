@@ -37,6 +37,7 @@ public class TitleManager : MonoBehaviour
             yield return null;
         }
 
+        serverSelectUI.blocksRaycasts = true;
         serverSelectUI.alpha = 1f;
         touchText.alpha = 0f;
     }
@@ -50,6 +51,7 @@ public class TitleManager : MonoBehaviour
             yield return null;
         }
 
+        serverSelectUI.blocksRaycasts = false;
         serverSelectUI.alpha = 0f;
         touchText.alpha = 1f;
 

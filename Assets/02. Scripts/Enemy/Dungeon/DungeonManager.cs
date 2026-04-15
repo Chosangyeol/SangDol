@@ -16,6 +16,8 @@ public class WarpData
     public Transform playerRespawn;
     public bool hasVideo;
     public VideoClip clip;
+    public bool hasAudio;
+    public C_Enums.BGM_List bgm;
     public bool hasPlayed;
 }
 
@@ -65,9 +67,13 @@ public class DungeonManager : MonoBehaviour
 
         yield return new WaitForSeconds(1f);
 
+        if (warpDatas[index].hasAudio)
+            AudioManager.instance.PlayBGM(warpDatas[index].bgm);
+
         if (warpDatas[index].hasVideo && !warpDatas[index].hasPlayed)
         {
             VideoPlayManager.instance.PlayVideo(warpDatas[index].clip);
+
 
             yield return new WaitUntil(() => !VideoPlayManager.instance.isPlaying);
 

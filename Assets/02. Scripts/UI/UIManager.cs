@@ -1,16 +1,22 @@
 using System;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; }
 
+    public bool isInGame = false;
+    public bool hasInit = false;
+
+    public GameObject inGameUIs;
     public MainUI mainUI;
     public InventoryUI inventoryUI;
     public SkillTreeUI skillTreeUI;
     public StatusUI statusUI;
     public QuestUI questUI;
     public BuffList buffUI;
+    public OptionUI optionUI;
 
     void Awake()
     {
@@ -22,6 +28,31 @@ public class UIManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
+        if (isInGame && !hasInit)
+            InitGameUIs();    
+
+        GameEvent.OnUIInvisable += () =>
+        {
+            mainUI.Toggle(true);
+            inventoryUI.Toggle(true);
+            skillTreeUI.Toggle(true);
+            statusUI.Toggle(true);
+            questUI.Toggle(true);
+            optionUI.Toggle(true);
+        };
+
+        GameEvent.OnMainUIviable += () => mainUI.Toggle(false);
+    }
+
+    void Start()
+    {
+        inGameUIs.SetActive(false);
+    }
+
+    public void InitGameUIs()
+    {
+        hasInit = true;
+
         CharacterModel character = FindAnyObjectByType<CharacterModel>();
 
         mainUI.Init(character.SkillSystem, character.Inventory, character);
@@ -31,21 +62,7 @@ public class UIManager : MonoBehaviour
         questUI.Init();
         buffUI.Init(character.Buff, character);
 
-        GameEvent.OnUIInvisable += () =>
-        {
-            mainUI.Toggle(true);
-            inventoryUI.Toggle(true);
-            skillTreeUI.Toggle(true);
-            statusUI.Toggle(true);
-            questUI.Toggle(true);
-        };
-
-        GameEvent.OnMainUIviable += () => mainUI.Toggle(false);
-    }
-
-    void Start()
-    {
-        
+        inGameUIs.SetActive(true);
     }
 
     public void ToggleUI(C_Enums.UIList ui)
@@ -65,6 +82,10 @@ public class UIManager : MonoBehaviour
         else if (ui == C_Enums.UIList.Quest)
         {
             questUI.Toggle();
+        }
+        else if (ui == C_Enums.UIList.Option)
+        {
+            optionUI.Toggle();
         }
     }
 
