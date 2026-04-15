@@ -17659,7 +17659,7 @@ MonoBehaviour:
   - soundName: 18
     clip: {fileID: 8300000, guid: 3b311620f56e92243866b0ee29a35f20, type: 3}
   - soundName: 19
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: ff429f471c48e264180e422e5c20072a, type: 3}
   - soundName: 20
     clip: {fileID: 0}
   - soundName: 21
@@ -17669,7 +17669,7 @@ MonoBehaviour:
   - soundName: 23
     clip: {fileID: 8300000, guid: 3b311620f56e92243866b0ee29a35f20, type: 3}
   - soundName: 24
-    clip: {fileID: 8300000, guid: ff429f471c48e264180e422e5c20072a, type: 3}
+    clip: {fileID: 0}
   - soundName: 25
     clip: {fileID: 8300000, guid: f38e8a5441222d644a907bcec280b780, type: 3}
   bgmDatabase:

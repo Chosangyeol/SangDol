@@ -103,6 +103,7 @@ public class BossModel : EnemyBase, ICounterable
     protected override void Die(GameObject source = null)
     {
         GameEvent.OnBossStateChange(null);
+        Destroy(gameObject);
     }
 
     #endregion
