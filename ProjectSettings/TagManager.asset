@@ -12,6 +12,7 @@ TagManager:
   - BossSpawnPos
   - PlayerRevivePos
   - DungeonPortal
+  - CamContainer
   layers:
   - Default
   - TransparentFX

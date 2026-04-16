@@ -52,9 +52,13 @@ public class UIManager : MonoBehaviour
 
     public void InitGameUIs()
     {
-        hasInit = true;
-
         CharacterModel character = FindAnyObjectByType<CharacterModel>();
+
+        if (character == null)
+        {
+            Debug.LogWarning("씬에 플레이어가 없어 UI 초기화를 대기합니다.");
+            return;
+        }
 
         mainUI.Init(character.SkillSystem, character.Inventory, character);
         inventoryUI.Init(character.Inventory, character.Equipment);
@@ -63,6 +67,7 @@ public class UIManager : MonoBehaviour
         questUI.Init();
         buffUI.Init(character.Buff, character);
 
+        hasInit = true;
         inGameUIs.SetActive(true);
     }
 

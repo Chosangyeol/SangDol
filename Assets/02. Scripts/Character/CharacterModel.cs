@@ -42,9 +42,6 @@ public class CharacterModel : MonoBehaviour
     private NavMeshAgent navMesh;
     public NavMeshAgent Navmesh => navMesh;
 
-    [SerializeField]
-    public List<Item> testItems;
-
     public C_Stat Stat => stat;
     private C_Stat stat;
     public C_SpecialStat SpecialStat => specialStat;
@@ -80,21 +77,28 @@ public class CharacterModel : MonoBehaviour
         skillSystem = new C_SkillSystem(this);
         buff = new C_Buff(this);
 
+        
+
         DontDestroyOnLoad(this.gameObject);
-
-        DontDestroyOnLoad(camContainer);
-
-        //UIManager.Instance.InitGameUIs();
-
-        ChangeCam(0);
     }
 
     private void Start()
     {
-        for (int i = 0; i < testItems.Count; i++)
+        DontDestroyOnLoad(camContainer);
+
+        cams = camContainer.GetComponentsInChildren<CinemachineVirtualCamera>(true);
+
+        foreach (var cam in cams)
         {
-            Inventory.AddItem(testItems[i].GetItem());
+            cam.Follow = this.transform;
         }
+
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.InitGameUIs();
+        }
+
+        ChangeCam(0);
 
         GameEvent.OnStatChange?.Invoke(stat.Stat);
     }

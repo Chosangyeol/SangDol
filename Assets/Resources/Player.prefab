@@ -3814,9 +3814,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 576
   camContainer: {fileID: 0}
-  cams:
-  - {fileID: 0}
-  - {fileID: 0}
+  cams: []
   textPos: {fileID: 6736747684343984682}
   characterStatSO: {fileID: 11400000, guid: 58501aac312a9664abd1a5c3516577cd, type: 2}
   inventorySlotSize: 66
@@ -3830,14 +3828,6 @@ MonoBehaviour:
   canUse: 1
   canAttack: 1
   isDie: 0
-  testItems:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
 --- !u!114 &402003624484510465
 MonoBehaviour:
   m_ObjectHideFlags: 0
