@@ -84,7 +84,7 @@ public class CharacterModel : MonoBehaviour
 
         DontDestroyOnLoad(camContainer);
 
-        UIManager.Instance.InitGameUIs();
+        //UIManager.Instance.InitGameUIs();
 
         ChangeCam(0);
     }

@@ -46,7 +46,8 @@ public class UIManager : MonoBehaviour
 
     void Start()
     {
-        inGameUIs.SetActive(false);
+        if (!hasInit)
+            inGameUIs.SetActive(false);
     }
 
     public void InitGameUIs()
