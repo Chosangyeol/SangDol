@@ -43,7 +43,6 @@ public class AudioManager : MonoBehaviour
         if (instance == null)
         {
             instance = this;
-            DontDestroyOnLoad(gameObject);
             Init(); // 재생기들 세팅
         }
         else

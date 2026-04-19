@@ -18,7 +18,6 @@ public class BossModel : EnemyBase, ICounterable
     public Transform bossSpawnPoint;
 
     [Header("기믹 / 무력화 / 카운터 상태")]
-    public bool isActive = false;
     public bool isStatic = false;
     public bool isImmunity = false;
     public bool isDoingSpecial = false;
@@ -50,7 +49,6 @@ public class BossModel : EnemyBase, ICounterable
     private void Update()
     {
         if (isKnockDown) return;
-        if (!isActive) return;
 
         HandleCheckSpecial();
 
@@ -270,8 +268,6 @@ public class BossModel : EnemyBase, ICounterable
     public void ResetBossState()
     {
         ForceStopCurrentAction();
-
-        isActive = false;
 
         Debug.Log("플레이어 사망. 대청소 시작");
 

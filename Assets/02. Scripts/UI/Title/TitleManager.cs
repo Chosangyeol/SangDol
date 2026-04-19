@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class TitleManager : MonoBehaviour
 {
@@ -27,6 +28,12 @@ public class TitleManager : MonoBehaviour
     {
         StartCoroutine(DisableServerSequence());
     }
+
+    public void StartGame()
+    {
+        StartCoroutine(StartGameRoutine());
+    }
+
 
     private IEnumerator EnableServerSequence()
     {
@@ -55,5 +62,22 @@ public class TitleManager : MonoBehaviour
         serverSelectUI.alpha = 0f;
         touchText.alpha = 1f;
 
+    }
+
+    private IEnumerator StartGameRoutine()
+    {
+        yield return SceneManager.LoadSceneAsync("Main", LoadSceneMode.Additive);
+
+        // 2. Main 씬에 있는 SceneController를 찾습니다.
+        // (싱글톤 Instance가 Awake에서 잡혔을 테니 바로 접근 가능합니다.)
+        if (SceneChanger.instance != null)
+        {
+            // 3. SceneController에게 첫 필드 로딩을 시킵니다.
+            // 이때 SceneController 내부 로직에 의해 '로딩 화면'이 즉시 켜집니다.
+            SceneChanger.instance.LoadScene("DungeonTest");
+        }
+
+        // 4. 이제 필요 없어진 Title 씬은 언로드합니다.
+        SceneManager.UnloadSceneAsync("Title");
     }
 }

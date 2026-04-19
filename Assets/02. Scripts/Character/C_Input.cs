@@ -15,6 +15,8 @@ public class C_Input
 
     public void OnMoveClick(Vector2 screenPos)
     {
+        _model.CancelInteraction();
+
         if (!GetMouseInput(screenPos, out var point))
             return;
 
@@ -23,6 +25,8 @@ public class C_Input
 
     public void OnAttackClick(bool isHeld, Vector2 screenPos)
     {
+        if (isHeld) _model.CancelInteraction();
+
         Vector3 point = Vector3.zero;
 
         if (isHeld)
@@ -41,6 +45,8 @@ public class C_Input
 
     public void OnSkillInput(C_Enums.SkillSlot skillSlot, Vector2 screenPos)
     {
+        _model.CancelInteraction();
+
         if (!GetMouseInput(screenPos, out var point))
             return;
 

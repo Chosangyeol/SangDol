@@ -132,6 +132,8 @@ public class D1_FinalBoss : BossModel
         Special5.prefab = GameObject.FindGameObjectWithTag("D1_Final_S5").GetComponent<D1_Chess>();
         Special5.cutSceneObj = GameObject.FindGameObjectWithTag("D1_Final_Cut2");
 
+        Special5.cutSceneObj.SetActive(false);
+
         bossMeshs = GetComponentsInChildren<SkinnedMeshRenderer>();
 
         normalPatterns.Add(new D1_Final_Normal1(pattern1, center));
@@ -150,7 +152,7 @@ public class D1_FinalBoss : BossModel
         Debug.Log($"🚨 [기믹 발동] {pattern.patternName} 시작!");
 
         if (pattern.patternName == "쇼타임")
-            StartCoroutine(Special_ShowTime());
+            StartCoroutine(Special_Chess());
         else if (pattern.patternName == "운명의 점")
             StartCoroutine(Special_Aracna());
         else if (pattern.patternName == "칩막기")

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  version: 10
+  version: 7
 --- !u!21 &2100000
 Material:
   serializedVersion: 8
@@ -33,7 +33,6 @@ Material:
   m_CustomRenderQueue: 2750
   stringTagMap:
     MotionVector: User
-    RenderType: Transparent
   disabledShaderPasses:
   - TransparentDepthPrepass
   - TransparentDepthPostpass
@@ -101,8 +100,6 @@ Material:
     - _DoubleSidedGIMode: 0
     - _DoubleSidedNormalMode: 2
     - _DstBlend: 10
-    - _DstBlend2: 0
-    - _DstBlendAlpha: 10
     - _Emission: 2
     - _EnableBlendModePreserveSpecularLighting: 0
     - _EnableFogOnTransparent: 1
@@ -110,12 +107,10 @@ Material:
     - _ExcludeFromTUAndAA: 0
     - _InvFade: 2
     - _OpaqueCullMode: 2
-    - _PerPixelSorting: 0
     - _QueueControl: 1
     - _QueueOffset: 0
     - _RenderQueueType: 3
     - _SrcBlend: 5
-    - _SrcBlendAlpha: 1
     - _StencilRef: 0
     - _StencilRefDepth: 1
     - _StencilRefDistortionVec: 4
@@ -143,7 +138,6 @@ Material:
     - _DoubleSidedConstants: {r: 1, g: 1, b: -1, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
-  m_AllowLocking: 1
 --- !u!114 &4543484945145086483
 MonoBehaviour:
   m_ObjectHideFlags: 11

@@ -147,6 +147,11 @@ public class EnemyModel : EnemyBase
         stateMachine.UpdateState();
     }
 
+    public void SetSpawnPoint(Transform pos)
+    {
+        spawnPoint = pos;
+    }
+
     public void Attack()
     {
         // 자식 클래스에서 공격 구현

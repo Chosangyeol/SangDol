@@ -34,6 +34,7 @@ public class CharacterModel : MonoBehaviour
     public bool canMove = true;
     public bool canUse = true;
     public bool canAttack = true;
+    public bool canSkill = true;
     public bool isDie = false;
 
     private Animator anim;
@@ -42,6 +43,7 @@ public class CharacterModel : MonoBehaviour
     private NavMeshAgent navMesh;
     public NavMeshAgent Navmesh => navMesh;
 
+    private Coroutine _interactionRoutine;
     public C_Stat Stat => stat;
     private C_Stat stat;
     public C_SpecialStat SpecialStat => specialStat;
@@ -77,14 +79,10 @@ public class CharacterModel : MonoBehaviour
         skillSystem = new C_SkillSystem(this);
         buff = new C_Buff(this);
 
-        
-
-        DontDestroyOnLoad(this.gameObject);
     }
 
     private void Start()
     {
-        DontDestroyOnLoad(camContainer);
 
         cams = camContainer.GetComponentsInChildren<CinemachineVirtualCamera>(true);
 
@@ -336,6 +334,8 @@ public class CharacterModel : MonoBehaviour
     #region 캐릭터 스탯 관리
     public void Damaged(float damage,bool isPercent)
     {
+        CancelInteraction();
+
         Stat.Damaged(damage,isPercent);
         
         if (DamageTextManager.Instance != null)
@@ -516,8 +516,151 @@ public class CharacterModel : MonoBehaviour
             }
         }
 
-        if (target != null)
-            target.gameObject.GetComponent<IInteractable>().Interact(this.transform);
+        if (target.gameObject.TryGetComponent<IInteractable>(out var interactable))
+        {
+            if (interactable.isLocked) return;
+
+            // 홀딩형이거나 자동 진행형인 경우 코루틴 실행
+            if (interactable.isHoldInteraction || interactable.isAutoProgress)
+            {
+                StartInteraction(interactable);
+            }
+            else // 일반 클릭형
+            {
+                if (interactable.Interact(this.transform))
+                    HandlePlayerReaction(interactable.interactType);
+            }
+        }
+    }
+
+    public void StartInteraction(IInteractable interactable)
+    {
+        // 이미 진행 중인게 있다면 취소하고 새로 시작
+        CancelInteraction();
+        _interactionRoutine = StartCoroutine(InteractionProcessRoutine(interactable));
+    }
+
+    private IEnumerator InteractionProcessRoutine(IInteractable interactable)
+    {
+        float timer = 0f;
+        Vector3 startPos = transform.position;
+
+        // 1. 게이지 UI 시작
+        UIManager.Instance.mainUI.SetGaugeUI(true, interactable.interactName, 0f);
+
+        playerController.StopMove();
+        HandlePlayerReaction(interactable.interactType);
+
+        while (timer < interactable.holdTime)
+        {
+            // --- 취소 조건 체크 ---
+
+            // A. 홀딩형일 때만 키를 뗐는지 검사 (AutoProgress는 이 검사를 건너뜀)
+            if (interactable.isHoldInteraction && !Input.GetKey(KeyCode.G))
+            {
+                Debug.Log("홀딩 중단으로 취소");
+                break;
+            }
+
+            // --- 시간 업데이트 ---
+            timer += Time.deltaTime;
+
+            // 2. 게이지 실시간 업데이트
+            float progress = Mathf.Clamp01(timer / interactable.holdTime); // 0~1 사이 값 고정
+            UIManager.Instance.mainUI.SetGaugeUI(true, interactable.interactName, progress);
+
+            yield return null;
+        }
+
+        // 3. 결과 처리
+        if (timer >= interactable.holdTime)
+        {
+            // 성공 시 최종 게이지 100% 한 번 더 갱신 (시각적 안정감)
+            UIManager.Instance.mainUI.SetGaugeUI(true, interactable.interactName, 1f);
+            interactable.Interact(this.transform);
+        }
+        else
+        {
+            // 실패 시 처리
+            interactable.OnInteractCancel();
+            Anim.SetTrigger("Interact_Cancel");
+        }
+
+        // 약간의 딜레이 후 게이지 끄기 (로아처럼 완료 직후 바로 사라지면 심심하니까요)
+        yield return new WaitForSeconds(0.1f);
+        UIManager.Instance.mainUI.SetGaugeUI(false);
+
+        _interactionRoutine = null;
+    }
+
+    public void CancelInteraction()
+    {
+        if (_interactionRoutine != null)
+        {
+            StopCoroutine(_interactionRoutine);
+            _interactionRoutine = null;
+
+            // UI 끄기 및 내부 상태 초기화
+            UIManager.Instance.mainUI.SetGaugeUI(false);
+            // 필요하다면 Anim.SetTrigger("Interact_Cancel"); 호출
+            Debug.Log("상호작용이 다른 액션에 의해 취소되었습니다.");
+        }
+    }
+
+    private void HandlePlayerReaction(InteractType type)
+    {
+        // NPC는 플레이어 애니메이션을 재생하지 않음
+        if (type == InteractType.NPC)
+        {
+            Debug.Log("NPC와 대화를 시작합니다.");
+            playerController.StopMove(); // 대화 중 이동만 정지
+            return;
+        }
+
+        if (Navmesh.enabled)
+        {
+            playerController.StopMove();
+        }
+
+        // 상호작용 오브젝트 종류별 애니메이션 분기
+        playerController.StopMove(); // 오브젝트 상호작용 시 이동 정지
+
+        switch (type)
+        {
+            case InteractType.Lever:
+                Anim.SetTrigger("Interact_Lever"); // 레버 당기는 모션
+                Debug.Log("레버 작동 애니메이션 재생");
+                break;
+
+            case InteractType.Gathering:
+                Anim.SetTrigger("Interact_Gather"); // 허리 숙여 줍는 모션
+                Debug.Log("채집 애니메이션 재생");
+                break;
+
+            case InteractType.Portal:
+                // 포탈은 보통 애니메이션 없이 이펙트나 씬 전환
+                Debug.Log("포탈 진입");
+                break;
+
+            case InteractType.Jump:
+                Anim.SetBool("Interact_Jump", true);
+                break;
+            default:
+                Anim.SetTrigger("Interact"); // 기본 상호작용 모션
+                break;
+        }
+    }
+
+    public void EndJump()
+    {
+        canAttack = true;
+        canMove = true;
+        canSkill = true;
+        canUse = true;
+
+        Navmesh.enabled = true;
+
+        Anim.SetBool("Interact_Jump", false);
     }
 
     #endregion

@@ -209,12 +209,12 @@ public class C_Controller
 
     public void StopMove()
     {
-        if (agent != null)
+        if (_model.Navmesh.enabled && _model.Navmesh.isOnNavMesh)
         {
-            agent.isStopped = true;
-            agent.ResetPath();
+            _model.Navmesh.isStopped = true;
+            _model.Navmesh.ResetPath();
         }
-    
+
         if (_model.Anim != null)
         {
             _model.Anim.SetBool("Move", false);

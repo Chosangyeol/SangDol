@@ -26,7 +26,6 @@ public class UIManager : MonoBehaviour
             return;
         }
         Instance = this;
-        DontDestroyOnLoad(gameObject);
 
         if (isInGame && !hasInit)
             InitGameUIs();    

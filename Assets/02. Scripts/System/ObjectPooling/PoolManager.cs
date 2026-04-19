@@ -19,7 +19,6 @@ public class PoolManager : MonoBehaviour
         _trmParent = parentObj.transform;
         _trmParent.SetParent(transform);
 
-        DontDestroyOnLoad(gameObject);
     }
 
     public void CreatePool(PoolableMono prefab, int count = 10)

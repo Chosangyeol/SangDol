@@ -13,6 +13,7 @@ TagManager:
   - PlayerRevivePos
   - DungeonPortal
   - CamContainer
+  - OverlayCam
   layers:
   - Default
   - TransparentFX
@@ -49,4 +50,7 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Overlay
+    uniqueID: 1783654549
     locked: 0

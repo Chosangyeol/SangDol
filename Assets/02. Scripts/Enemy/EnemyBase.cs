@@ -12,6 +12,7 @@ public class EnemyBase : MonoBehaviour
     [SerializeField] protected LayerMask _groundLayer;
 
     protected bool _isDead = false;
+    public bool IsDead => _isDead;
 
     protected CharacterModel _target;
     public CharacterModel Target  => _target;

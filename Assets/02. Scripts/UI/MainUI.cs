@@ -40,6 +40,11 @@ public class MainUI : MonoBehaviour
     [Header("알람 텍스트")]
     public TMP_Text bossRoomEnterCount;
 
+    [Header("상호작용 / 게이지 UI")]
+    public GameObject gaugeObject;
+    public Slider gaugeFill;
+    public TMP_Text gaugeTitle;
+
     public void Init(C_SkillSystem skillSystem,C_Inventory inventory, CharacterModel model)
     {
         _skillSystem = skillSystem;
@@ -63,6 +68,7 @@ public class MainUI : MonoBehaviour
         RefreshAll();
 
         bossUI.SetActive(false);
+        gaugeObject.SetActive(false);
         bossRoomEnterCount.gameObject.SetActive(false);
     }
 
@@ -156,6 +162,28 @@ public class MainUI : MonoBehaviour
         else
         {
             bossRoomEnterCount.gameObject.SetActive(false);
+        }
+    }
+
+    public void SetGaugeUI(bool active, string title = "", float progress = 0f)
+    {
+        if (gaugeObject == null)
+        {
+            Debug.LogWarning("MainUI: Gauge Object가 할당되지 않았습니다.");
+            return;
+        }
+
+        // 상태가 같으면 SetActive를 중복 호출하지 않도록 최적화
+        if (gaugeObject.activeSelf != active)
+            gaugeObject.SetActive(active);
+
+        if (active)
+        {
+            if (gaugeTitle != null) gaugeTitle.text = title;
+            if (gaugeFill != null)
+            {
+                gaugeFill.value = progress;
+            }
         }
     }
 
