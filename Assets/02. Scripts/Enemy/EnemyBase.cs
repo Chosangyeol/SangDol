@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class EnemyBase : MonoBehaviour
+public class EnemyBase : PoolableMono
 {
     [Header("적 기본 설정")]
     public EnemyStatSO statSO;
@@ -23,6 +23,8 @@ public class EnemyBase : MonoBehaviour
     protected EnemyStat _stat;
     public EnemyStat Stat => _stat;
 
+    public System.Action<EnemyModel> OnReturnToPool;
+
 
     protected virtual void Awake()
     {
@@ -33,6 +35,23 @@ public class EnemyBase : MonoBehaviour
     {
         _target = FindAnyObjectByType<CharacterModel>();
         _anim = GetComponentInChildren<Animator>();
+    }
+
+    public override void Reset()
+    {
+        _isDead = false;
+        OnReturnToPool = null;
+
+        if (_stat != null)
+        {
+            _stat.curHp = _stat.maxHp;
+        }
+
+        if (_anim != null)
+        {
+            _anim.Rebind();       // 애니메이터를 기본 상태로 되돌림
+            _anim.Update(0f);
+        }
     }
 
     public virtual void Damaged(SDamageInfo info)

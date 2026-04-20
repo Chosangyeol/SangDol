@@ -100,8 +100,13 @@ public class BossModel : EnemyBase, ICounterable
 
     protected override void Die(GameObject source = null)
     {
+        if (_isDead) return;
+        _isDead = true;
+
         GameEvent.OnBossStateChange(null);
-        Destroy(gameObject);
+        GameEvent.OnMonsterKill?.Invoke(statSO.enemyID);
+
+        PoolManager.Instance.Push(this);
     }
 
     #endregion

@@ -34,6 +34,20 @@ public class SceneChanger : MonoBehaviour
         loadingCanvas.SetActive(false);
     }
 
+    private void Start()
+    {
+        // 현재 로드된 씬들 중 Main이나 Title이 아닌 것을 찾아 _currentScene으로 설정
+        for (int i = 0; i < SceneManager.sceneCount; i++)
+        {
+            Scene s = SceneManager.GetSceneAt(i);
+            if (s.name != "Main" && s.name != "Title")
+            {
+                _currentScene = s.name;
+                break;
+            }
+        }
+    }
+
     public void ChageScene(string scene)
     {
         SceneManager.LoadScene(scene);
@@ -55,9 +69,19 @@ public class SceneChanger : MonoBehaviour
         // 3. 이전 씬 언로드 (타이틀에서 처음 넘어가는 게 아니라면)
         if (!string.IsNullOrEmpty(_currentScene))
         {
-            yield return SceneManager.UnloadSceneAsync(_currentScene);
-            // [중요] 이전 맵에서 쓴 몬스터 풀링 클리어
-            // PoolManager.Instance.ClearPool(); 
+            // 씬 매니저에서 해당 이름의 씬 상태를 가져옵니다.
+            Scene sceneToUnload = SceneManager.GetSceneByName(_currentScene);
+
+            // 씬이 유효하고(isValid), 현재 로드된 상태(isLoaded)일 때만 언로드 실행
+            if (sceneToUnload.IsValid() && sceneToUnload.isLoaded)
+            {
+                yield return SceneManager.UnloadSceneAsync(_currentScene);
+                Debug.Log($"[SceneChanger] {_currentScene} 언로드 성공");
+            }
+            else
+            {
+                Debug.LogWarning($"[SceneChanger] {_currentScene}은 로드되어 있지 않아 언로드를 건너뜁니다.");
+            }
         }
 
         // 4. 다음 씬 비동기 로드 (Additive 모드!)

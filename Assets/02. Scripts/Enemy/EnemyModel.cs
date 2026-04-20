@@ -147,6 +147,28 @@ public class EnemyModel : EnemyBase
         stateMachine.UpdateState();
     }
 
+    public override void Reset()
+    {
+        base.Reset();
+
+        curState = EState.Idle;
+
+        if (stateMachine != null)
+        {
+            stateMachine.ChangeState(new IdleState(this));
+        }
+
+        if (_agent != null)
+        {
+            _agent.enabled = true;
+            _agent.isStopped = false;
+            _agent.velocity = Vector3.zero;
+
+            if (_agent.isOnNavMesh) _agent.ResetPath();
+        }
+
+        
+    }
     public void SetSpawnPoint(Transform pos)
     {
         spawnPoint = pos;
@@ -185,9 +207,7 @@ public class EnemyModel : EnemyBase
             character.Stat.GainGold(statSO.goldAmount);
             // 아이템 드랍 처리
         }
-
-        // 적 사망 처리
-        Debug.Log($"{_stat.enemyName}이(가) 사망했습니다.");
+        
     }
 
     private void OnDrawGizmos()

@@ -41,24 +41,47 @@ public class EnemySector : MonoBehaviour, ISectorCondition
 
     }
 
+    public void ResetCondition()
+    {
+        StopAllCoroutines();
+        foreach (var enemy in _spawnedEnemies)
+        {
+            if (enemy != null && enemy.gameObject.activeSelf)
+            {
+                // 죽어서 들어가는 게 아니므로 이벤트 비우고 Push
+                if (enemy is EnemyModel model) model.OnReturnToPool = null;
+                PoolManager.Instance.Push(enemy);
+            }
+        }
+        _spawnedEnemies.Clear();
+        _isStarted = false;
+    }
+
     IEnumerator SpawnRoutine(SpawnData data)
     {
         if (data.delay > 0)
             yield return new WaitForSeconds(data.delay);
 
-        if (data.enemyPrefab != null && data.spawnPoint != null)
+        EnemyBase enemy = PoolManager.Instance.Pop(data.enemyPrefab.name) as EnemyBase;
+        if (enemy != null)
         {
-            // 2. 실제 몬스터 생성
-            GameObject instance = Instantiate(data.enemyPrefab, data.spawnPoint.position, data.spawnPoint.rotation);
+            // 위치 설정 및 리셋
+            enemy.transform.position = data.spawnPoint.position;
+            enemy.transform.rotation = data.spawnPoint.rotation;
+            enemy.Reset();
 
-            // 3. EnemyBase 컴포넌트 가져와서 리스트에 등록 (사망 체크용)
-            if (instance.TryGetComponent<EnemyBase>(out var enemy))
+            if (enemy is EnemyModel model)
             {
-                if (enemy.TryGetComponent<EnemyModel>(out var model))
-                    model.SetSpawnPoint(data.spawnPoint);
-
-                _spawnedEnemies.Add(enemy);
+                model.SetSpawnPoint(data.spawnPoint);
+                // 던전은 OnReturnToPool에 리스폰 로직을 넣지 않음!
+                // 단순히 리스트 관리만 수행
+                model.OnReturnToPool = (e) => {
+                    // 필요 시 여기서 사망 알림 등만 처리
+                    DungeonManager.instance.UpdateDungeonUI();
+                };
             }
+            _spawnedEnemies.Add(enemy);
+            DungeonManager.instance.UpdateDungeonUI();
         }
     }
 

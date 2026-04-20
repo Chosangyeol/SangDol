@@ -11,6 +11,8 @@ public class PoolManager : MonoBehaviour
 
     private Transform _trmParent;
 
+    public PoolingListSO currentStageList;
+
     private void Awake()
     {
         Instance = this;
@@ -19,6 +21,17 @@ public class PoolManager : MonoBehaviour
         _trmParent = parentObj.transform;
         _trmParent.SetParent(transform);
 
+    }
+
+    private void Start()
+    {
+        if (currentStageList != null)
+        {
+            foreach (var item in currentStageList.PoolList)
+            {
+                CreatePool(item.Prefab, item.Count);
+            }
+        }
     }
 
     public void CreatePool(PoolableMono prefab, int count = 10)
