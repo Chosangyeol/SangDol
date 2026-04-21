@@ -12,6 +12,8 @@ public class TitleManager : MonoBehaviour
     public CanvasGroup touchText;
     public float speed = 1f;
 
+    public string targetScene;
+
     private void Awake()
     {
         instance = this;
@@ -74,7 +76,7 @@ public class TitleManager : MonoBehaviour
         {
             // 3. SceneController에게 첫 필드 로딩을 시킵니다.
             // 이때 SceneController 내부 로직에 의해 '로딩 화면'이 즉시 켜집니다.
-            SceneChanger.instance.LoadScene("FieldTest1");
+            SceneChanger.instance.LoadScene(targetScene);
         }
 
         // 4. 이제 필요 없어진 Title 씬은 언로드합니다.

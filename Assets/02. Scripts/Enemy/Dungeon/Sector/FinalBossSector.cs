@@ -1,18 +1,9 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-[Serializable]
-public struct SpawnData
-{
-    public GameObject enemyPrefab;
-    public Transform spawnPoint;
-    public float delay;
-}
-
-public class EnemySector : MonoBehaviour, ISectorCondition
+public class FinalBossSector : MonoBehaviour, ISectorCondition
 {
     [Header("스폰 데이터")]
     public List<SpawnData> spawnDataList;
@@ -20,13 +11,14 @@ public class EnemySector : MonoBehaviour, ISectorCondition
 
     private List<EnemyBase> _spawnedEnemies = new List<EnemyBase>();
 
-    public int TotalEnemyCount => spawnDataList.Count;
-    public int DeadEnemyCount => _spawnedEnemies.Count(e => e != null && e.IsDead);
-
     private bool _isStarted = false;
     public string SectorGoal => _goal;
 
+    public int TotalEnemyCount => spawnDataList.Count;
+    public int DeadEnemyCount => _spawnedEnemies.Count(e => e != null && e.IsDead);
+
     public bool IsSatisfied => _isStarted && DeadEnemyCount >= TotalEnemyCount;
+
     public void OnConditionStart()
     {
         if (_isStarted) return;
@@ -38,26 +30,6 @@ public class EnemySector : MonoBehaviour, ISectorCondition
         {
             StartCoroutine(SpawnRoutine(data));
         }
-    }
-
-    public void ResetCondition()
-    {
-        StopAllCoroutines();
-        foreach (var enemy in _spawnedEnemies)
-        {
-            if (enemy != null && enemy.gameObject.activeSelf)
-            {
-                // 죽어서 들어가는 게 아니므로 이벤트 비우고 Push
-                if (enemy is EnemyModel model)
-                {
-                    model.OnReturnToPool = null;
-                    model.StateMachine.ChangeState(new IdleState(model));
-                }
-                PoolManager.Instance.Push(enemy);
-            }
-        }
-        _spawnedEnemies.Clear();
-        _isStarted = false;
     }
 
     IEnumerator SpawnRoutine(SpawnData data)
@@ -73,11 +45,8 @@ public class EnemySector : MonoBehaviour, ISectorCondition
             enemy.transform.rotation = data.spawnPoint.rotation;
             enemy.Reset();
 
-            if (enemy is EnemyModel model)
+            if (enemy is BossModel model)
             {
-                model.SetSpawnPoint(data.spawnPoint);
-                // 던전은 OnReturnToPool에 리스폰 로직을 넣지 않음!
-                // 단순히 리스트 관리만 수행
                 model.OnReturnToPool = (e) => {
                     // 필요 시 여기서 사망 알림 등만 처리
                     DungeonManager.instance.UpdateDungeonUI();
@@ -86,6 +55,26 @@ public class EnemySector : MonoBehaviour, ISectorCondition
             _spawnedEnemies.Add(enemy);
             DungeonManager.instance.UpdateDungeonUI();
         }
+    }
+
+    public void ResetCondition()
+    {
+        StopAllCoroutines();
+
+        foreach (var enemy in _spawnedEnemies)
+        {
+            if (enemy != null && enemy.gameObject.activeSelf)
+            {
+                if (enemy is BossModel model)
+                {
+                    model.ResetBossState();
+                    model.OnReturnToPool = null;
+                }
+            }
+        }
+
+        _spawnedEnemies.Clear();
+        _isStarted = false;
     }
 
     public string GetProgressString()

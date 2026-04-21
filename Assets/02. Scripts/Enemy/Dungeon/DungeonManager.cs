@@ -11,10 +11,19 @@ using UnityEngine.Video;
 [System.Serializable]
 public class WarpData
 {
+    public string warpName;
     public Transform targetPos;
-    public bool isBossRoom = false;
-    public EnemySector bossSector;
     public Transform playerRespawn;
+
+    [Header("연결된 섹터")]
+    public SectorController nextSector;
+
+    [Header("보스전 전용")]
+    public bool isBossRoom = false;
+
+    [Header("체크포인트")]
+
+    [Header("연출 설정")]
     public bool hasVideo;
     public VideoClip clip;
     public bool hasAudio;
@@ -35,6 +44,7 @@ public class DungeonManager : MonoBehaviour
     public string dungeonName;
     public List<SectorController> allSectors;
     public int currentSector = 0;
+    public bool isEnterStart = true;
 
     [Header("던전 UI")]
     public GameObject dungeonUI;
@@ -53,7 +63,8 @@ public class DungeonManager : MonoBehaviour
         currentSector = 0;
         _model = GameObject.FindObjectOfType<CharacterModel>();
 
-        StartCoroutine(StartDungeon());
+        if (isEnterStart)
+            StartCoroutine(StartDungeon());
     }
 
     public void OnSectorCleared(SectorController sector)
@@ -90,9 +101,11 @@ public class DungeonManager : MonoBehaviour
 
     private IEnumerator WarpSequence(int index)
     {
+        WarpData data = warpDatas[index];
         dungeonStepIndex = index;
 
         _model.PlayerController.StopMove();
+
         _model.canMove = false;
         _model.canAttack = false;
         _model.canUse = false;
@@ -133,13 +146,9 @@ public class DungeonManager : MonoBehaviour
 
 
         // 3. 보스방이라면 EnemySector 실행
-        if (warpDatas[index].isBossRoom && warpDatas[index].bossSector != null)
+        if (data.nextSector != null)
         {
-            // 보스 섹터 시작 (EnemySector 내의 SpawnRoutine이 실행됨)
-            warpDatas[index].bossSector.OnConditionStart();
-
-            // [선택 사항] 보스가 죽을 때까지 기다렸다가 던전 클리어 처리를 하고 싶다면:
-            StartCoroutine(MonitorBossClear(warpDatas[index].bossSector));
+            data.nextSector.ActivateSector();
         }
     }
 
@@ -158,19 +167,29 @@ public class DungeonManager : MonoBehaviour
 
     private IEnumerator ReplaceSequence()
     {
-        yield return new WaitForSeconds(3f);
+        _model.SetControlable(false);
 
-        _model.Navmesh.enabled = false;
-        _model.canMove = false;
-        _model.canUse = false;
+        yield return new WaitForSeconds(3f);
 
         _model.transform.position = warpDatas[dungeonStepIndex].playerRespawn.position;
 
         _model.Revive();
 
+        SectorController current = warpDatas[dungeonStepIndex].nextSector;
+
+        if (current != null)
+        {
+            foreach (var condition in current.conditions)
+            {
+                if (condition is EnemySector es) es.ResetCondition();
+                else if (condition is MiddleBossSector mbs) mbs.ResetCondition();
+                else if (condition is FinalBossSector fbs) fbs.ResetCondition();
+            }
+
+        }
         yield return new WaitForSeconds(3f);
 
-        _model.canMove = true;
+        _model.SetControlable(true);
     }
     #endregion
 
@@ -183,13 +202,7 @@ public class DungeonManager : MonoBehaviour
 
         sectorName.text = nowSector.sectorName;
 
-        if (nowSector.conditions[nowSector.currentConditionIndex] is EnemySector enemyS)
-        {
-            sectorGoal.text = currentCondition.GetProgressString();
-            return;
-        }
-
-        sectorGoal.text = nowSector.conditions[nowSector.currentConditionIndex].SectorGoal;
+        sectorGoal.text = currentCondition.GetProgressString();
     }
 
     #endregion

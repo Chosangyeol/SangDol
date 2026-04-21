@@ -130,7 +130,9 @@ public class D1_FinalBoss : BossModel
         pattern5.hat = GameObject.FindGameObjectWithTag("D1_Final_N5");
 
         Special5.prefab = GameObject.FindGameObjectWithTag("D1_Final_S5").GetComponent<D1_Chess>();
-        Special5.cutSceneObj = GameObject.FindGameObjectWithTag("D1_Final_Cut2");
+        
+        GameObject parent = GameObject.Find("Root");
+        Special5.cutSceneObj = parent.transform.Find("D1_Special5CutScene").gameObject;
 
         Special5.cutSceneObj.SetActive(false);
 

@@ -2039,6 +2039,7 @@ MonoBehaviour:
   serverSelectUI: {fileID: 1148962357}
   touchText: {fileID: 823729641}
   speed: 1
+  targetScene: MainTest
 --- !u!4 &1777302858
 Transform:
   m_ObjectHideFlags: 0

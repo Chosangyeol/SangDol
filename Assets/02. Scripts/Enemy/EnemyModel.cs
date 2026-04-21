@@ -22,6 +22,7 @@ public class EnemyModel : EnemyBase
 
 
     private StateMachine stateMachine;
+    public StateMachine StateMachine => stateMachine;
     private EState curState;
 
     protected override void Awake()

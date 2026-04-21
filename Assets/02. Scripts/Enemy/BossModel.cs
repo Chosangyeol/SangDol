@@ -276,14 +276,14 @@ public class BossModel : EnemyBase, ICounterable
 
         Debug.Log("플레이어 사망. 대청소 시작");
 
-        StartCoroutine(Delay(5f));
+        StartCoroutine(Delay(3f));
     }
 
     private IEnumerator Delay(float delay)
     {
         yield return new WaitForSeconds(delay);
 
-        Destroy(gameObject);
+        PoolManager.Instance.Push(this);
     }
 
 #if UNITY_EDITOR

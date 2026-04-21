@@ -136,6 +136,15 @@ public class CharacterModel : MonoBehaviour
         }
     }
 
+    public void SetControlable(bool canControl)
+    {
+        navMesh.enabled = canControl;
+        canAttack = canControl;
+        canMove = canControl;
+        canSkill = canControl;
+        canUse = canControl;
+    }
+
     #region 일반 공격
     public void OnComboStart()
     {
@@ -380,9 +389,6 @@ public class CharacterModel : MonoBehaviour
         Heal(Stat.Stat.maxHp.FinalValue);
 
         Anim.SetTrigger("Revive");
-
-        Navmesh.enabled = true;
-        canUse = true;
 
         isDie = false;
 

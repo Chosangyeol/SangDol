@@ -129,7 +129,9 @@ public class SectorController : MonoBehaviour
         else
         {
             // 컷씬이 없으면 기존처럼 바로 게이트 제거
-            if (gateObject != null) gateObject.SetActive(false);
+            if (gateObject != null)
+                gateObject.SetActive(false);
+
             FinishSector();
         }
     }
