@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using UnityEditor.Searcher;
+
 
 
 #if UNITY_EDITOR
@@ -21,6 +23,33 @@ public class ItemDataBaseSO : ScriptableObject
     {
         GenerateEquipItemSO();
         GenerateItemSO();
+    }
+
+    public ItemBaseSO GetItemByID(string itemID)
+    {
+        if (int.TryParse(itemID, out int idNumber))
+        {
+            if (idNumber >= 10000 && idNumber < 20000)
+            {
+                foreach (var equip in equipItemDataBase)
+                {
+                    if (equip.itemID == itemID)
+                        return equip;
+                }
+            }
+            else if (idNumber >= 20000 && idNumber < 30000)
+            {
+                foreach (var item in itemDataBase)
+                {
+                    if (item.itemID == itemID)
+                        return item;
+                }
+            }
+        }
+
+        // 해당하는 범위를 찾지 못했거나, 리스트에 아이템이 없는 경우
+        Debug.LogWarning($"데이터베이스에 ID가 '{itemID}'인 아이템을 찾을 수 없습니다! (ID 범위를 확인해주세요)");
+        return null;
     }
 
     public void GenerateEquipItemSO()

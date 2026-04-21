@@ -113,6 +113,7 @@ public class CharacterStat
         this.criticalChance = new StatValue(statSO.criticalChance);
         this.criticalDamage = new StatValue(statSO.criticalDamage);
 
+        gold = 1000;
         statPoint = 0;
     }
 
@@ -163,6 +164,7 @@ public class CharacterStat
     public void UseGold(int amount)
     {
         gold -= amount;
+        Debug.Log($"{gold}¿ø º¸À¯");
     }
 
     public bool GetCritical()

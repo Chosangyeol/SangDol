@@ -30,6 +30,8 @@ public class FinalBossSector : MonoBehaviour, ISectorCondition
         {
             StartCoroutine(SpawnRoutine(data));
         }
+        DungeonManager.instance.UpdateDungeonUI();
+
     }
 
     IEnumerator SpawnRoutine(SpawnData data)
@@ -75,6 +77,7 @@ public class FinalBossSector : MonoBehaviour, ISectorCondition
 
         _spawnedEnemies.Clear();
         _isStarted = false;
+        DungeonManager.instance.UpdateDungeonUI();
     }
 
     public string GetProgressString()

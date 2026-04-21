@@ -63,6 +63,8 @@ public class DungeonManager : MonoBehaviour
         currentSector = 0;
         _model = GameObject.FindObjectOfType<CharacterModel>();
 
+        dungeonUI.SetActive(false);
+
         if (isEnterStart)
             StartCoroutine(StartDungeon());
     }
@@ -85,6 +87,7 @@ public class DungeonManager : MonoBehaviour
     {
         yield return new WaitForSeconds(2f);
 
+
         allSectors[0].ActivateSector();
     }
     private void OnDungeonComplete()
@@ -106,11 +109,7 @@ public class DungeonManager : MonoBehaviour
 
         _model.PlayerController.StopMove();
 
-        _model.canMove = false;
-        _model.canAttack = false;
-        _model.canUse = false;
-        _model.canSkill = false;
-        _model.Navmesh.enabled = false;
+        _model.SetControlable(false);
 
         GameEvent.OnBossRoomEnterCount?.Invoke(true, 0f);
 
@@ -138,14 +137,8 @@ public class DungeonManager : MonoBehaviour
         _model.cams[0].PreviousStateIsValid = false;
 
         // 2. 조작 해제
-        _model.Navmesh.enabled = true;
-        _model.canAttack = true;
-        _model.canUse = true;
-        _model.canMove = true;
-        _model.canSkill = true;
+        _model.SetControlable(true);
 
-
-        // 3. 보스방이라면 EnemySector 실행
         if (data.nextSector != null)
         {
             data.nextSector.ActivateSector();
@@ -197,6 +190,8 @@ public class DungeonManager : MonoBehaviour
 
     public void UpdateDungeonUI()
     {
+        dungeonUI.SetActive(true);
+
         SectorController nowSector = allSectors[currentSector];
         ISectorCondition currentCondition = nowSector.conditions[nowSector.currentConditionIndex];
 

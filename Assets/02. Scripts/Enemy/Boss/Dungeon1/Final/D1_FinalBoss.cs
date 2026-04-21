@@ -611,6 +611,8 @@ public class D1_FinalBoss : BossModel
         else
             yield return new WaitForSeconds(1f);
 
+        Target.ChangeCam(0, true);
+
         Target.Navmesh.enabled = false;
 
         Target.transform.position = Special5.prefab.startPos.position;

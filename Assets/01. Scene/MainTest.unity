@@ -503,7 +503,7 @@ MonoBehaviour:
   - m_Script
   m_LockStageInInspector: 
   m_StreamingVersion: 20170927
-  m_Priority: 15
+  m_Priority: 102
   m_StandbyUpdate: 2
   m_LookAt: {fileID: 0}
   m_Follow: {fileID: 0}
@@ -841,7 +841,7 @@ MonoBehaviour:
   - m_Script
   m_LockStageInInspector: 
   m_StreamingVersion: 20170927
-  m_Priority: 1
+  m_Priority: 99
   m_StandbyUpdate: 2
   m_LookAt: {fileID: 0}
   m_Follow: {fileID: 0}
@@ -1040,7 +1040,7 @@ MonoBehaviour:
   - m_Script
   m_LockStageInInspector: 
   m_StreamingVersion: 20170927
-  m_Priority: 1
+  m_Priority: 101
   m_StandbyUpdate: 2
   m_LookAt: {fileID: 0}
   m_Follow: {fileID: 0}
@@ -1219,6 +1219,30 @@ PlayableDirector:
     value: {fileID: 954417999}
   - key: {fileID: -2375090345839605337, guid: 4bef19b119c7cca49805cb599e6248bc, type: 2}
     value: {fileID: 54204531}
+  - key: {fileID: -8094702157410324683, guid: 4bef19b119c7cca49805cb599e6248bc, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: -5436085967707139736, guid: 4bef19b119c7cca49805cb599e6248bc, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: -2604884225570787150, guid: 4bef19b119c7cca49805cb599e6248bc, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: 5702936280040884493, guid: 4bef19b119c7cca49805cb599e6248bc, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: 5119679732335629978, guid: 4bef19b119c7cca49805cb599e6248bc, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: -3758641307465061850, guid: 4bef19b119c7cca49805cb599e6248bc, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: 8719732916960031958, guid: 4bef19b119c7cca49805cb599e6248bc, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: -2975324333784987284, guid: 4bef19b119c7cca49805cb599e6248bc, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: -6129767832258568158, guid: 4bef19b119c7cca49805cb599e6248bc, type: 2}
+    value: {fileID: 397570045}
+  - key: {fileID: 162837011569444707, guid: 4bef19b119c7cca49805cb599e6248bc, type: 2}
+    value: {fileID: 1863935229}
+  - key: {fileID: 2012933997686164275, guid: 4bef19b119c7cca49805cb599e6248bc, type: 2}
+    value: {fileID: 562408602}
+  - key: {fileID: 3022669666684634022, guid: 4bef19b119c7cca49805cb599e6248bc, type: 2}
+    value: {fileID: 54204528}
   m_ExposedReferences:
     m_References:
     - 676d00db5757d854c88ad50e4a3f9810: {fileID: 1863935230}
@@ -3647,7 +3671,7 @@ MonoBehaviour:
   sectorName: "\uC81C\uC2A4\uD130\uB97C \uC7A1\uC544\uB77C"
   sectorObjects:
   - {fileID: 1393408019}
-  isSequential: 1
+  isSequential: 0
   gateObject: {fileID: 0}
   nextSectorTrigger: {fileID: 0}
   cutsceneDirector: {fileID: 0}
@@ -4455,7 +4479,7 @@ MonoBehaviour:
   - m_Script
   m_LockStageInInspector: 
   m_StreamingVersion: 20170927
-  m_Priority: 1
+  m_Priority: 100
   m_StandbyUpdate: 2
   m_LookAt: {fileID: 0}
   m_Follow: {fileID: 0}
@@ -6237,7 +6261,7 @@ PrefabInstance:
     - target: {fileID: 6292796012629706706, guid: 4c09c35c3d85ce64db55b44f895ed03e,
         type: 3}
       propertyPath: warpDatas.Array.data[0].hasVideo
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6292796012629706706, guid: 4c09c35c3d85ce64db55b44f895ed03e,
         type: 3}

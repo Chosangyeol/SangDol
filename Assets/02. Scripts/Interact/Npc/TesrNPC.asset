@@ -15,8 +15,8 @@ MonoBehaviour:
   npcID: 30001
   npcName: "\uCD0C\uC7A5"
   defaultDialogID: D_30001_001
-  hasShop: 0
-  shopID: 
+  hasShop: 1
+  shopID: Shop00001
   canUpgrade: 0
   canTeleport: 0
   talkDialogID: D_30001_002

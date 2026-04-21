@@ -58,6 +58,8 @@ public class EnemySector : MonoBehaviour, ISectorCondition
         }
         _spawnedEnemies.Clear();
         _isStarted = false;
+        DungeonManager.instance.UpdateDungeonUI();
+
     }
 
     IEnumerator SpawnRoutine(SpawnData data)

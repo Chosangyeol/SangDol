@@ -96,7 +96,7 @@ public class CharacterModel : MonoBehaviour
             UIManager.Instance.InitGameUIs();
         }
 
-        ChangeCam(0);
+        ChangeCam(0, true);
 
         GameEvent.OnStatChange?.Invoke(stat.Stat);
     }
@@ -126,13 +126,19 @@ public class CharacterModel : MonoBehaviour
         canMove = true;
     }
 
-    public void ChangeCam(int index)
+    public void ChangeCam(int index, bool isCut = false)
     {
         for (int i = 0; i < cams.Length; i++)
         {
             cams[i].Priority = 0;
             if (i == index)
                 cams[i].Priority = 99;
+        }
+
+        if (isCut)
+        {
+            cams[index].gameObject.SetActive(false);
+            cams[index].gameObject.SetActive(true);
         }
     }
 
@@ -412,6 +418,11 @@ public class CharacterModel : MonoBehaviour
     public void GainGold(int amount)
     {
         Stat.GainGold(amount);
+    }
+    
+    public void UseGold(int amount)
+    {
+        Stat.UseGold(amount);
     }
 
     public bool GetCritical()

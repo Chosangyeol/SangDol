@@ -85,7 +85,7 @@ public class D1_Chess : MonoBehaviour
 
     private IEnumerator ReturnStage()
     {
-        _boss.Target.ChangeCam(0);
+        _boss.Target.ChangeCam(0, false);
 
         yield return new WaitForSeconds(2f);
 
@@ -118,7 +118,7 @@ public class D1_Chess : MonoBehaviour
 
         yield return new WaitForSeconds(1f);
 
-        _boss.Target.ChangeCam(1);
+        _boss.Target.ChangeCam(1, false);
 
         yield return new WaitForSeconds(1f);
 
@@ -148,7 +148,7 @@ public class D1_Chess : MonoBehaviour
 
         yield return new WaitForSeconds(2f);
 
-        _boss.Target.ChangeCam(0);
+        _boss.Target.ChangeCam(0, false);
 
         yield return new WaitForSeconds(3f);
 

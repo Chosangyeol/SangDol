@@ -49,9 +49,7 @@ public class QuestManager : MonoBehaviour
     [Header("퀘스트 미리보기")]
     public GameObject questPreview;
     public TMP_Text questNameText;
-    public TMP_Text questDialogText;
-
-    
+    public TMP_Text questDialogText; 
 
     private void Awake()
     {

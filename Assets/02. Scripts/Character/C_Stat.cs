@@ -70,6 +70,12 @@ public class C_Stat
         GameEvent.OnStatChange?.Invoke(Stat);
     }
 
+    public void UseGold(int amount)
+    {
+        stat.UseGold(amount);
+        GameEvent.OnStatChange?.Invoke(Stat);
+    }
+
     #region Add Stat Methods
     public void AddMaxHp(bool isFlat, float value)
     {

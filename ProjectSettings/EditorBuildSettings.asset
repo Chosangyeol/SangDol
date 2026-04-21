@@ -24,6 +24,9 @@ EditorBuildSettings:
     path: Assets/01. Scene/FieldTestScenes/FieldTest4.unity
     guid: a365d6070612e88468bfcb8229ac4852
   - enabled: 1
+    path: Assets/01. Scene/TestZone.unity
+    guid: db3a261a693b8c84daa7fbed6f787cc0
+  - enabled: 1
     path: Assets/01. Scene/DungeonTest.unity
     guid: 12200c5f19cc4b34fac25316b7c585f3
   - enabled: 1

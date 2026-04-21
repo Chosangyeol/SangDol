@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 
@@ -24,6 +25,11 @@ public class PlayerInputs : MonoBehaviour
     private void Update()
     {
         if (model.isDie) return;
+
+        if (EventSystem.current.IsPointerOverGameObject())
+        {
+            return;
+        }
 
         if (model != null && model.PlayerInput != null && model.canAttack)
         {
