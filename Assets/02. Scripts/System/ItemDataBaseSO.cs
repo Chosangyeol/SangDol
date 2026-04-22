@@ -72,7 +72,7 @@ public class ItemDataBaseSO : ScriptableObject
         {
             string[] cols = Regex.Split(rows[i], splitRegex);
 
-            if (cols.Length < 10) continue;
+            if (cols.Length < 11) continue;
 
             for (int j = 0; j < cols.Length; j++)
             {
@@ -113,6 +113,19 @@ public class ItemDataBaseSO : ScriptableObject
             string isflat = cols[9].ToUpper();
             newItemSO.isFlat = (isflat == "1" || isflat == "O" || isflat == "TRUE");
             newItemSO.value = float.Parse(cols[10]);
+            string canUpgrade = cols[11].ToUpper();
+            newItemSO.canUpgrade = (canUpgrade == "1" || canUpgrade == "O" || canUpgrade == "TRUE");
+
+            if (newItemSO.canUpgrade)
+            {
+                newItemSO.maxUpgrade = int.Parse(cols[12]);
+                newItemSO.perUpgradeBonus = float.Parse(cols[13]);
+            }
+            else
+            {
+                newItemSO.maxUpgrade = 0;
+                newItemSO.perUpgradeBonus = 0;
+            }
 
             EditorUtility.SetDirty(newItemSO);
 

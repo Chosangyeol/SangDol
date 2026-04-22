@@ -16,7 +16,7 @@ MonoBehaviour:
   itemName: "\uD14C\uC2A4\uD2B8\uC6A9 \uC7A5\uBE44 \uC0C1\uC758"
   itemIcon: {fileID: 21300000, guid: 3edd32efa63a39b4e923c26bdb0ac1e7, type: 3}
   itemType: 0
-  itemRarity: 1
+  itemRarity: 0
   itemDesc: "\uD14C\uC2A4\uD2B8\uC6A9 \uC7A5\uBE44 \uC0C1\uC758"
   itemPrice: 110
   stackable: 0
@@ -25,3 +25,7 @@ MonoBehaviour:
   statToIncrease: 2
   isFlat: 0
   value: 0.5
+  canUpgrade: 1
+  maxUpgrade: 99
+  perUpgradeBonus: 0.01
+  upgradeTable: {fileID: 0}

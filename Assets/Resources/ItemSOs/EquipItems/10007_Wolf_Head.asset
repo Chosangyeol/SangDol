@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f402cc7d7f5033e4ea7058b3ae8a2648, type: 3}
+  m_Name: 10007_Wolf_Head
+  m_EditorClassIdentifier: 
+  itemID: 10007
+  itemName: "\uB291\uB300\uC655\uC758 \uD22C\uAD6C"
+  itemIcon: {fileID: 21300000, guid: 3e43e3444bd906244a073f121012a0d2, type: 3}
+  itemType: 0
+  itemRarity: 3
+  itemDesc: "\uB291\uB300\uC655\uC758 \uD22C\uAD6C"
+  itemPrice: 0
+  stackable: 0
+  maxStack: 1
+  equipItemType: 0
+  statToIncrease: 1
+  isFlat: 1
+  value: 50
+  canUpgrade: 1
+  maxUpgrade: 5
+  perUpgradeBonus: 10
+  upgradeTable: {fileID: 11400000, guid: d6c9fef1152c55c469246d012b3dfe1d, type: 2}

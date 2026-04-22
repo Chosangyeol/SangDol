@@ -25,3 +25,7 @@ MonoBehaviour:
   statToIncrease: 1
   isFlat: 1
   value: 10
+  canUpgrade: 1
+  maxUpgrade: 99
+  perUpgradeBonus: 1
+  upgradeTable: {fileID: 0}

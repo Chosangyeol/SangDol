@@ -17,7 +17,7 @@ MonoBehaviour:
   defaultDialogID: D_30001_001
   hasShop: 1
   shopID: Shop00001
-  canUpgrade: 0
+  canUpgrade: 1
   canTeleport: 0
   talkDialogID: D_30001_002
   npcQuests:

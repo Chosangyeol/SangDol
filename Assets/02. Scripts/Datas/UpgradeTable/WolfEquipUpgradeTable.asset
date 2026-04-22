@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92eacc399b65f0a4eacf72fc5f4ad6b7, type: 3}
+  m_Name: WolfEquipUpgradeTable
+  m_EditorClassIdentifier: 
+  data:
+  - targetLevel: 1
+    successRate: 90
+    requireGold: 0
+    requireMaterialID: []
+    requiredMaterialAmount: 
+  - targetLevel: 2
+    successRate: 80
+    requireGold: 0
+    requireMaterialID: []
+    requiredMaterialAmount: 
+  - targetLevel: 3
+    successRate: 70
+    requireGold: 0
+    requireMaterialID: []
+    requiredMaterialAmount: 
+  - targetLevel: 4
+    successRate: 60
+    requireGold: 0
+    requireMaterialID: []
+    requiredMaterialAmount: 
+  - targetLevel: 5
+    successRate: 50
+    requireGold: 0
+    requireMaterialID: []
+    requiredMaterialAmount: 

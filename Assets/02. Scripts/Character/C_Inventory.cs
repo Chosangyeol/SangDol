@@ -240,4 +240,32 @@ public class C_Inventory
 
         return totalCount;
     }
+
+    public void RemoveTargetItem(string targetItemID, int amount)
+    {
+        int currentTotal = GetTotalItemCount(targetItemID);
+        if (currentTotal < amount)
+            return;
+
+        int remainToRemove = amount;
+
+        for (int i = 0; i < items.Count; i++)
+        {
+            if (items[i].currentStack > remainToRemove)
+            {
+                items[i].currentStack -= remainToRemove;
+                remainToRemove = 0;
+                break;
+            }
+            else
+            {
+                remainToRemove -= items[i].currentStack;
+                RemoveItem(items[i]);
+
+                if (remainToRemove <= 0)
+                    break;
+            }
+            
+        }
+    }
 }

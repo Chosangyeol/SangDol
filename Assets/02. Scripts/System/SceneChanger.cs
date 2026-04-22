@@ -60,33 +60,28 @@ public class SceneChanger : MonoBehaviour
 
     private IEnumerator LoadSequence(string nextScene, string spawnPointName)
     {
-        // 1. 플레이어 조작 금지
-        // CharacterModel.instance.canMove = false; 
+        if (playerObject != null)
+        {
+            // 콜라이더를 꺼서 이전 좌표의 포탈 충돌을 방지합니다.
+            if (playerObject.TryGetComponent<Collider>(out var col)) col.enabled = false;
+            if (playerAgent != null) playerAgent.enabled = false;
+        }
 
-        // 2. 로딩 UI 켜기
         loadingCanvas.SetActive(true);
 
-        // 3. 이전 씬 언로드 (타이틀에서 처음 넘어가는 게 아니라면)
+        // 3. 이전 씬 언로드
         if (!string.IsNullOrEmpty(_currentScene))
         {
-            // 씬 매니저에서 해당 이름의 씬 상태를 가져옵니다.
             Scene sceneToUnload = SceneManager.GetSceneByName(_currentScene);
-
-            // 씬이 유효하고(isValid), 현재 로드된 상태(isLoaded)일 때만 언로드 실행
             if (sceneToUnload.IsValid() && sceneToUnload.isLoaded)
             {
                 yield return SceneManager.UnloadSceneAsync(_currentScene);
-                Debug.Log($"[SceneChanger] {_currentScene} 언로드 성공");
-            }
-            else
-            {
-                Debug.LogWarning($"[SceneChanger] {_currentScene}은 로드되어 있지 않아 언로드를 건너뜁니다.");
             }
         }
 
-        // 4. 다음 씬 비동기 로드 (Additive 모드!)
+        // 4. 다음 씬 비동기 로드
         AsyncOperation op = SceneManager.LoadSceneAsync(nextScene, LoadSceneMode.Additive);
-        op.allowSceneActivation = false; // 90%에서 멈춰둠
+        op.allowSceneActivation = false;
 
         while (op.progress < 0.9f)
         {
@@ -94,30 +89,33 @@ public class SceneChanger : MonoBehaviour
             yield return null;
         }
 
-        // 5. [로아 핵심] 로딩 중에 몬스터 미리 풀링하기 (Pre-Pooling)
-        // 이 시점에 프리팹들을 미리 Instantiate 해서 메모리에 올려둡니다.
-        // yield return StartCoroutine(PrePoolingRoutine(nextScene));
-
-        // 6. 씬 활성화
+        // 6. 씬 활성화 및 대기
         op.allowSceneActivation = true;
-        yield return new WaitUntil(() => op.isDone);    
-        // 7. 활성화된 씬을 ActiveScene으로 설정 (내비메쉬, 라이팅 등을 위해)
+        yield return new WaitUntil(() => op.isDone);
 
         _currentScene = nextScene;
-
-        // 8. 플레이어 위치 세팅 및 로딩 UI 끄기
-        // DungeonManager.instance.OnSceneLoaded();
         SceneManager.SetActiveScene(SceneManager.GetSceneByName(_currentScene));
 
+        // 8. 플레이어 위치 세팅 (중요!)
         MovePlayerToSpawnPoint(spawnPointName);
+
+        // 시네머신 워프 처리를 위해 한 프레임 대기하거나 수동 갱신 호출 필요
+        // CinemachineBrain이 새 좌표를 인식할 시간을 줍니다.
+        yield return new WaitForEndOfFrame();
+
+        // 9. 물리 판정 재활성화 (좌표 이동이 완전히 끝난 후)
+        if (playerObject != null)
+        {
+            if (playerObject.TryGetComponent<Collider>(out var col)) col.enabled = true;
+            if (playerAgent != null) playerAgent.enabled = true;
+        }
+
         RefreshCameraStack();
 
         DynamicGI.UpdateEnvironment();
         RenderSettings.skybox = RenderSettings.skybox;
-        yield return new WaitForSeconds(0.5f); // 연출용 대기
+        yield return new WaitForSeconds(0.5f);
         loadingCanvas.SetActive(false);
-
-        // CharacterModel.instance.canMove = true;
     }
 
     private void MovePlayerToSpawnPoint(string pointName)

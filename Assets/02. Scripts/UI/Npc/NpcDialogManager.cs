@@ -42,6 +42,15 @@ public class NpcDialogManager : MonoBehaviour
             });
         }
 
+        if (npc.canUpgrade)
+        {
+            CreateButton("장비 강화", () =>
+            {
+                NpcUpgradeManager.instance.OpenUI();
+                CloseUI();
+            });
+        }
+
         CreateButton("대화 하기", () =>
         {
             Debug.Log("대화 하기 실행 ");
