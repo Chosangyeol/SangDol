@@ -13,17 +13,19 @@ MonoBehaviour:
   m_Name: 20001_hpPotion_Basic
   m_EditorClassIdentifier: 
   itemID: 20001
-  itemName: "\uCD08\uAE09 \uD68C\uBCF5 \uD3EC\uC158"
+  itemName: "\uCCB4\uB825 \uD3EC\uC158"
   itemIcon: {fileID: 21300000, guid: 7a88253f5a01cfc4094487ecf40e71d0, type: 3}
   itemType: 2
   itemRarity: 0
-  itemDesc: "\uCD08\uAE09 \uD68C\uBCF5 \uD3EC\uC158\uC774\uB2E4."
+  itemDesc: "\uB2EC\uB2EC\uD55C \uC0AC\uACFC\uB9DB\uC774 \uB098\uB294 \uCCB4\uB825
+    \uD3EC\uC158\uC774\uB2E4.  HP 60\uC744 3\uCD08\uC5D0 \uAC78\uCCD0 \uD68C\uBCF5\uD55C\uB2E4."
   itemPrice: 100
   stackable: 1
   maxStack: 99
   useItemType: 0
-  effectedStat: 1
-  isFlat: 0
-  effectAmount: 10
-  itemDuration: 0
-  coolDownTime: 0
+  isImmediately: 0
+  isPercent: 0
+  effectAmount: 60
+  itemDuration: 3
+  coolDownTime: 15
+  buffSO: {fileID: 11400000, guid: 0b2db036217bd094aae7f7838f79e2b4, type: 2}

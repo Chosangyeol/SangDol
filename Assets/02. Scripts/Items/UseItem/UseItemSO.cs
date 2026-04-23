@@ -5,22 +5,24 @@ public class UseItemSO : ItemBaseSO
 {
     [Header("소비 아이템 세팅")]
     public ItemEnums.UseItemType useItemType;
-    public C_Enums.CharacterStat effectedStat = C_Enums.CharacterStat.None;
 
-    public bool isFlat = true;
+    public bool isImmediately = false;
+    public bool isPercent = true;
     public float effectAmount = 0f;
     public float itemDuration = 0f;
 
     public float coolDownTime = 0f;
 
+    public BuffSO buffSO;
+
     public override ItemBase CreateItem(int stack)
     {
         switch (useItemType)
         {
-            case ItemEnums.UseItemType.Potion:
-                return new Potion(this, stack);
-            case ItemEnums.UseItemType.Scroll:
-                break;
+            case ItemEnums.UseItemType.Heal:
+                return new Heal(this, stack);
+            case ItemEnums.UseItemType.AntiPoison:
+                return new AntiPoison(this, stack);
                 
         }
 

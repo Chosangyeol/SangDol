@@ -3814,7 +3814,9 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 576
   camContainer: {fileID: 0}
-  cams: []
+  cams:
+  - {fileID: 0}
+  - {fileID: 0}
   textPos: {fileID: 6736747684343984682}
   characterStatSO: {fileID: 11400000, guid: 58501aac312a9664abd1a5c3516577cd, type: 2}
   inventorySlotSize: 66
@@ -3824,9 +3826,13 @@ MonoBehaviour:
   interactableDistance: 1.5
   skill_ZSO: {fileID: 11400000, guid: 5accf9595da007b4e95e8c604f3ae0c6, type: 2}
   skill_SpaceSO: {fileID: 11400000, guid: 653c1d810e92b0c40bb46c1cb5decc9c, type: 2}
+  lv5ABuffSO: {fileID: 11400000, guid: 4c44d6272a1bf4d4fa4719b184936067, type: 2}
+  clonePrefeb: {fileID: 5749607877044518315, guid: 217e1bf5cc6dad54bab2f738406df23d,
+    type: 3}
   canMove: 1
   canUse: 1
   canAttack: 1
+  canSkill: 1
   isDie: 0
 --- !u!114 &402003624484510465
 MonoBehaviour:

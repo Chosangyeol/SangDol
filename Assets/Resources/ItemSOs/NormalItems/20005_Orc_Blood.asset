@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 39b3023a6ddeb8944bdd3ecc740bd859, type: 3}
+  m_Name: 20005_Orc_Blood
+  m_EditorClassIdentifier: 
+  itemID: 20005
+  itemName: "\uC624\uD06C\uC758 \uD53C"
+  itemIcon: {fileID: 0}
+  itemType: 1
+  itemRarity: 1
+  itemDesc: "\uC624\uD06C\uC758 \uD53C\uB294 \uC5EC\uB7EC\uAC00\uC9C0 \uB9F9\uB3C5\uC73C\uB85C
+    \uBD80\uD130 \uBA74\uC5ED\uC744 \uAC00\uC9C0\uACE0 \uC788\uB2E4\uACE0 \uD55C\uB2E4.
+    \uC81C\uC791\uC744 \uD1B5\uD574 \uD574\uB3C5\uC81C\uB97C \uC81C\uC791\uD560 \uC218
+    \uC788\uB2E4."
+  itemPrice: 200
+  stackable: 1
+  maxStack: 99

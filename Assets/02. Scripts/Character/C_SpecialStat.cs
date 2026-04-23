@@ -59,7 +59,7 @@ public class C_SpecialStat
         {
             // 공격력 증가
             case C_Enums.SpecialStat.S1:
-                _model.AddStat(C_Enums.CharacterStat.AttackDamage, false, 0.03f);
+                _model.AddStat(C_Enums.CharacterStat.AttackDamage, true, 0.03f);
                 break;
             // 이동 / 공격속도 증가
             case C_Enums.SpecialStat.S2:
@@ -68,16 +68,16 @@ public class C_SpecialStat
                 break;
             // 무력화 피해량 증가
             case C_Enums.SpecialStat.S3:
-                _model.AddStat(C_Enums.CharacterStat.DownPower, false, 0.05f);
+                _model.AddStat(C_Enums.CharacterStat.DownPower, true, 0.05f);
                 break;
             // 치명타 확률 / 치명타 피해 증가
             case C_Enums.SpecialStat.S4:
-                _model.AddStat(C_Enums.CharacterStat.CriticalChance, true, 0.02f);
-                _model.AddStat(C_Enums.CharacterStat.CriticalDamage, true, 0.05f);
+                _model.AddStat(C_Enums.CharacterStat.CriticalChance, false, 0.02f);
+                _model.AddStat(C_Enums.CharacterStat.CriticalDamage, false, 0.05f);
                 break;
             case C_Enums.SpecialStat.S5:
                 _model.AddStat(C_Enums.CharacterStat.MaxHp, false, 0.05f);
-                _model.AddStat(C_Enums.CharacterStat.Defense, false, 0.03f);
+                _model.AddStat(C_Enums.CharacterStat.DamageTakeMultiplier, false, 0.03f);
                 break;
         }
     }

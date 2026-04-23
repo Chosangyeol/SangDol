@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemID: 10008
   itemName: "\uB291\uB300\uC655\uC758 \uAC11\uC637"
-  itemIcon: {fileID: 0}
+  itemIcon: {fileID: 21300000, guid: 5b34d8a2949fc3c4fbd33963df5377bc, type: 3}
   itemType: 0
   itemRarity: 3
   itemDesc: "\uB291\uB300\uC655\uC758 \uAC11\uC637"
@@ -23,7 +23,7 @@ MonoBehaviour:
   maxStack: 1
   equipItemType: 1
   statToIncrease: 1
-  isFlat: 1
+  isPercent: 1
   value: 50
   canUpgrade: 1
   maxUpgrade: 5

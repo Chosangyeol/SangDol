@@ -6,18 +6,18 @@ public class StatBuff : BuffBase
 {
     protected CharacterModel model;
     public C_Enums.CharacterStat effectedStat;
-    public bool isFlat;
+    public bool isPercent;
     public float value;
 
     public StatBuff(CharacterModel model,BuffSO buffSO, float remainSecond, 
-        C_Enums.CharacterStat effectedStat, bool isFlat, float value) : base(buffSO, remainSecond)
+        C_Enums.CharacterStat effectedStat, bool isPercent, float value) : base(buffSO, remainSecond)
     {
         this.model = model;
         buffType = EBuffType.StatBuff;
         this.remainSecond = remainSecond;
 
         this.effectedStat = effectedStat;
-        this.isFlat = isFlat;
+        this.isPercent = isPercent;
         this.value = value;
 
         return;
@@ -25,12 +25,12 @@ public class StatBuff : BuffBase
 
     public override void OnEnable()
     {
-        model.AddStat(effectedStat, isFlat, value);
+        model.AddStat(effectedStat, isPercent, value);
     }
 
     public override void OnDisable()
     {
-        model.RemoveStat(effectedStat, isFlat, value * currentStack);
+        model.RemoveStat(effectedStat, isPercent, value * currentStack);
     }
 
     public override void Stack()
@@ -41,7 +41,7 @@ public class StatBuff : BuffBase
             base.Stack();
 
             // ⭐️ 스택이 하나 쌓였으니, 1스택 분량의 스탯을 캐릭터에게 추가로 적용!
-            model.AddStat(effectedStat, isFlat, value);
+            model.AddStat(effectedStat, isPercent, value);
         }
     }
 

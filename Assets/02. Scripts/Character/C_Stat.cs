@@ -77,42 +77,29 @@ public class C_Stat
     }
 
     #region Add Stat Methods
-    public void AddMaxHp(bool isFlat, float value)
+    public void AddMaxHp(bool isPercent, float value)
     {
-        stat.AddMaxHp(isFlat, value);
+        stat.AddMaxHp(isPercent, value);
         GameEvent.OnStatChange?.Invoke(Stat);
 
     }
 
-    public void AddAttackDamage(bool isFlat, float value)
+    public void AddAttackDamage(bool isPercent, float value)
     {
-        stat.AddAttackDamage(isFlat, value);
+        stat.AddAttackDamage(isPercent, value);
         GameEvent.OnStatChange?.Invoke(Stat);
 
     }
 
-    public void AddDefense(bool isFlat, float value)
+    public void AddMoveSpeed(bool isPercent, float value)
     {
-        stat.AddDefense(isFlat, value);
-        GameEvent.OnStatChange?.Invoke(Stat);
-
-    }
-
-    public void AddMoveSpeed(bool isFlat, float value)
-    {
-        stat.AddMoveSpeed(isFlat,value);
+        stat.AddMoveSpeed(isPercent, value);
         GameEvent.OnStatChange?.Invoke(Stat);
     }
 
-    public void AddAttackSpeed(bool isFlat, float value)
+    public void AddAttackSpeed(bool isPercent, float value)
     {
-        stat.AddAttackSpeed(isFlat,value);
-        GameEvent.OnStatChange?.Invoke(Stat);
-    }
-
-    public void AddDownPower(float value)
-    {
-        stat.AddDownPower(value);
+        stat.AddAttackSpeed(isPercent, value);
         GameEvent.OnStatChange?.Invoke(Stat);
     }
 
@@ -130,39 +117,27 @@ public class C_Stat
     #endregion
 
     #region Remove Stat Methods
-    public void RemoveMaxHp(bool isFlat, float value)
+    public void RemoveMaxHp(bool isPercent, float value)
     {
-        stat.RemoveMaxHp(isFlat, value);
+        stat.RemoveMaxHp(isPercent, value);
         GameEvent.OnStatChange?.Invoke(Stat);
     }
 
-    public void RemoveAttackDamage(bool isFlat, float value)
+    public void RemoveAttackDamage(bool isPercent, float value)
     {
-        stat.RemoveAttackDamage(isFlat, value);
+        stat.RemoveAttackDamage(isPercent, value);
         GameEvent.OnStatChange?.Invoke(Stat);
     }
 
-    public void RemoveDefense(bool isFlat, float value)
+    public void RemoveMoveSpeed(bool isPercent, float value)
     {
-        stat.RemoveDefense(isFlat, value);
+        stat.RemoveMoveSpeed(isPercent, value);
         GameEvent.OnStatChange?.Invoke(Stat);
     }
 
-    public void RemoveMoveSpeed(bool isFlat, float value)
+    public void RemoveAttackSpeed(bool isPercent, float value)
     {
-        stat.RemoveMoveSpeed(isFlat,value);
-        GameEvent.OnStatChange?.Invoke(Stat);
-    }
-
-    public void RemoveAttackSpeed(bool isFlat, float value)
-    {
-        stat.RemoveAttackSpeed(isFlat, value);
-        GameEvent.OnStatChange?.Invoke(Stat);
-    }
-
-    public void RemoveDownPower(float value)
-    {
-        stat.RemoveDownPower(value);
+        stat.RemoveAttackSpeed(isPercent, value);
         GameEvent.OnStatChange?.Invoke(Stat);
     }
 
@@ -175,6 +150,69 @@ public class C_Stat
     public void RemoveCirticalDamage(float value)
     {
         stat.RemoveCirticalDamage(value);
+        GameEvent.OnStatChange?.Invoke(Stat);
+    }
+    #endregion
+
+    #region Special Stat Methods
+    // 특수 스탯
+    public void AddDownPower(float value)
+    {
+        stat.AddDownPower(value);
+        GameEvent.OnStatChange?.Invoke(Stat);
+    }
+
+    public void AddIdenBonus(float value)
+    {
+        stat.AddIdenBonus(value);
+        GameEvent.OnStatChange?.Invoke(Stat);
+    }
+
+    public void AddCooldownReduction(float value)
+    {
+        stat.AddCooldownReduction(value);
+        GameEvent.OnStatChange?.Invoke(Stat);
+    }
+
+    public void AddTakeMultiplier(float value)
+    {
+        stat.AddTakeMultiplier(value);
+        GameEvent.OnStatChange?.Invoke(Stat);
+    }
+
+    public void AddDodgeCooldownReduction(float value)
+    {
+        stat.AddDodgeCooldownReduction(value);
+        GameEvent.OnStatChange?.Invoke(Stat);
+    }
+
+    public void RemoveDownPower(float value)
+    {
+        stat.RemoveDownPower(value);
+        GameEvent.OnStatChange?.Invoke(Stat);
+    }
+
+    public void RemoveIdenBonus(float value)
+    {
+        stat.RemoveIdenBonus(value);
+        GameEvent.OnStatChange?.Invoke(Stat);
+    }
+
+    public void RemoveCooldownReduction(float value)
+    {
+        stat.RemoveCooldownReduction(value);
+        GameEvent.OnStatChange?.Invoke(Stat);
+    }
+
+    public void RemoveTakeMultiplier(float value)
+    {
+        stat.RemoveTakeMultiplier(value);
+        GameEvent.OnStatChange?.Invoke(Stat);
+    }
+
+    public void RemoveDodgeCooldownReduction(float value)
+    {
+        stat.RemoveDodgeCooldownReduction(value);
         GameEvent.OnStatChange?.Invoke(Stat);
     }
     #endregion

@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 39b3023a6ddeb8944bdd3ecc740bd859, type: 3}
+  m_Name: 20007_Jester_Letter
+  m_EditorClassIdentifier: 
+  itemID: 20007
+  itemName: "\uD0D0\uC695\uC758 \uC11C\uC2E0"
+  itemIcon: {fileID: 0}
+  itemType: 1
+  itemRarity: 3
+  itemDesc: "\uD0D0\uC695\uC758 \uAD70\uB2E8\uC7A5 \uC81C\uC2A4\uD130\uAC00 \uC4F4
+    \uC11C\uC2E0\uC73C\uB85C \uBA85\uB839\uC774 \uC801\uD600 \uC788\uB294 \uAC83
+    \uAC19\uC9C0\uB9CC \uB108\uBB34 \uC545\uD544\uC774\uB77C \uD574\uC11D\uC774 \uBD88\uAC00\uB2A5\uD558\uB2E4."
+  itemPrice: 5000
+  stackable: 1
+  maxStack: 99

@@ -23,7 +23,7 @@ MonoBehaviour:
   maxStack: 1
   equipItemType: 1
   statToIncrease: 2
-  isFlat: 0
+  isPercent: 1
   value: 0.5
   canUpgrade: 1
   maxUpgrade: 99

@@ -18,14 +18,7 @@ public class Potion : UseItemBase
     {
         if (owner == null) return false;
 
-        Debug.Log(itemBaseSO.effectedStat);
 
-        switch (itemBaseSO.effectedStat)
-        {
-            case C_Enums.CharacterStat.MaxHp:
-                owner.Heal(itemBaseSO.effectAmount);
-                return true;
-        }
 
         return false;
     }

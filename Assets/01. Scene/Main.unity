@@ -2435,8 +2435,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1062863465}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 4.5, z: -221.6}
+  m_LocalRotation: {x: 0.42261827, y: 0, z: 0, w: 0.9063079}
+  m_LocalPosition: {x: 0, y: 20, z: -221.6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3475,19 +3475,26 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2542087223080165811, guid: 83f62ffa919386c49806af7607bb00a4,
         type: 3}
+      propertyPath: stunSO
+      value: 
+      objectReference: {fileID: 11400000, guid: c029c3d867fe76549ab78fd424165bce,
+        type: 2}
+    - target: {fileID: 2542087223080165811, guid: 83f62ffa919386c49806af7607bb00a4,
+        type: 3}
       propertyPath: mainCam
       value: 
       objectReference: {fileID: 1062863469}
     - target: {fileID: 2542087223080165811, guid: 83f62ffa919386c49806af7607bb00a4,
         type: 3}
+      propertyPath: lv5BBuffSO
+      value: 
+      objectReference: {fileID: 11400000, guid: c8c1dd7454893004d9f8c4c4d8cef42f,
+        type: 2}
+    - target: {fileID: 2542087223080165811, guid: 83f62ffa919386c49806af7607bb00a4,
+        type: 3}
       propertyPath: camContainer
       value: 
       objectReference: {fileID: 1089954753}
-    - target: {fileID: 2542087223080165811, guid: 83f62ffa919386c49806af7607bb00a4,
-        type: 3}
-      propertyPath: cams.Array.size
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 2542087223080165811, guid: 83f62ffa919386c49806af7607bb00a4,
         type: 3}
       propertyPath: cams.Array.data[0]

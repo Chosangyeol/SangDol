@@ -1,0 +1,10 @@
+﻿ID,Name,NameKr,Icon,Rarity,Desc,MaxStack,Price,UseType,Immediately,IsPercent,Amount,Duration,CoolDown
+20001,hpPotion_Basic,체력 포션,20001,Common,달달한 사과맛이 나는 체력 포션이다.  HP 60을 3초에 걸쳐 회복한다.,99,100,Heal,FALSE,FALSE,60,3,15
+20002,Normal_Test,테스트용 일반아이템,20002,Common,테스트용 일반 아이템,99,2,,,,,,
+20003,Wolf_Leather,늑대 가죽,20003,Common,늑대의 가죽으로 생각보다 꺼칠꺼칠한 느낌이든다.,99,20,,,,,,
+20004,Golem_Essence,골램의 바위 정수,20004,Common,골렘의 핵이자 정수로 골렘의 움직임을 통제한다.,99,30,,,,,,
+20005,Orc_Blood,오크의 피,20005,Uncommon,오크의 피는 여러가지 맹독으로 부터 면역을 가지고 있다고 한다. 제작을 통해 해독제를 제작할 수 있다.,99,200,,,,,,
+20006,Devil_Horn,악마의 뿔,20006,Rare,악마의 뿔은 높은 가치와 힘을 지니고 있다고 한다. 상점에서 비싸게 판매 할 수 있다.,99,3000,,,,,,
+20007,Jester_Letter,탐욕의 서신,20007,Unique,탐욕의 군단장 제스터가 쓴 서신으로 명령이 적혀 있는 것 같지만 너무 악필이라 해석이 불가능하다.,99,5000,,,,,,
+20008,Apple,빛나는 제철 사과,20008,Uncommon,꿀을 머금은 듯이 윤기나는 사과. 맛도 일품!,99,0,,,,,,
+20009,Poison_Potion,해독제,20009,Uncommon,독상태를 치유할 수 있는 포션 ,99,0,AntiPoison,TRUE,FALSE,0,0,30

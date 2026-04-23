@@ -92,7 +92,6 @@ public class StatusUI : MonoBehaviour
         hpText.text = $"체력: {stat.curHp} / {stat.maxHp.GetValue()}";
         levelText.text = $"레벨: {stat.currentLevel}";
         attackText.text = $"공격력: {stat.attackDamage.GetValue()}";
-        defenseText.text = $"방어력: {stat.defense.GetValue()}";
         criticalChanceText.text = $"치명타 확률: {stat.criticalChance.GetValue() * 100}%";
         criticalDamageText.text = $"치명타 피해량: {stat.criticalDamage.GetValue() * 100}%";
 

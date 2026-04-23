@@ -36,12 +36,15 @@ public class C_Enums
         None,
         MaxHp,
         AttackDamage,
-        Defense,
         MoveSpeed,
         AttackSpeed,
-        DownPower,
         CriticalChance,
-        CriticalDamage
+        CriticalDamage,
+        DownPower,
+        IdenBonus,
+        CooldownReduction,
+        DamageTakeMultiplier,
+        DodgeCooldownReduction
     }
 
     public enum SpecialStat

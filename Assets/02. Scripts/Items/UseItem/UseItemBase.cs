@@ -2,7 +2,7 @@ using UnityEngine;
 
 public abstract class UseItemBase : ItemBase
 {
-    public UseItemSO itemBaseSO;
+    public new UseItemSO itemBaseSO;
 
     public UseItemBase(UseItemSO itemBaseSO, int currentStack) : base(itemBaseSO, currentStack)
     {

@@ -112,6 +112,55 @@ public class C_Buff
         _listBuff.Clear();
     }
 
+    public bool RemoveBuff(BuffSO targetSO)
+    {
+        // FindIndex를 사용하면 for문을 돌리는 것보다 코드가 훨씬 짧고 직관적이게 됩니다.
+        int index = _listBuff.FindIndex(x => x.act.buffSO == targetSO);
+
+        if (index != -1) // 일치하는 BuffSO를 찾았다면!
+        {
+            SBuff buffToRemove = _listBuff[index];
+
+            // 완벽하게 작성하신 생명주기(이벤트 -> 종료 -> 삭제 -> 이벤트)를 그대로 적용합니다.
+            ActionBeforeRemoveBuff?.Invoke(ref buffToRemove);
+
+            buffToRemove.act.OnDisable();
+            _listBuff.RemoveAt(index);
+
+            ActionAfterRemoveBuff?.Invoke(buffToRemove);
+
+            return true;
+        }
+
+        // 지우려는 버프가 리스트에 없으면 false 반환
+        return false;
+    }
+
+    public bool RemoveBuff(EBuffType targetType)
+    {
+        for (int i = 0; i < _listBuff.Count;i++)
+        {
+            SBuff buff = _listBuff[i];
+
+            if (buff.act.buffType == targetType)
+            {
+                ActionBeforeRemoveBuff?.Invoke(ref buff);
+                buff.act.OnDisable();
+                _listBuff.RemoveAt(i);
+
+                ActionAfterRemoveBuff?.Invoke(buff);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private bool IsDebuff(EBuffType type)
+    {
+        // 기획에 따라 해로운 효과에 해당하는 타입을 모두 나열해줍니다.
+        return type == EBuffType.Dot || type == EBuffType.Stun || type == EBuffType.Panic || type == EBuffType.Poison;
+    }
+
     #region 상태이상 부여
 
     public void StunEnable()

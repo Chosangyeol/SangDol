@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f402cc7d7f5033e4ea7058b3ae8a2648, type: 3}
+  m_Name: 10017_Wolf_Shoes
+  m_EditorClassIdentifier: 
+  itemID: 10017
+  itemName: "\uB291\uB300\uC655\uC758 \uC2E0\uBC1C"
+  itemIcon: {fileID: 21300000, guid: 6529a34abea8edd4f8c0d262fd572642, type: 3}
+  itemType: 0
+  itemRarity: 3
+  itemDesc: "\uB291\uB300\uC758 \uAC00\uC8FD\uC744 \uC0AC\uC6A9\uD558\uC5EC \uC81C\uC791\uD55C
+    \uC2E0\uBC1C\uC774\uB2E4. \uC65C\uC778\uC9C0 \uB291\uB300\uB4E4\uC774 \uC798
+    \uB530\uB974\uB294 \uAE30\uBD84\uC774\uB4E0\uB2E4."
+  itemPrice: 0
+  stackable: 0
+  maxStack: 1
+  equipItemType: 4
+  statToIncrease: 4
+  isPercent: 0
+  value: 0.1
+  canUpgrade: 1
+  maxUpgrade: 5
+  perUpgradeBonus: 0.01
+  upgradeTable: {fileID: 0}

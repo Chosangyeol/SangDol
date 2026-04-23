@@ -71,47 +71,67 @@ public class CharacterStat
     public float idenMax;
     public float idenCurrent;
 
+    // 일반 스탯
     public StatValue maxHp;
     public float curHp;
 
-    public StatValue attackDamage;
-    public StatValue defense;
+    public StatValue attackDamage; 
 
     public StatValue moveSpeed;
     public StatValue attackSpeed;
 
-    public StatValue idenBonus;
-    public StatValue downPower;
-
     public StatValue criticalChance;
     public StatValue criticalDamage;
+
+    // 특수 스탯
+    /// <summary>
+    /// 아이덴티티 획득량 증가 %
+    /// </summary>
+    public StatValue idenBonus;
+    /// <summary>
+    /// 무력화 피해 증가 %
+    /// </summary>
+    public StatValue downPower;
+    /// <summary>
+    /// 쿨타임 감소 %
+    /// </summary>
+    public StatValue cooldownReduction;
+    /// <summary>
+    /// 받는 피해 배율 %
+    /// </summary>
+    public StatValue damageTakeMultiplier;
+    public float dodgeCooldownReduction;
 
     public int gold;
     public int statPoint;
 
     public CharacterStat(CharacterStatSO statSO, string name = "테스트")
     {
+        // 고정값
         this.characterName = name;
         this.currentLevel = 1;
         this.maxExp = 100;
-
         this.idenMax = 100;
         this.idenCurrent = 100;
 
+        // 일반 스탯
         this.maxHp = new StatValue(statSO.maxHp);
         this.curHp = maxHp.FinalValue;
 
         this.attackDamage = new StatValue(statSO.attackDamage);
-        this.defense = new StatValue(statSO.defense);
 
         this.moveSpeed = new StatValue(statSO.moveSpeed);
         this.attackSpeed = new StatValue(statSO.attackSpeed);
 
-        this.idenBonus = new StatValue(statSO.idenBonus);
-        this.downPower = new StatValue(statSO.downPower);
-
         this.criticalChance = new StatValue(statSO.criticalChance);
         this.criticalDamage = new StatValue(statSO.criticalDamage);
+
+        // 특수 스탯
+        this.idenBonus = new StatValue(statSO.idenBonus);
+        this.downPower = new StatValue(statSO.downPower);
+        this.cooldownReduction = new StatValue(1.0f);
+        this.damageTakeMultiplier = new StatValue(1.0f);
+        this.dodgeCooldownReduction = 0f;
 
         gold = 1000;
         statPoint = 0;
@@ -129,6 +149,9 @@ public class CharacterStat
         {
             finalDamage = Mathf.RoundToInt(maxHp.FinalValue * damage);
         }
+
+        // 받는 피해 비율 체크
+        finalDamage = Mathf.RoundToInt(finalDamage * damageTakeMultiplier.FinalValue);
 
         curHp -= finalDamage;
 
@@ -203,49 +226,36 @@ public class CharacterStat
     #endregion
 
     #region Add Stat Methods
-    public void AddMaxHp(bool isFlat, float value)
+    public void AddMaxHp(bool isPercent, float value)
     {
-        if (isFlat)
-            maxHp.AddFlat(value);
-        else
+        if (isPercent)
             maxHp.AddPercent(value);
+        else
+            maxHp.AddFlat(value);
     }
 
-    public void AddAttackDamage(bool isFlat, float value)
+    public void AddAttackDamage(bool isPercent, float value)
     {
-        if (isFlat)
-            attackDamage.AddFlat(value);
-        else
+        if (isPercent)
             attackDamage.AddPercent(value);
+        else
+            attackDamage.AddFlat(value);
     }
 
-    public void AddDefense(bool isFlat, float value)
+    public void AddMoveSpeed(bool isPercent, float value)
     {
-        if (isFlat)
-            defense.AddFlat(value);
-        else
-            defense.AddPercent(value);
-    }
-
-    public void AddMoveSpeed(bool isFlat, float value)
-    {
-        if (isFlat)
-            moveSpeed.AddFlat(value);
-        else
+        if (isPercent)
             moveSpeed.AddPercent(value);
-    }
-
-    public void AddAttackSpeed(bool isFlat, float value)
-    {
-        if (isFlat)
-            attackSpeed.AddFlat(value);
         else
-            attackSpeed.AddPercent(value);
+            moveSpeed.AddFlat(value);
     }
 
-    public void AddDownPower(float value)
+    public void AddAttackSpeed(bool isPercent, float value)
     {
-        downPower.AddFlat(value);
+        if (isPercent)
+            attackSpeed.AddPercent(value);
+        else
+            attackSpeed.AddFlat(value);
     }
 
     public void AddCirticalChance(float value)
@@ -257,52 +267,41 @@ public class CharacterStat
     {
         criticalDamage.AddFlat(value);
     }
+
+    
     #endregion
 
     #region Remove Stat Methods
-    public void RemoveMaxHp(bool isFlat, float value)
+    public void RemoveMaxHp(bool isPercent, float value)
     {
-        if (isFlat)
+        if (isPercent)
             maxHp.RemoveFlat(value);
         else
             maxHp.RemovePercent(value);
     }
 
-    public void RemoveAttackDamage(bool isFlat, float value)
+    public void RemoveAttackDamage(bool isPercent, float value)
     {
-        if (isFlat)
+        if (isPercent)
             attackDamage.RemoveFlat(value);
         else
             attackDamage.RemovePercent(value);
     }
 
-    public void RemoveDefense(bool isFlat, float value)
+    public void RemoveMoveSpeed(bool isPercent, float value)
     {
-        if (isFlat)
-            defense.RemoveFlat(value);
-        else
-            defense.RemovePercent(value);
-    }
-
-    public void RemoveMoveSpeed(bool isFlat, float value)
-    {
-        if (isFlat)
-            moveSpeed.RemoveFlat(value);
-        else
+        if (isPercent)
             moveSpeed.RemovePercent(value);
-    }
-
-    public void RemoveAttackSpeed(bool isFlat, float value)
-    {
-        if (isFlat)
-            attackSpeed.RemoveFlat(value);
         else
-            attackSpeed.RemovePercent(value);
+            moveSpeed.RemoveFlat(value);
     }
 
-    public void RemoveDownPower(float value)
+    public void RemoveAttackSpeed(bool isPercent, float value)
     {
-        downPower.RemoveFlat(value);
+        if (isPercent)
+            attackSpeed.RemovePercent(value);
+        else
+            attackSpeed.RemoveFlat(value);
     }
 
     public void RemoveCirticalChance(float value)
@@ -318,14 +317,62 @@ public class CharacterStat
     #endregion
 
     #region Special Stat Methods
+    // 특수 스탯
+    public void AddDownPower(float value)
+    {
+        downPower.AddFlat(value);
+    }
 
+    public void AddIdenBonus(float value)
+    {
+        idenBonus.AddFlat(value);
+    }
+
+    public void AddCooldownReduction(float value)
+    {
+        cooldownReduction.AddFlat(value);
+    }
+
+    public void AddTakeMultiplier(float value)
+    {
+        damageTakeMultiplier.AddFlat(value);
+    }
+
+    public void AddDodgeCooldownReduction(float value)
+    {
+        dodgeCooldownReduction += value;
+    }
+
+    public void RemoveDownPower(float value)
+    {
+        downPower.RemoveFlat(value);
+    }
+
+    public void RemoveIdenBonus(float value)
+    {
+        idenBonus.RemoveFlat(value);
+    }
+
+    public void RemoveCooldownReduction(float value)
+    {
+        cooldownReduction.RemoveFlat(value);
+    }
+
+    public void RemoveTakeMultiplier(float value)
+    {
+        damageTakeMultiplier.RemoveFlat(value);
+    }
+
+    public void RemoveDodgeCooldownReduction(float value)
+    {
+        dodgeCooldownReduction -= value;
+    }
     #endregion
 
     public void RecalculateAll()
     {
         maxHp.Recalculate();
         attackDamage.Recalculate();
-        defense.Recalculate();
         moveSpeed.Recalculate();
         attackSpeed.Recalculate();
         downPower.Recalculate();

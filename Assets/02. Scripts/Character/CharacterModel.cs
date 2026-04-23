@@ -30,6 +30,12 @@ public class CharacterModel : MonoBehaviour
     public Skill_ZSO skill_ZSO;
     public Skill_SpaceSO skill_SpaceSO;
 
+    [Header("성흔 설정")]
+    public BuffSO lv5ABuffSO;
+    public BuffSO lv5BBuffSO;
+    public BuffSO stunSO;
+    public GameObject clonePrefeb;
+
     [Header("캐릭터 상태")]
     public bool canMove = true;
     public bool canUse = true;
@@ -62,6 +68,16 @@ public class CharacterModel : MonoBehaviour
     private C_Buff buff;
     public C_Buff Buff => buff;
 
+    private C_Stigma stigma;
+    public C_Stigma Stigma => stigma; 
+
+    /// <summary>
+    /// 캐릭터 이벤트
+    /// </summary>
+    public event Action<CharacterModel, float, bool, EnemyBase> OnHitTarget;
+    public event Action<float> OnTakeDamage;
+    public event Action OnSkillUsed;
+    public event Action OnDodgeUsed;
 
     private void Awake()
     {
@@ -78,6 +94,7 @@ public class CharacterModel : MonoBehaviour
         playerInput = new C_Input(this, playerController);
         skillSystem = new C_SkillSystem(this);
         buff = new C_Buff(this);
+        stigma = new C_Stigma(this,lv5ABuffSO, lv5BBuffSO, stunSO, clonePrefeb);
 
     }
 
@@ -106,8 +123,9 @@ public class CharacterModel : MonoBehaviour
         if (isDie) return;
 
         playerController.Tick();
-        buff.UpdateBuff(Time.deltaTime);
-        skillSystem.UpdateSkills(Time.deltaTime);
+        buff?.UpdateBuff(Time.deltaTime);
+        skillSystem?.UpdateSkills(Time.deltaTime);
+        stigma?.UpdateStigma(Time.deltaTime);
 
         if (Buff.isStun)
         {
@@ -241,6 +259,7 @@ public class CharacterModel : MonoBehaviour
                     {
                         GameEvent.OnBossStateChange?.Invoke(boss);
                     }
+                    OnHitTarget?.Invoke(this, info.damage, true, enemy);
                 }
             }
 
@@ -258,10 +277,7 @@ public class CharacterModel : MonoBehaviour
                 }
             }
         }
-
-       
         canMove = true;
-
     }
 
     private void HandleBasicAttack4(float damageMultiplier)
@@ -300,6 +316,7 @@ public class CharacterModel : MonoBehaviour
                 {
                     GameEvent.OnBossStateChange?.Invoke(boss);
                 }
+                OnHitTarget?.Invoke(this, info.damage, true, enemy);
             }
 
             if (target.TryGetComponent<ICounterable>(out ICounterable counterable))
@@ -430,27 +447,23 @@ public class CharacterModel : MonoBehaviour
         return (Stat.GetCritical());
     }
 
-    public void AddStat(C_Enums.CharacterStat statType,bool isFlat, float value)
+    public void AddStat(C_Enums.CharacterStat statType,bool isPercent, float value)
     {
         if (statType == C_Enums.CharacterStat.MaxHp)
         {
-            Stat.AddMaxHp(isFlat, value);
+            Stat.AddMaxHp(isPercent, value);
         }
         else if (statType == C_Enums.CharacterStat.AttackDamage)
         {
-            Stat.AddAttackDamage(isFlat, value);
-        }
-        else if (statType == C_Enums.CharacterStat.Defense)
-        {
-            Stat.AddDefense(isFlat, value);
+            Stat.AddAttackDamage(isPercent, value);
         }
         else if (statType == C_Enums.CharacterStat.MoveSpeed)
         {
-            Stat.AddMoveSpeed(isFlat,value);
+            Stat.AddMoveSpeed(isPercent, value);
         }
         else if (statType == C_Enums.CharacterStat.AttackSpeed)
         {
-            Stat.AddAttackSpeed(isFlat,value);
+            Stat.AddAttackSpeed(isPercent, value);
         }
         else if (statType == C_Enums.CharacterStat.DownPower)
         {
@@ -464,31 +477,43 @@ public class CharacterModel : MonoBehaviour
         {
             Stat.AddCirticalDamage(value);
         }
+        else if (statType == C_Enums.CharacterStat.IdenBonus)
+        {
+            Stat.AddIdenBonus(value);
+        }
+        else if (statType == C_Enums.CharacterStat.CooldownReduction)
+        {
+            Stat.AddCooldownReduction(value);
+        }
+        else if (statType == C_Enums.CharacterStat.DamageTakeMultiplier)
+        {
+            Stat.AddTakeMultiplier(value);
+        }
+        else if (statType == C_Enums.CharacterStat.DodgeCooldownReduction)
+        {
+            Stat.AddDodgeCooldownReduction(value);
+        }
 
         navMesh.speed = Stat.Stat.moveSpeed.FinalValue;
     }
 
-    public void RemoveStat(C_Enums.CharacterStat statType, bool isFlat, float value)
+    public void RemoveStat(C_Enums.CharacterStat statType, bool isPercent, float value)
     {
         if (statType == C_Enums.CharacterStat.MaxHp)
         {
-            Stat.RemoveMaxHp(isFlat, value);
+            Stat.RemoveMaxHp(isPercent, value);
         }
         else if (statType == C_Enums.CharacterStat.AttackDamage)
         {
-            Stat.RemoveAttackDamage(isFlat, value);
-        }
-        else if (statType == C_Enums.CharacterStat.Defense)
-        {
-            Stat.RemoveDefense(isFlat, value);
+            Stat.RemoveAttackDamage(isPercent, value);
         }
         else if (statType == C_Enums.CharacterStat.MoveSpeed)
         {
-            Stat.RemoveMoveSpeed(isFlat, value);
+            Stat.RemoveMoveSpeed(isPercent, value);
         }
         else if (statType == C_Enums.CharacterStat.AttackSpeed)
         {
-            Stat.RemoveAttackSpeed(isFlat, value);
+            Stat.RemoveAttackSpeed(isPercent, value);
         }
         else if (statType == C_Enums.CharacterStat.DownPower)
         {
@@ -501,6 +526,22 @@ public class CharacterModel : MonoBehaviour
         else if (statType == C_Enums.CharacterStat.CriticalDamage)
         {
             Stat.RemoveCirticalDamage(value);
+        }
+        else if (statType == C_Enums.CharacterStat.IdenBonus)
+        {
+            Stat.RemoveIdenBonus(value);
+        }
+        else if (statType == C_Enums.CharacterStat.CooldownReduction)
+        {
+            Stat.RemoveCooldownReduction(value);
+        }
+        else if (statType == C_Enums.CharacterStat.DamageTakeMultiplier)
+        {
+            Stat.RemoveTakeMultiplier(value);
+        }
+        else if (statType == C_Enums.CharacterStat.DodgeCooldownReduction)
+        {
+            Stat.RemoveDodgeCooldownReduction(value);
         }
 
         navMesh.speed = Stat.Stat.moveSpeed.FinalValue;

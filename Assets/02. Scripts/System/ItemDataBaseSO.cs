@@ -54,7 +54,9 @@ public class ItemDataBaseSO : ScriptableObject
 
     public void GenerateEquipItemSO()
     {
-        TextAsset csvFile = Resources.Load<TextAsset>("equipItemDataBase");
+        string filePath = "Assets/Editor/ItemData/EquipItemDataBase.csv";
+
+        TextAsset csvFile = AssetDatabase.LoadAssetAtPath<TextAsset>(filePath);
 
         if (csvFile == null)
         {
@@ -98,7 +100,7 @@ public class ItemDataBaseSO : ScriptableObject
             newItemSO.itemID = id;
             newItemSO.itemName = nameKr;
 
-            string iconPath = $"Assets/Resources/ItemIcons/{id}.png";
+            string iconPath = $"Assets/05. Sprite/ItemIcons/{id}.png";
             newItemSO.itemIcon = AssetDatabase.LoadAssetAtPath<Sprite>(iconPath);
             newItemSO.itemType = ItemEnums.ItemType.Equip;
             newItemSO.itemRarity = (ItemEnums.ItemRarity)Enum.Parse(typeof(ItemEnums.ItemRarity), cols[4]);
@@ -110,8 +112,8 @@ public class ItemDataBaseSO : ScriptableObject
             newItemSO.equipItemType = (ItemEnums.EquipItemType)Enum.Parse(typeof(ItemEnums.EquipItemType), cols[7]);
             newItemSO.statToIncrease = (C_Enums.CharacterStat)Enum.Parse(typeof(C_Enums.CharacterStat), cols[8]);
 
-            string isflat = cols[9].ToUpper();
-            newItemSO.isFlat = (isflat == "1" || isflat == "O" || isflat == "TRUE");
+            string isPercent = cols[9].ToUpper();
+            newItemSO.isPercent = (isPercent == "1" || isPercent == "O" || isPercent == "TRUE");
             newItemSO.value = float.Parse(cols[10]);
             string canUpgrade = cols[11].ToUpper();
             newItemSO.canUpgrade = (canUpgrade == "1" || canUpgrade == "O" || canUpgrade == "TRUE");
@@ -138,7 +140,9 @@ public class ItemDataBaseSO : ScriptableObject
 
     public void GenerateItemSO()
     {
-        TextAsset csvFile = Resources.Load<TextAsset>("ItemDataBase");
+        string filePath = "Assets/Editor/ItemData/ItemDataBase.csv";
+
+        TextAsset csvFile = AssetDatabase.LoadAssetAtPath<TextAsset>(filePath);
 
         if (csvFile == null )
         {
@@ -184,7 +188,7 @@ public class ItemDataBaseSO : ScriptableObject
                 newItemSO.itemID = id;
                 newItemSO.itemName = nameKr;
 
-                string iconPath = $"Assets/Resources/ItemIcons/{id}.png";
+                string iconPath = $"Assets/05. Sprite/ItemIcons/{id}.png";
                 newItemSO.itemIcon = AssetDatabase.LoadAssetAtPath<Sprite>(iconPath);
                 newItemSO.itemType = ItemEnums.ItemType.Use;
                 newItemSO.itemRarity = (ItemEnums.ItemRarity)Enum.Parse(typeof(ItemEnums.ItemRarity), cols[4]);
@@ -194,9 +198,10 @@ public class ItemDataBaseSO : ScriptableObject
                 newItemSO.itemPrice = int.Parse(cols[7]);
 
                 newItemSO.useItemType = (ItemEnums.UseItemType)Enum.Parse(typeof(ItemEnums.UseItemType), cols[8]);
-                newItemSO.effectedStat = (C_Enums.CharacterStat)Enum.Parse(typeof(C_Enums.CharacterStat), cols[9]);
-                string isflat = cols[10].ToUpper();
-                newItemSO.isFlat = (isflat == "1" || isflat == "O" || isflat == "TRUE");
+                string isimmediately = cols[9].ToUpper();
+                newItemSO.isImmediately = (isimmediately == "1" || isimmediately == "O" || isimmediately == "TRUE");
+                string isPercent = cols[10].ToUpper();
+                newItemSO.isPercent = (isPercent == "1" || isPercent == "O" || isPercent == "TRUE");
                 newItemSO.effectAmount = float.Parse(cols[11]);
                 newItemSO.itemDuration = float.Parse(cols[12]);
                 newItemSO.coolDownTime = float.Parse(cols[13]);
