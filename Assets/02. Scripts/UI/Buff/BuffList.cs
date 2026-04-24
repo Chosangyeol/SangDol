@@ -7,6 +7,7 @@ public class BuffList : MonoBehaviour
     [SerializeField] BuffSlot slotPrefab;
     [SerializeField] Transform buffSlotParent;
     [SerializeField] Transform deBuffSlotParent;
+    [SerializeField] BuffTooltip tooltip;
 
     private CharacterModel _model;
     private C_Buff _buff;
@@ -61,7 +62,7 @@ public class BuffList : MonoBehaviour
             if (i < buffCount)
             {
                 targetSlots[i].gameObject.SetActive(true);
-                targetSlots[i].Init(targetBuffs[i]);
+                targetSlots[i].Init(targetBuffs[i],tooltip);
             }
             else
             {

@@ -14,6 +14,8 @@ public class NpcSO : ScriptableObject
     public bool hasShop = false;
     public string shopID;
     public bool canUpgrade = false;
+    public bool canCraft = false;
+    public CraftTableSO craftTableSO;
     public bool canTeleport = false;
 
     [Header("대화하기 대사 설정")]

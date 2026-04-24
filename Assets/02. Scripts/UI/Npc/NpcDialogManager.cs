@@ -51,6 +51,15 @@ public class NpcDialogManager : MonoBehaviour
             });
         }
 
+        if (npc.canCraft)
+        {
+            CreateButton("아이템 제작", () =>
+            {
+                NpcCraftManager.instance.OpenUI(npc.craftTableSO);
+                CloseUI();
+            });
+        }
+
         CreateButton("대화 하기", () =>
         {
             Debug.Log("대화 하기 실행 ");

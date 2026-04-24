@@ -30,7 +30,7 @@ public class Heal : UseItemBase
         else
         {
             HealBuff buff = new HealBuff(owner, itemBaseSO.buffSO, itemBaseSO.itemDuration,
-                itemBaseSO.isPercent, itemBaseSO.effectAmount);
+                itemBaseSO.isPercent, itemBaseSO.effectAmount,1f);
 
             SBuff sBuff = new SBuff
                 (

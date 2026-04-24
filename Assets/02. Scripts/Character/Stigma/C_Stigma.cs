@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Cinemachine.DocumentationSortingAttribute;
 
 public enum EStigmaType
 {
@@ -19,24 +20,35 @@ public class C_Stigma
 
     private BuffSO lv5ABuffSO;
     private BuffSO lv5BBuffSO;
+    private BuffSO lv6ABuffSO;
+    private BuffSO lv10ABuffSO;
     private BuffSO stunSO;
     private GameObject clonePrefeb;
 
     // 성흔 별 관리에 사용되는 변수들
     private float lv5ACooldown = 0f;
+    private float lv8ACooldown = 0f;
 
-    public C_Stigma(CharacterModel model, BuffSO lv5A, BuffSO lv5B, BuffSO stunSO, GameObject clonePrefeb)
+    public C_Stigma(CharacterModel model, BuffSO lv5A, BuffSO lv5B, BuffSO lv6A,BuffSO lv10A, BuffSO stunSO, GameObject clonePrefeb)
     {
         _model = model;
+
         lv5ABuffSO = lv5A;
         lv5BBuffSO = lv5B;
+        lv6ABuffSO = lv6A;
+        lv10ABuffSO = lv10A;
+
         this.stunSO = stunSO;
         this.clonePrefeb = clonePrefeb;
 
         model.OnHitTarget += HandleOnHitTarget;
+        model.OnSkillUsed += HandleOnSkillUsed;
+        model.OnDodgeUsed += HandleOnSpaceUsed;
 
         EquipStigma(5, EStigmaType.Lv5_B);
+        EquipStigma(5, EStigmaType.Lv6_A);
         EquipStigma(7, EStigmaType.Lv7_B);
+        EquipStigma(7, EStigmaType.Lv10_A);
     }
 
     public void UpdateStigma(float delta)
@@ -60,6 +72,23 @@ public class C_Stigma
     /// <param name="type">활성화할 스티그마 타입</param>
     private void ApplyStigmaStats(EStigmaType type)
     {
+        if (type == EStigmaType.Lv6_A)
+        {
+            SBuff buff = new SBuff
+                (
+                    _model.gameObject,
+                    _model.gameObject,
+                    new HealBuff(_model, lv6ABuffSO, -1, false, 10, 5f)
+                );
+
+            _model.Buff.AddBuff(buff);
+        }
+
+        if (type == EStigmaType.Lv6_B)
+        {
+            _model.AddStat(C_Enums.CharacterStat.CooldownReduction, false, -0.1f);
+        }
+
         if (type == EStigmaType.Lv7_A)
         {
             _model.AddStat(C_Enums.CharacterStat.CriticalChance,false,0.05f);
@@ -79,6 +108,8 @@ public class C_Stigma
         {
             _model.AddStat(C_Enums.CharacterStat.DodgeCooldownReduction, false, -3);
         }
+
+        Debug.Log($"성흔 장착 완료 : {type}");
     }
 
     /// <summary>
@@ -87,6 +118,16 @@ public class C_Stigma
     /// <param name="type">비활성화할 스티그마 타입</param>
     private void RemoveStigmaStats(EStigmaType type)
     {
+        if (type == EStigmaType.Lv6_A)
+        {
+            _model.Buff.RemoveBuff(lv6ABuffSO);
+        }
+
+        if (type == EStigmaType.Lv6_B)
+        {
+            _model.RemoveStat(C_Enums.CharacterStat.CooldownReduction, false, -0.1f);
+        }
+
         if (type == EStigmaType.Lv7_A)
         {
             _model.RemoveStat(C_Enums.CharacterStat.CriticalChance, false, 0.05f);
@@ -106,6 +147,9 @@ public class C_Stigma
         {
             _model.RemoveStat(C_Enums.CharacterStat.DodgeCooldownReduction, false, -3);
         }
+
+        Debug.Log($"성흔 해제 완료 : {type}");
+
     }
 
     /// <summary>
@@ -174,12 +218,30 @@ public class C_Stigma
         }
     }
 
+    private void HandleOnSkillUsed()
+    {
+        if (HasStigma(EStigmaType.Lv6_B))
+        {
+            _model.Damaged(0.05f, true);
+        }
+    }
+
     /// <summary>
     /// Space 이동기를 사용 시 발동하는 스티그마 핸들
     /// </summary>
     private void HandleOnSpaceUsed()
     {
+        if (HasStigma(EStigmaType.Lv10_A))
+        {
+            SBuff buff = new SBuff
+                (
+                    _model.gameObject,
+                    _model.gameObject,
+                    new InvincibilityBuff(_model, lv10ABuffSO, 2f)
+                );
 
+            _model.Buff.AddBuff(buff);
+        }
     }
 
     /// <summary>

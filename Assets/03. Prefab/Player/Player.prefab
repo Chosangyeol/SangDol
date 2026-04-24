@@ -3827,6 +3827,10 @@ MonoBehaviour:
   skill_ZSO: {fileID: 11400000, guid: 5accf9595da007b4e95e8c604f3ae0c6, type: 2}
   skill_SpaceSO: {fileID: 11400000, guid: 653c1d810e92b0c40bb46c1cb5decc9c, type: 2}
   lv5ABuffSO: {fileID: 11400000, guid: 4c44d6272a1bf4d4fa4719b184936067, type: 2}
+  lv5BBuffSO: {fileID: 11400000, guid: c8c1dd7454893004d9f8c4c4d8cef42f, type: 2}
+  lv6ABuffSO: {fileID: 11400000, guid: 161b55e4f2cf1db48b88ef783d412285, type: 2}
+  lv10ABuffSO: {fileID: 11400000, guid: e93d1a4a820614e4e802e8a7e3c2e307, type: 2}
+  stunSO: {fileID: 11400000, guid: c029c3d867fe76549ab78fd424165bce, type: 2}
   clonePrefeb: {fileID: 5749607877044518315, guid: 217e1bf5cc6dad54bab2f738406df23d,
     type: 3}
   canMove: 1

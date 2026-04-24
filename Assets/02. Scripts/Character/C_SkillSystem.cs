@@ -71,9 +71,15 @@ public class C_SkillSystem
         if (!_model.canMove) return;
 
         if (activeSkills[slot] != null)
+        {
             activeSkills[slot].UseSkill(targetPos);
+            if (slot == C_Enums.SkillSlot.Space)
+                _model.UseDodge();
+        }
         else
+        {
             Debug.Log("해당 슬롯에 스킬 없음");
+        }
 
     }
 

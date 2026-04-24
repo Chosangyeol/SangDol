@@ -7,15 +7,17 @@ public class HealBuff : BuffBase
     protected CharacterModel model;
     public bool isPercent;
     public float value;
+    public float interval = 1f;
 
     private float timer = 1f;
 
     public HealBuff(CharacterModel model, BuffSO buffSO, float remainSecond
-        , bool isPercent, float value) : base(buffSO, remainSecond)
+        , bool isPercent, float value, float inverval) : base(buffSO, remainSecond)
     {
         this.model = model;
         this.isPercent = isPercent;
         this.value = value;
+        this.interval = inverval;
 
         return;
     }
@@ -30,10 +32,10 @@ public class HealBuff : BuffBase
         if (isActive)
         {
             timer += delta;
-            if (timer >= 1.0f)
+            if (timer >= interval)
             {
                 ApplyHeal();
-                timer -= 1.0f;
+                timer -= interval;
             }
         }
 

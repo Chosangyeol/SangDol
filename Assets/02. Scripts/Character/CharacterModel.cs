@@ -33,6 +33,8 @@ public class CharacterModel : MonoBehaviour
     [Header("¼ºÈç ¼³Á¤")]
     public BuffSO lv5ABuffSO;
     public BuffSO lv5BBuffSO;
+    public BuffSO lv6ABuffSO;
+    public BuffSO lv10ABuffSO;
     public BuffSO stunSO;
     public GameObject clonePrefeb;
 
@@ -94,8 +96,9 @@ public class CharacterModel : MonoBehaviour
         playerInput = new C_Input(this, playerController);
         skillSystem = new C_SkillSystem(this);
         buff = new C_Buff(this);
-        stigma = new C_Stigma(this,lv5ABuffSO, lv5BBuffSO, stunSO, clonePrefeb);
+        stigma = new C_Stigma(this, lv5ABuffSO, lv5BBuffSO,lv6ABuffSO,lv10ABuffSO, stunSO, clonePrefeb);
 
+        GameEvent.OnStatChange += UpdateAttackSpeed;
     }
 
     private void Start()
@@ -131,7 +134,7 @@ public class CharacterModel : MonoBehaviour
         {
             playerController.StopMove();
             return;
-        }  
+        }
     }
 
     public void SkillCorutaine(IEnumerator routine)
@@ -142,6 +145,11 @@ public class CharacterModel : MonoBehaviour
     public void SetCanMove()
     {
         canMove = true;
+    }
+
+    public void UseDodge()
+    {
+        OnDodgeUsed?.Invoke();
     }
 
     public void ChangeCam(int index, bool isCut = false)
@@ -350,6 +358,16 @@ public class CharacterModel : MonoBehaviour
         Buff.ImmunityDisable();
     }
 
+    public void InvincibilityEnable()
+    {
+        Buff.InvincibilityEnable();
+    }
+
+    public void InvincibilityDisable()
+    {
+        Buff.InvincibilityDisable();
+    }    
+
     public void PanicEnable()
     {
         Buff.PanicEnable();
@@ -445,6 +463,15 @@ public class CharacterModel : MonoBehaviour
     public bool GetCritical()
     {
         return (Stat.GetCritical());
+    }
+
+    public void UpdateAttackSpeed(CharacterStat stat)
+    {
+        if (anim == null || stat == null) return;
+
+        float currentAttackSpeed = stat.attackSpeed.FinalValue;
+
+        anim.SetFloat("AttackSpeed", currentAttackSpeed);
     }
 
     public void AddStat(C_Enums.CharacterStat statType,bool isPercent, float value)

@@ -14,6 +14,7 @@ public class C_Buff
 
     public bool isStun = false;
     public bool isImmunity = false;
+    public bool isInvincibility = false;
     public bool isPanic = false;
 
     public event BuffHandler ActionBeforeAddBuff;
@@ -182,6 +183,18 @@ public class C_Buff
     {
         isImmunity = false;
     }
+
+    public void InvincibilityEnable()
+    {
+        isInvincibility = true;
+    }
+
+    public void InvincibilityDisable()
+    {
+        isInvincibility = false;
+    }
+
+
 
     public void PanicEnable()
     {

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public enum EBuffType
@@ -10,13 +11,16 @@ public enum EBuffType
     Stun,
     Panic,
     Poison,
-    Heal
+    Heal,
+    Immunity,
+    Invincibility
 }
 
 public abstract class BuffBase
 {
     public BuffSO buffSO;
     public float duration;
+    public bool isInfinite = false;
     public float remainSecond;
     public bool isStackable;
     public int maxStack;
@@ -36,6 +40,9 @@ public abstract class BuffBase
         this.currentStack = 1;
         Desc = buffSO.buffDesc;
         isActive = true;
+
+        if (duration <= 0f)
+            this.isInfinite = true;
         return;
         
     }
@@ -44,6 +51,9 @@ public abstract class BuffBase
 
     public virtual bool OnUpdate(float delta)
     {
+        if (isInfinite)
+            return false;
+
         if (isActive)
             remainSecond -= delta;
 

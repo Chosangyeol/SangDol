@@ -78,4 +78,17 @@ public class ItemManager : MonoBehaviour
         Debug.LogWarning($"[ItemManager] 해당 ID({itemID})를 가진 아이템을 찾을 수 없습니다.");
         return null;
     }
+
+    public string ReturnRarity(ItemEnums.ItemRarity rarity)
+    {
+        switch (rarity)
+        {
+            case ItemEnums.ItemRarity.Common: return "<color=gray>일반</color>";
+            case ItemEnums.ItemRarity.Uncommon: return "<color=green>고급</color>";
+            case ItemEnums.ItemRarity.Rare: return "<color=magenta>희귀</color>";
+            case ItemEnums.ItemRarity.Unique: return "<color=purple>유니크</color>";
+            case ItemEnums.ItemRarity.Legendary: return "<color=yellow>전설</color>";
+        }
+        return "Unknown";
+    }
 }

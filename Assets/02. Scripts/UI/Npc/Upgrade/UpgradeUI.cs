@@ -15,7 +15,6 @@ public class UpgradeUI : MonoBehaviour
     public Image targetEquipIcon;
     public TMP_Text targetEquipNameText;
     public TMP_Text levelText;
-    public Image requireGoldImage;
     public TMP_Text requireGoldAmountText;
     public Image[] materialImages;
     public TMP_Text[] materialCountTexts;
