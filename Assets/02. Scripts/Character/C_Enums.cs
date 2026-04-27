@@ -9,6 +9,10 @@ public class C_Enums
         W,
         E,
         R,
+        A,
+        S,
+        D,
+        F,
         Space,
         V
     }
@@ -28,7 +32,10 @@ public class C_Enums
         Inventory,
         SkillTree,
         Status,
-        Quest
+        Quest,
+        Upgrade,
+        Shop,
+        Craft
     }
 
     public enum CharacterStat

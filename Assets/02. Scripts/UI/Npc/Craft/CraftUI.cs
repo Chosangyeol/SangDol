@@ -10,6 +10,7 @@ public class CraftUI : MonoBehaviour
     public GameObject gridLayout;
     public List<GameObject> slots = new List<GameObject>();
     public GameObject slotUI;
+    public ItemTooltip tooltip;
 
     [Header("제작 실행 UI")]
     public Image resultItemIcon;
@@ -30,7 +31,7 @@ public class CraftUI : MonoBehaviour
         for (int i = 0; i < recipeList.Count; i++)
         {
             GameObject slot = Instantiate(slotUI, gridLayout.transform);
-            slot.GetComponent<CraftRecipeSlot>().Init(recipeList[i]);
+            slot.GetComponent<CraftRecipeSlot>().Init(recipeList[i], tooltip);
             slots.Add(slot);
         }
     }

@@ -89,7 +89,7 @@ public class InventorySlot : MonoBehaviour,
             if (item is EquipItemBase)
             {
                 _equipment.EquipItem(item as EquipItemBase);
-                tooltip.ToggleTooltip(false);
+                tooltip.ToggleTooltip(false,null,(ItemBase)null);
             }
             return;
         }
@@ -197,7 +197,7 @@ public class InventorySlot : MonoBehaviour,
         if (currentItem == null) return;
         if (tooltip == null) return;
 
-        tooltip.ToggleTooltip(false);
+        tooltip.ToggleTooltip(false,null,(ItemBase)null);
 
     }
     #endregion

@@ -20,10 +20,13 @@ public class EnemyModel : EnemyBase
     private NavMeshAgent _agent;
     public NavMeshAgent Agent => _agent;
 
-
     private StateMachine stateMachine;
     public StateMachine StateMachine => stateMachine;
     private EState curState;
+
+    public bool isAggressive = false;
+
+    public bool canAttack;
 
     protected override void Awake()
     {
@@ -60,36 +63,36 @@ public class EnemyModel : EnemyBase
         switch (curState)
         {
             case EState.Idle:
-                if (canAttack)
+                if (isAggressive)
                 {
-                    curState = EState.Attack;
-                    stateMachine.ChangeState(new AttackState(this));
-                    return;
-                }                
-                else if (canChase && !canAttack)
-                {
-                    curState = EState.Chase;
-                    stateMachine.ChangeState(new ChaseState(this));
-                    return;
-                }
-                else if (!canChase && !canAttack)
-                {
-                    if (stateMachine.CurState is IdleState idle && idle.canPatrol)
+                    if (canAttack)
                     {
-                        curState = EState.Patrol;
-                        stateMachine.ChangeState(new PatrolState(this));
+                        curState = EState.Attack;
+                        stateMachine.ChangeState(new AttackState(this));
+                        return;
+                    }
+                    else if (canChase)
+                    {
+                        curState = EState.Chase;
+                        stateMachine.ChangeState(new ChaseState(this));
                         return;
                     }
                 }
+                if (stateMachine.CurState is IdleState idle && idle.canPatrol)
+                {
+                    curState = EState.Patrol;
+                    stateMachine.ChangeState(new PatrolState(this));
+                    return;
+                }
                 break;
             case EState.Patrol:
-                if (canAttack && canChase)
+                if (canAttack && canChase && isAggressive)
                 {
                     curState = EState.Attack;
                     stateMachine.ChangeState(new AttackState(this));
                     return;
                 }
-                else if (canChase && !canAttack)
+                else if (canChase && !canAttack && isAggressive)
                 {
                     curState = EState.Chase;
                     stateMachine.ChangeState(new ChaseState(this));
@@ -119,12 +122,17 @@ public class EnemyModel : EnemyBase
                 // 추적 상태에서의 행동
                 break;
             case EState.Attack:
-                if (stateMachine.CurState is AttackState attack && attack.CanAttack)
+                if (stateMachine.CurState is AttackState attack && attack.changeState)
                 {
                     if (canChase)
                     {
                         curState = EState.Chase;
                         stateMachine.ChangeState(new ChaseState(this));
+                    }
+                    else if (canAttack)
+                    {
+                        curState = EState.Attack;
+                        stateMachine.ChangeState(new AttackState(this));
                     }
                     else if (canReturn)
                     {
@@ -152,6 +160,7 @@ public class EnemyModel : EnemyBase
     {
         base.Reset();
 
+        isAggressive = statSO.isAggressive;
         curState = EState.Idle;
 
         if (stateMachine != null)
@@ -161,6 +170,7 @@ public class EnemyModel : EnemyBase
 
         if (_agent != null)
         {
+            _agent.speed = Stat.moveSpeed;
             _agent.enabled = true;
             _agent.isStopped = false;
             _agent.velocity = Vector3.zero;
@@ -175,14 +185,16 @@ public class EnemyModel : EnemyBase
         spawnPoint = pos;
     }
 
-    public void Attack()
+    public virtual void Attack()
     {
-        // 자식 클래스에서 공격 구현
         Debug.Log("공격 실행");
     }
 
+    public virtual void AttackEnd()
+    {
+        canAttack = true;
+    }
 
-    
 
     public void Heal(int healAmount)
     {
@@ -197,6 +209,8 @@ public class EnemyModel : EnemyBase
 
         _isDead = true;
 
+        Anim.SetTrigger("Die");
+
         GameEvent.OnMonsterKill?.Invoke(statSO.enemyID);
 
         curState = EState.Die;
@@ -209,6 +223,12 @@ public class EnemyModel : EnemyBase
             // 아이템 드랍 처리
         }
         
+    }
+
+    public void ReturnPool()
+    {
+        OnReturnToPool?.Invoke(this);
+        PoolManager.Instance.Push(this);
     }
 
     private void OnDrawGizmos()

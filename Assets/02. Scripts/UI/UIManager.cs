@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
 
@@ -17,6 +18,8 @@ public class UIManager : MonoBehaviour
     public QuestUI questUI;
     public BuffList buffUI;
     public OptionUI optionUI;
+
+    private List<C_Enums.UIList> openedUIList = new List<C_Enums.UIList>();
 
     void Awake()
     {
@@ -49,6 +52,14 @@ public class UIManager : MonoBehaviour
             inGameUIs.SetActive(false);
     }
 
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            CloseTopUI();
+        }
+    }
+
     public void InitGameUIs()
     {
         CharacterModel character = FindAnyObjectByType<CharacterModel>();
@@ -62,7 +73,7 @@ public class UIManager : MonoBehaviour
         mainUI.Init(character.SkillSystem, character.Inventory, character);
         inventoryUI.Init(character.Inventory, character.Equipment);
         skillTreeUI.Init(character.SkillSystem, character);
-        statusUI.Init(character.Stat, character.Equipment, character.SpecialStat);
+        statusUI.Init(character,character.Stat, character.Equipment, character.SpecialStat);
         questUI.Init();
         buffUI.Init(character.Buff, character);
 
@@ -72,25 +83,51 @@ public class UIManager : MonoBehaviour
 
     public void ToggleUI(C_Enums.UIList ui)
     {
+        bool isNowOpen = false;
+
         if (ui == C_Enums.UIList.Inventory)
         {
             inventoryUI.Toggle();
+            isNowOpen = inventoryUI.gameObject.activeSelf;
         }
         else if (ui == C_Enums.UIList.SkillTree)
         {
             skillTreeUI.Toggle();
+            isNowOpen = skillTreeUI.gameObject.activeSelf;
         }
         else if (ui == C_Enums.UIList.Status)
         {
             statusUI.Toggle();
+            isNowOpen = statusUI.gameObject.activeSelf;
+            if (isNowOpen)
+                statusUI.ChangeStatusTap(0);
         }
         else if (ui == C_Enums.UIList.Quest)
         {
             questUI.Toggle();
+            isNowOpen = questUI.gameObject.activeSelf;
         }
         else if (ui == C_Enums.UIList.Option)
         {
-            optionUI.Toggle();
+            if (openedUIList.Count == 0)
+            {
+                optionUI.Toggle();
+                isNowOpen = optionUI.gameObject.activeSelf;
+            }
+        }
+
+        if (isNowOpen)
+        {
+            if (openedUIList.Contains(ui))
+                openedUIList.Remove(ui);
+
+            openedUIList.Add(ui);
+            Debug.Log("Ãß°¡");
+        }
+        else
+        {
+            if (openedUIList.Contains(ui))
+                openedUIList.Remove(ui);
         }
     }
 
@@ -100,5 +137,18 @@ public class UIManager : MonoBehaviour
         skillTreeUI.RefreshAll();
         statusUI.RefreshAll();
 
+    }
+
+    private void CloseTopUI()
+    {
+        if (openedUIList.Count > 0)
+        {
+            C_Enums.UIList topUI = openedUIList[openedUIList.Count - 1];
+            ToggleUI(topUI);
+        }
+        else
+        {
+            ToggleUI(C_Enums.UIList.Option);
+        }
     }
 }

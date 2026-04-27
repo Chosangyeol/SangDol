@@ -15,26 +15,32 @@ MonoBehaviour:
   data:
   - targetLevel: 1
     successRate: 90
+    breakable: 0
     requireGold: 0
-    requireMaterialID: []
-    requiredMaterialAmount: 
+    requireMaterialID:
+    - 20002
+    requiredMaterialAmount: 03000000
   - targetLevel: 2
     successRate: 80
+    breakable: 0
     requireGold: 0
     requireMaterialID: []
     requiredMaterialAmount: 
   - targetLevel: 3
     successRate: 70
+    breakable: 0
     requireGold: 0
     requireMaterialID: []
     requiredMaterialAmount: 
   - targetLevel: 4
     successRate: 60
+    breakable: 0
     requireGold: 0
     requireMaterialID: []
     requiredMaterialAmount: 
   - targetLevel: 5
     successRate: 50
+    breakable: 1
     requireGold: 0
     requireMaterialID: []
     requiredMaterialAmount: 

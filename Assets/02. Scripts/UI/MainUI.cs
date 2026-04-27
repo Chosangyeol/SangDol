@@ -96,7 +96,7 @@ public class MainUI : MonoBehaviour
         slPlayerHp.value = stat.curHp / stat.maxHp.GetValue();
 
         if (stat.currentExp != 0)
-            slPlayerExp.value = stat.maxExp / stat.currentExp;
+            slPlayerExp.value =  stat.currentExp / stat.maxExp;
         else slPlayerExp.value = 0;
 
         tmpPlayerLevel.text = $"Lv.{stat.currentLevel}";

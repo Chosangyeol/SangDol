@@ -35,7 +35,10 @@ public abstract class SkillBase
         {
             nowCoolTime = coolTime;
             canUse = false;
-            
+
+            _model.PlayerController.StopMove();
+            _model.PlayerController.FaceTo(targetPos);
+
             return true;
         }
         return false;

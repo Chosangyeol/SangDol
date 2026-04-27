@@ -17,6 +17,8 @@ public class PatrolState : State
         {
             _owner.Agent.SetDestination(targetPoint);
             isPatrolling = true;
+            _owner.Anim.SetBool("Patrol", true);
+            _owner.Anim.SetBool("InBattle", false);
         }
     }
 
@@ -29,6 +31,7 @@ public class PatrolState : State
                 _owner.Agent.isStopped = true;
                 _owner.Agent.velocity = Vector3.zero;
                 isPatrolling = false;
+                _owner.Anim.SetBool("Patrol", false);
             }
         }
     }

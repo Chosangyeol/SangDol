@@ -29,12 +29,13 @@ public class EnemyBase : PoolableMono
     protected virtual void Awake()
     {
         _stat = new EnemyStat(statSO);
+        _target = FindAnyObjectByType<CharacterModel>();
+        _anim = GetComponentInChildren<Animator>();
     }
 
     protected virtual void Start()
     {
-        _target = FindAnyObjectByType<CharacterModel>();
-        _anim = GetComponentInChildren<Animator>();
+        
     }
 
     public override void Reset()
@@ -64,7 +65,10 @@ public class EnemyBase : PoolableMono
         }
 
 
-        _stat.Damaged(info);   
+        _stat.Damaged(info); 
+        
+        if (this is EnemyModel enemy && !enemy.isAggressive)
+            enemy.isAggressive = true;
 
         if (_stat.curHp <= 0)
         {

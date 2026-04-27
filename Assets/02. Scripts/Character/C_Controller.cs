@@ -184,10 +184,6 @@ public class C_Controller
     {
         if (_model.Buff.isStun) return;
 
-        StopMove();
-
-        FaceTo(dest);
-
         Debug.Log("스킬 " + skillSlot + " 사용 시도");
         _model.SkillSystem.UseSkill(skillSlot, dest);
     }
@@ -233,7 +229,7 @@ public class C_Controller
         isRotating = true;
     }
 
-    private void FaceTo(Vector3 target)
+    public void FaceTo(Vector3 target)
     {
         Vector3 dir = target - tr.position;
         dir.y = 0f;

@@ -15,6 +15,10 @@ public class UpgradeData
     /// </summary>
     public float successRate;
     /// <summary>
+    /// 실패 시 파괴 여부
+    /// </summary>
+    public bool breakable;
+    /// <summary>
     /// 강화 요구 골드
     /// </summary>
     public int requireGold;

@@ -59,11 +59,20 @@ public class C_Stigma
     public void EquipStigma(int level, EStigmaType stigmaType)
     {
         if (selectedStigmas.TryGetValue(level, out EStigmaType oldStigma))
-            RemoveStigmaStats(stigmaType);
+            RemoveStigmaStats(oldStigma);
 
         selectedStigmas[level] = stigmaType;
         ApplyStigmaStats(stigmaType);
         Debug.Log($"성흔 장착 완료 : {level} / {selectedStigmas[level]}");
+    }
+
+    public void UnEquipStigma(int level)
+    {
+        if (selectedStigmas.TryGetValue(level,out EStigmaType oldStigma))
+        {
+            RemoveStigmaStats(oldStigma);
+            selectedStigmas.Remove(level);
+        }
     }
 
     /// <summary>

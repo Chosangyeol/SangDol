@@ -5,7 +5,9 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
 
-public class CraftRecipeSlot : MonoBehaviour, IPointerClickHandler
+public class CraftRecipeSlot : MonoBehaviour, IPointerClickHandler,
+    IPointerEnterHandler,
+    IPointerExitHandler
 {
     [Header("슬룻 UI")]
     public Image resultIcon;
@@ -14,10 +16,12 @@ public class CraftRecipeSlot : MonoBehaviour, IPointerClickHandler
 
     private ItemBaseSO nowItem;
     private CraftRecipe nowRecipe;
+    private ItemTooltip tooltip;
 
-    public void Init(CraftRecipe recipe)
+    public void Init(CraftRecipe recipe, ItemTooltip tooltip)
     {
         nowRecipe = recipe;
+        this.tooltip = tooltip;
 
         nowItem = ItemManager.Instance.GetItemBaseSO(nowRecipe.resultItemId);
 
@@ -33,5 +37,23 @@ public class CraftRecipeSlot : MonoBehaviour, IPointerClickHandler
         {
             NpcCraftManager.instance.SelectCraftRecipe(nowRecipe);
         }
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (nowItem == null) return;
+        if (nowRecipe == null) return;
+        if (tooltip == null) return;
+
+        tooltip.ToggleTooltip(true, this.GetComponent<RectTransform>(), nowItem);
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        if (nowItem == null) return;
+        if (nowRecipe == null) return;
+        if (tooltip == null) return;
+
+        tooltip.ToggleTooltip(false,null,(ItemBaseSO)null);
     }
 }

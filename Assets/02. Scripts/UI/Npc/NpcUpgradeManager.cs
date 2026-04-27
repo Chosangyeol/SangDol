@@ -17,6 +17,7 @@ public class NpcUpgradeManager : MonoBehaviour
     [Header("강화 UI")]
     public UpgradeUI upgradePanel;
 
+
     private void Awake()
     {
         if (instance == null)
@@ -82,6 +83,7 @@ public class NpcUpgradeManager : MonoBehaviour
 
         if (randomRoll <= upgradeData.successRate)
         {
+            // 성공 연출
             selectedEquip.currentUpgradeLevel++;
 
             if (selectedEquip.currentUpgradeLevel == selectedEquip.itemBaseSO.maxUpgrade)
@@ -92,11 +94,16 @@ public class NpcUpgradeManager : MonoBehaviour
         }
         else
         {
-            if (selectedEquip.currentUpgradeLevel == 4)
+            if (upgradeData.breakable)
             {
+                // 파괴 연출
                 _model.Inventory.RemoveItem(selectedEquip);
                 selectedEquip = null;
                 upgradePanel.SetUpgradeUI(selectedEquip,null,null);
+            }
+            else
+            {
+                // 실패 연출
             }
         }
 

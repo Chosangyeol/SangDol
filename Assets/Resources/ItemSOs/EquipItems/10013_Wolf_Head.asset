@@ -30,4 +30,4 @@ MonoBehaviour:
   canUpgrade: 1
   maxUpgrade: 5
   perUpgradeBonus: 10
-  upgradeTable: {fileID: 0}
+  upgradeTable: {fileID: 11400000, guid: d6c9fef1152c55c469246d012b3dfe1d, type: 2}

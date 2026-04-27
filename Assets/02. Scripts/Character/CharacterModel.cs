@@ -238,6 +238,7 @@ public class CharacterModel : MonoBehaviour
         if (isCritical)
             baseDmg *= Stat.Stat.criticalDamage.FinalValue;
 
+
         SDamageInfo info = new SDamageInfo()
         {
             damage = baseDmg,
@@ -249,9 +250,13 @@ public class CharacterModel : MonoBehaviour
             isBackattack = true
         };
 
+        HashSet<EnemyBase> hitEnemies = new HashSet<EnemyBase>();
+
         foreach (Collider target in targets)
         {
-            if (target.TryGetComponent<EnemyBase>(out EnemyBase enemy))
+            EnemyBase enemy = target.GetComponentInParent<EnemyBase>();
+
+            if (enemy != null && !hitEnemies.Contains(enemy))
             {
                 Vector3 dir = (enemy.transform.position - transform.position).normalized;
                 dir.y = 0;
@@ -315,9 +320,12 @@ public class CharacterModel : MonoBehaviour
             isBackattack = false
         };
 
+        HashSet<EnemyBase> hitEnemies = new HashSet<EnemyBase>();
+
         foreach (Collider target in targets)
         {
-            if (target.TryGetComponent<EnemyBase>(out EnemyBase enemy))
+            EnemyBase enemy = target.GetComponentInParent<EnemyBase>();
+            if (enemy != null)
             {
                 enemy.Damaged(info);
                 if (target.TryGetComponent<BossModel>(out BossModel boss))
@@ -327,11 +335,13 @@ public class CharacterModel : MonoBehaviour
                 OnHitTarget?.Invoke(this, info.damage, true, enemy);
             }
 
-            if (target.TryGetComponent<ICounterable>(out ICounterable counterable))
+            ICounterable counterable = enemy.GetComponentInParent<ICounterable>();
+            if (counterable != null)
             {
                 counterable.OnCounterSuccess(info);
             }
         }
+        canMove = true;
     }
     #endregion
 

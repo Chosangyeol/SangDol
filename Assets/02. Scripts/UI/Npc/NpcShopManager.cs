@@ -11,6 +11,7 @@ public class NpcShopManager : MonoBehaviour
     public GameObject shopPanel;
     public Transform gridLayoutGroup;
     public GameObject shopSlotPrefab;
+    public ItemTooltip tooltip;
 
     [Header("아이템 데이터베이스")]
     public ItemDataBaseSO globalItemData;
@@ -31,7 +32,7 @@ public class NpcShopManager : MonoBehaviour
         shopPanel.SetActive(true);
 
         if (!UIManager.Instance.inventoryUI.gameObject.activeSelf)
-            UIManager.Instance.inventoryUI.Toggle();
+            UIManager.Instance.ToggleUI(C_Enums.UIList.Inventory);
 
         LoadShopDataFromCSV(shopID);
     }
@@ -65,7 +66,7 @@ public class NpcShopManager : MonoBehaviour
             {
                 GameObject slotObj = Instantiate(shopSlotPrefab, gridLayoutGroup);
                 ShopSlotUI slotUI = slotObj.GetComponent<ShopSlotUI>();
-                slotUI.InitSlot(itemSO, itemPrice);
+                slotUI.InitSlot(itemSO, itemPrice, tooltip);
             }
         }
     }

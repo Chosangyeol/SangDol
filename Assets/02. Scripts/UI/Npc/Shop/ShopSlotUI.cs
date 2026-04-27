@@ -5,7 +5,10 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ShopSlotUI : MonoBehaviour, IPointerClickHandler
+public class ShopSlotUI : MonoBehaviour,
+    IPointerClickHandler,
+    IPointerEnterHandler,
+    IPointerExitHandler
 {
     private ItemBaseSO slotItem;
     private int itemPrice;
@@ -15,10 +18,13 @@ public class ShopSlotUI : MonoBehaviour, IPointerClickHandler
     public TMP_Text itemNameText;
     public TMP_Text itemPrictText;
 
-    public void InitSlot(ItemBaseSO item, int price)
+    private ItemTooltip tooltip;
+
+    public void InitSlot(ItemBaseSO item, int price, ItemTooltip tooltip)
     {
         slotItem = item;
         itemPrice = price;
+        this.tooltip = tooltip;
 
         itemIcon.sprite = item.itemIcon;
         itemNameText.text = item.itemName;
@@ -38,5 +44,21 @@ public class ShopSlotUI : MonoBehaviour, IPointerClickHandler
                 NpcShopManager.instance.BuyItem(slotItem, itemPrice, 1);
             }
         }
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (slotItem == null) return;
+        if (tooltip == null) return;
+
+        tooltip.ToggleTooltip(true, this.GetComponent<RectTransform>(), slotItem);
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        if (slotItem == null) return;
+        if (tooltip == null) return;
+
+        tooltip.ToggleTooltip(false,null,(ItemBaseSO)null);
     }
 }

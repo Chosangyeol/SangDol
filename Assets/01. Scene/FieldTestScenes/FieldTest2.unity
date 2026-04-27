@@ -623,11 +623,11 @@ MonoBehaviour:
       type: 3}
     respawnTime: 5
   - spanwPos: {fileID: 1353820191}
-    enemyPrefab: {fileID: 2250746701917371195, guid: dc074bd3bc512944a9d2cca2a8439a9e,
+    enemyPrefab: {fileID: 4263010779071610442, guid: fee21c22422684644b10c239822c274f,
       type: 3}
     respawnTime: 5
   - spanwPos: {fileID: 17761391}
-    enemyPrefab: {fileID: 2250746701917371195, guid: dc074bd3bc512944a9d2cca2a8439a9e,
+    enemyPrefab: {fileID: 4263010779071610442, guid: fee21c22422684644b10c239822c274f,
       type: 3}
     respawnTime: 5
   isActive: 0

@@ -10,15 +10,25 @@ public class UpgradeUI : MonoBehaviour
     public GameObject gridLayout;
     public List<GameObject> slots = new List<GameObject>();
     public GameObject slotUI;
+    public ItemTooltip tooltip;
 
     [Header("강화 실행 UI")]
     public Image targetEquipIcon;
+    public TMP_Text successRateText;
     public TMP_Text targetEquipNameText;
     public TMP_Text levelText;
     public TMP_Text requireGoldAmountText;
-    public Image[] materialImages;
+    public MaterialItemSlot[] materialSlots;
     public TMP_Text[] materialCountTexts;
     public GameObject executeButton;
+
+    private void Awake()
+    {
+        for (int i = 0; i < materialSlots.Length; i++)
+        {
+            materialSlots[i].Init(tooltip);
+        }
+    }
 
     public void SetEquipListUI(List<EquipItemBase> itemList)
     {
@@ -30,7 +40,7 @@ public class UpgradeUI : MonoBehaviour
         for (int i = 0; i < itemList.Count; i++)
         {
             GameObject slot = Instantiate(slotUI, gridLayout.transform);
-            slot.GetComponent<UpgradeEquipSlotUI>().Init(itemList[i]);
+            slot.GetComponent<UpgradeEquipSlotUI>().Init(itemList[i], tooltip);
             slots.Add(slot);
         }
     }
@@ -40,6 +50,7 @@ public class UpgradeUI : MonoBehaviour
         if (target == null)
         {
             targetEquipIcon.sprite = null;
+            successRateText.text = "";
             targetEquipNameText.text = "";
             levelText.text = "";
 
@@ -48,7 +59,7 @@ public class UpgradeUI : MonoBehaviour
             for (int i = 0; i < 4; i++)
             { 
                 materialCountTexts[i].text = "";
-                materialImages[i].sprite = null;
+                materialSlots[i].SetUpItem();
             }
             executeButton.SetActive(false);
 
@@ -59,7 +70,16 @@ public class UpgradeUI : MonoBehaviour
 
         bool canUpgrade = true;
 
+        string breakable = "";
+
+        if (upgradeData.breakable)
+            breakable = "<color=red>파괴</color>";
+        else
+            breakable = "<color=green>유지</color>";
+
         targetEquipIcon.sprite = target.itemBaseSO.itemIcon;
+        successRateText.text = $"성공 확률 : {upgradeData.successRate}%\n" +
+            $"실패 시 {breakable}";
         targetEquipNameText.text = target.itemBaseSO.itemName;
         levelText.text = $"{target.currentUpgradeLevel}단계 -> {target.currentUpgradeLevel + 1}단계";
 
@@ -79,7 +99,7 @@ public class UpgradeUI : MonoBehaviour
         {
             string targetID = upgradeData.requireMaterialID[i];
 
-            materialImages[i].sprite = ItemManager.Instance.GetItemBaseSO(targetID).itemIcon;
+            materialSlots[i].SetUpItem(ItemManager.Instance.GetItemBaseSO(targetID));
             materialCountTexts[i].text =
                 $"{inventory.GetTotalItemCount(targetID)} / {upgradeData.requiredMaterialAmount[i]}";
 
@@ -97,7 +117,7 @@ public class UpgradeUI : MonoBehaviour
         for (int i = index; i < upgradeData.requireMaterialID.Length; i++)
         {
             materialCountTexts[i].text = "";
-            materialImages[i].sprite = null;
+            materialSlots[i].SetUpItem();
         }
         executeButton.SetActive(canUpgrade);
     }

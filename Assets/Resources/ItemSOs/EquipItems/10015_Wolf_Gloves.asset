@@ -24,10 +24,10 @@ MonoBehaviour:
   stackable: 0
   maxStack: 1
   equipItemType: 3
-  statToIncrease: 7
+  statToIncrease: 5
   isPercent: 0
   value: 0.05
   canUpgrade: 1
   maxUpgrade: 5
   perUpgradeBonus: 0.01
-  upgradeTable: {fileID: 0}
+  upgradeTable: {fileID: 11400000, guid: d6c9fef1152c55c469246d012b3dfe1d, type: 2}

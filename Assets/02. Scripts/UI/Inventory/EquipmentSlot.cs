@@ -73,7 +73,7 @@ public class EquipmentSlot : MonoBehaviour,
         if (eventData.clickCount == 2)
         {
             _equipment.UnequipItem(equipType);
-            tooltip.ToggleTooltip(false);
+            tooltip.ToggleTooltip(false,null,(ItemBase)null);
             return;
         }
 
@@ -168,7 +168,7 @@ public class EquipmentSlot : MonoBehaviour,
         if (equipItem == null) return;
         if (tooltip == null) return;
 
-        tooltip.ToggleTooltip(false);
+        tooltip.ToggleTooltip(false,null, (ItemBase)null);
 
     }
     #endregion

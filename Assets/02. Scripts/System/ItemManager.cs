@@ -83,12 +83,43 @@ public class ItemManager : MonoBehaviour
     {
         switch (rarity)
         {
-            case ItemEnums.ItemRarity.Common: return "<color=gray>일반</color>";
+            case ItemEnums.ItemRarity.Common: return "<color=grey>일반</color>";
             case ItemEnums.ItemRarity.Uncommon: return "<color=green>고급</color>";
-            case ItemEnums.ItemRarity.Rare: return "<color=magenta>희귀</color>";
+            case ItemEnums.ItemRarity.Rare: return "<color=#1ABEFF>희귀</color>";
             case ItemEnums.ItemRarity.Unique: return "<color=purple>유니크</color>";
             case ItemEnums.ItemRarity.Legendary: return "<color=yellow>전설</color>";
         }
         return "Unknown";
+    }
+
+    public string ReturnEquipType(ItemEnums.EquipItemType type)
+    {
+        switch (type)
+        {
+            case ItemEnums.EquipItemType.Head: return "투구";
+            case ItemEnums.EquipItemType.Body: return "상의";
+            case ItemEnums.EquipItemType.Gloves: return "장갑";
+            case ItemEnums.EquipItemType.Pants: return "하의";
+            case ItemEnums.EquipItemType.Shoes: return "신발";
+            case ItemEnums.EquipItemType.Weapon: return "무기";
+        }
+        return "Unknown";
+    }
+
+    public string ReturnEffectStatType(C_Enums.CharacterStat type)
+    {
+        switch (type)
+        {
+            case C_Enums.CharacterStat.MaxHp: return "최대 체력";
+            case C_Enums.CharacterStat.AttackDamage: return "공격력";
+            case C_Enums.CharacterStat.MoveSpeed: return "이동속도";
+            case C_Enums.CharacterStat.AttackSpeed: return "공격속도";
+            case C_Enums.CharacterStat.CriticalChance: return "치명타 확룰";
+            case C_Enums.CharacterStat.CriticalDamage: return "치명타 피해";
+            case C_Enums.CharacterStat.DownPower: return "무력화 피해";
+            case C_Enums.CharacterStat.CooldownReduction: return "스킬 쿨타임 감소";
+            case C_Enums.CharacterStat.DamageTakeMultiplier: return "받는 피해 감소";
+            default: return "Unknown";
+        }
     }
 }

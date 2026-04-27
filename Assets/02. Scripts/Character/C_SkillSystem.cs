@@ -72,9 +72,9 @@ public class C_SkillSystem
 
         if (activeSkills[slot] != null)
         {
-            activeSkills[slot].UseSkill(targetPos);
-            if (slot == C_Enums.SkillSlot.Space)
-                _model.UseDodge();
+            if (activeSkills[slot].UseSkill(targetPos))
+                if (slot == C_Enums.SkillSlot.Space)
+                    _model.UseDodge();
         }
         else
         {
