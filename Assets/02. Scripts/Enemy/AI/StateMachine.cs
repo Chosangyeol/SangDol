@@ -4,7 +4,6 @@ public class StateMachine
 {
     // 몬스터의 현재 상태
     public State CurState { get; set; }
-     
     // 몬스터 자신
     private EnemyModel _owner;
 

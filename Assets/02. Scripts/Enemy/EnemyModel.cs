@@ -180,6 +180,20 @@ public class EnemyModel : EnemyBase
 
         
     }
+
+    public override void Damaged(SDamageInfo info)
+    {
+        base.Damaged(info);
+
+        isAggressive = true;
+
+        if (curState == EState.Idle || curState == EState.Patrol)
+        {
+            curState = EState.Chase;
+            stateMachine.ChangeState(new ChaseState(this));
+        }
+    }
+
     public void SetSpawnPoint(Transform pos)
     {
         spawnPoint = pos;
@@ -220,7 +234,27 @@ public class EnemyModel : EnemyBase
         {
             character.Stat.GainExp(statSO.expAmount);
             character.Stat.GainGold(statSO.goldAmount);
-            // 아이템 드랍 처리
+
+            if (statSO.dropTableSO == null) return;
+
+            foreach(DropItem dropItem in statSO.dropTableSO.dropItems)
+            {
+                int dropChance = Random.Range(0, 100);
+
+                if (dropChance <= dropItem.dropPercent)
+                {
+                    ItemBaseSO dropItemSO = ItemManager.Instance.GetItemBaseSO(dropItem.itemID);
+
+                    PoolableMono item = PoolManager.Instance.Pop("DropItem");
+                    
+                    if (item.GetComponent<DropItemModel>() != null)
+                    {
+                        DropItemModel dropItemModel = item.GetComponent<DropItemModel>();
+                        dropItemModel.InitItem(dropItemSO,dropItem.amount);
+                        dropItemModel.transform.position = transform.position + Vector3.up * 0.5f;
+                    }
+                }
+            }
         }
         
     }

@@ -741,7 +741,6 @@ public class CharacterModel : MonoBehaviour
                 Anim.SetBool("Interact_Jump", true);
                 break;
             default:
-                Anim.SetTrigger("Interact"); // 기본 상호작용 모션
                 break;
         }
     }

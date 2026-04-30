@@ -64,11 +64,7 @@ public class EnemyBase : PoolableMono
             DamageTextManager.Instance.SpawnDamageText(textSpawnPos.position, info.damage, info.isCritical);
         }
 
-
         _stat.Damaged(info); 
-        
-        if (this is EnemyModel enemy && !enemy.isAggressive)
-            enemy.isAggressive = true;
 
         if (_stat.curHp <= 0)
         {

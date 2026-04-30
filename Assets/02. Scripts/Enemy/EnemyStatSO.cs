@@ -24,6 +24,6 @@ public class EnemyStatSO : ScriptableObject
     [Header("적 드랍 테이블")]
     public float expAmount = 0f;
     public int goldAmount = 0;
-    // 아이템 드랍;
+    public ItemDropTableSO dropTableSO;
 
 }

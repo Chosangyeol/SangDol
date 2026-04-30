@@ -619,7 +619,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spawnData:
   - spanwPos: {fileID: 1041310501}
-    enemyPrefab: {fileID: 2250746701917371195, guid: dc074bd3bc512944a9d2cca2a8439a9e,
+    enemyPrefab: {fileID: 155867340947502665, guid: 1d980bdbed1f74e4d85b4dd4ab5fa37e,
       type: 3}
     respawnTime: 5
   - spanwPos: {fileID: 1353820191}
@@ -627,7 +627,15 @@ MonoBehaviour:
       type: 3}
     respawnTime: 5
   - spanwPos: {fileID: 17761391}
-    enemyPrefab: {fileID: 4263010779071610442, guid: fee21c22422684644b10c239822c274f,
+    enemyPrefab: {fileID: 1342959200176554030, guid: 71c2b86e4d7bc49b894c67d7b7a7b83f,
+      type: 3}
+    respawnTime: 5
+  - spanwPos: {fileID: 17761391}
+    enemyPrefab: {fileID: 5858953201300902105, guid: e812c04705f47d645beb13e90ec0ff93,
+      type: 3}
+    respawnTime: 5
+  - spanwPos: {fileID: 17761391}
+    enemyPrefab: {fileID: 4902596315025441598, guid: 07216ef3fb53e7e4d917e5df0f0d84d1,
       type: 3}
     respawnTime: 5
   isActive: 0

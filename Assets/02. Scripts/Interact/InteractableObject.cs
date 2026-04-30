@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 
-public class InteractableObject : MonoBehaviour, IInteractable
+public class InteractableObject : PoolableMono, IInteractable
 {
     [Header("Base Settings")]
     [SerializeField] protected string InteractName = "G - 상호작용";
@@ -84,7 +84,7 @@ public class InteractableObject : MonoBehaviour, IInteractable
     }
 
 
-    public void Init(string text)
+    public virtual void Init(string text)
     {
         if (interactText != null) interactText.text = text;
     }

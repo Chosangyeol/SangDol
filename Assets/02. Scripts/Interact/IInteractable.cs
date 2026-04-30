@@ -8,7 +8,8 @@ public enum InteractType
     Lever,      // 레버 당기기 애니메이션
     Gathering,  // 줍기/채집 애니메이션 (허리 숙이기)
     Portal,      // 포탈/입장 (단순 이동 등)
-    Jump
+    Jump,
+    Item
 }
 
 public interface IInteractable
