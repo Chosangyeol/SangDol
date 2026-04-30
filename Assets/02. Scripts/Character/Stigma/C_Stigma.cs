@@ -46,9 +46,12 @@ public class C_Stigma
         model.OnDodgeUsed += HandleOnSpaceUsed;
 
         EquipStigma(5, EStigmaType.Lv5_B);
-        EquipStigma(5, EStigmaType.Lv6_A);
+        EquipStigma(6, EStigmaType.Lv6_A);
         EquipStigma(7, EStigmaType.Lv7_B);
-        EquipStigma(7, EStigmaType.Lv10_A);
+        EquipStigma(9, EStigmaType.Lv9_B);
+        EquipStigma(10, EStigmaType.Lv10_A);
+
+        Debug.Log(_model.Stat.Stat.dodgeCooldownReduction);
     }
 
     public void UpdateStigma(float delta)

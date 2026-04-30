@@ -9,6 +9,7 @@ public abstract class SkillBase
     public int SkillLevel => skillLevel;
 
     public float coolTime;
+    public float finalCoolTime;
     public float nowCoolTime;
     public bool isSelected;
     public bool canUse;
@@ -23,7 +24,8 @@ public abstract class SkillBase
         else
             skillLevel = 0;
 
-        this.coolTime = skillData.skillCool;
+        coolTime = skillData.skillCool;
+        finalCoolTime = coolTime;
         isSelected = false;
         canUse = true;
         return;
@@ -33,7 +35,8 @@ public abstract class SkillBase
     {
         if (canUse)
         {
-            nowCoolTime = coolTime;
+            finalCoolTime = coolTime * _model.Stat.Stat.cooldownReduction.FinalValue;
+            nowCoolTime = finalCoolTime;
             canUse = false;
 
             _model.PlayerController.StopMove();

@@ -13,7 +13,8 @@ public class Skill_Space : SkillBase
     {
         if (canUse)
         {
-            nowCoolTime = coolTime;
+            finalCoolTime = coolTime - _model.Stat.Stat.dodgeCooldownReduction;
+            nowCoolTime = finalCoolTime;
             canUse = false;
 
             _model.canMove = false;

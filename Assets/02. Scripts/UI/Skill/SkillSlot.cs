@@ -99,7 +99,7 @@ public class SkillSlot : MonoBehaviour,
                 coolTimeText.gameObject.SetActive(true);
 
             coolTimeText.text = Mathf.Ceil(skill.nowCoolTime).ToString() + "s";
-            float fillAmount = skill.nowCoolTime / skill.coolTime;
+            float fillAmount = skill.nowCoolTime / skill.finalCoolTime;
             coolOverlay.fillAmount = fillAmount;
         }
         else

@@ -333,13 +333,13 @@ public class CharacterModel : MonoBehaviour
                     GameEvent.OnBossStateChange?.Invoke(boss);
                 }
                 OnHitTarget?.Invoke(this, info.damage, true, enemy);
-            }
 
-            ICounterable counterable = enemy.GetComponentInParent<ICounterable>();
-            if (counterable != null)
-            {
-                counterable.OnCounterSuccess(info);
-            }
+                ICounterable counterable = enemy.GetComponentInParent<ICounterable>();
+                if (counterable != null)
+                {
+                    counterable.OnCounterSuccess(info);
+                }
+            }        
         }
         canMove = true;
     }

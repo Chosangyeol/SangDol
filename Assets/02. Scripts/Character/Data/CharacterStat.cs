@@ -375,9 +375,12 @@ public class CharacterStat
         attackDamage.Recalculate();
         moveSpeed.Recalculate();
         attackSpeed.Recalculate();
-        downPower.Recalculate();
         criticalChance.Recalculate();
         criticalDamage.Recalculate();
+        downPower.Recalculate();
+        idenBonus.Recalculate();
+        cooldownReduction.Recalculate();
+        damageTakeMultiplier.Recalculate();
     }
 
 
