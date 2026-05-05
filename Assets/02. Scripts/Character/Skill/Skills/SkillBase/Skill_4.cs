@@ -18,8 +18,13 @@ public class Skill_4 : ChargeSkillBase
         if (base.UseSkill(targetPos))
         {
             isCharging = true;
+            
             currentChargeTime = 0f;
             tickTimer = 0f;
+
+            _model.canMove = false;
+            _model.canAttack = false;
+            _model.canSkill = false;
 
             _model.Anim.SetTrigger("Skill4_Spin");
             _model.StartCoroutine(Effect(skillData.skillEffects[0], _model.transform.position));

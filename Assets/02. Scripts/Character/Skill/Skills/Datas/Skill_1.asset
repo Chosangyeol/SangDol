@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Skill_1SO
   skillID: 10001
   skillName: "\uC9C4\uACA9 : \uC6A9\uC870"
-  skillDesc: "\uC804\uBC29\uC73C\uB85C \uB97C \uBE60\uB974\uAC8C \uB300\uC2DC\uD558\uBA70
+  skillDesc: "\uC804\uBC29\uC73C\uB85C \uBE60\uB974\uAC8C \uB300\uC2DC\uD558\uBA70
     \uAC15\uB825\uD55C \uC815\uAD8C \uC9C0\uB974\uAE30\uB97C \uB0B4\uC9C8\uB7EC %%%\uC758
     \uD53C\uD574\uB97C \uC90D\uB2C8\uB2E4."
-  skillIcon: {fileID: 21300000, guid: b7f77607c82ea4142a2070c0e37e1756, type: 3}
+  skillIcon: {fileID: 21300000, guid: f95ce893fbd58f542aba5399c0b03e63, type: 3}
   requireLevel: 0
   maxLevel: 10
   skillCool: 1
@@ -25,6 +25,16 @@ MonoBehaviour:
   - 1.5
   - 1.7
   - 2
+  canMoveSkill: 0
+  isChargeSkill: 0
+  isHoldingSkill: 0
+  maxChargeTime: 2
+  chargeDamageMultipliers: []
+  chargeStageTimes: []
+  chargeScaleMultipliers: []
+  hasPerfectZone: 0
+  perfectZoneStart: 1
+  perfectZoneEnd: 1.2
   attackShape: 0
   forwardOffset: 1.5
   knockDownPower: 4

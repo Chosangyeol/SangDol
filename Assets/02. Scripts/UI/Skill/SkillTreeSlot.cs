@@ -95,7 +95,7 @@ public class SkillTreeSlot : MonoBehaviour,
         if (currentSkill == null) return;
         if (_skillTooltip == null) return;
 
-        _skillTooltip.ToggleSkillTooltip(true, GetComponent<RectTransform>(), currentSkill);
+        _skillTooltip.ToggleSkillTooltip(true, skillIcon.GetComponent<RectTransform>(), currentSkill);
     }
 
     public void OnPointerExit(PointerEventData eventData)

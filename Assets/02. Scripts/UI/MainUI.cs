@@ -47,6 +47,8 @@ public class MainUI : MonoBehaviour
     public TMP_Text gaugeTitle;
     public RectTransform perfectZoneRect;
     public Image perfectZoneImage;
+    public GameObject imagePopUpUI;
+    public Image popUpImage;
 
     public void Init(C_SkillSystem skillSystem,C_Inventory inventory, CharacterModel model)
     {
@@ -69,6 +71,7 @@ public class MainUI : MonoBehaviour
         }
 
         RefreshAll();
+        SetPopUpImage(false);
 
         bossUI.SetActive(false);
         gaugeObject.SetActive(false);
@@ -202,4 +205,25 @@ public class MainUI : MonoBehaviour
         }
     }
 
+    public void SetPopUpImage(bool active, Sprite image = null)
+    {
+        if (imagePopUpUI == null || popUpImage == null) return;
+        if (imagePopUpUI.activeSelf != active)
+            imagePopUpUI.SetActive(active);
+
+        if (active && image != null)
+        {
+            popUpImage.sprite = image;
+        }
+    }
+
+    public void ClosePopUpImage()
+    {
+        if (imagePopUpUI != null)
+        {
+            imagePopUpUI.SetActive(false);
+            popUpImage.sprite = null;
+
+        }
+    }
 }

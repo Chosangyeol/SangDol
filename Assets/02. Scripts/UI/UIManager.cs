@@ -18,6 +18,7 @@ public class UIManager : MonoBehaviour
     public QuestUI questUI;
     public BuffList buffUI;
     public OptionUI optionUI;
+    public DungentEnterUI dungentEnterUI;
 
     private List<C_Enums.UIList> openedUIList = new List<C_Enums.UIList>();
 
@@ -41,6 +42,7 @@ public class UIManager : MonoBehaviour
             statusUI.Toggle(true);
             questUI.Toggle(true);
             optionUI.Toggle(true);
+            dungentEnterUI.Toggle(true);
         };
 
         GameEvent.OnMainUIviable += () => mainUI.Toggle(false);

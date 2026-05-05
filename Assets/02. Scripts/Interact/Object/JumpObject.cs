@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class JumpObject : InteractableObject
 {
-    [Header("목적지")]
+    [Header("목적지 및 궤적")]
     public Transform targetPos;
+    public Transform apexPos; // ⭐️ 사용자가 직접 지정할 포물선의 최고점(경유지)
     public AnimationCurve jumpCurve;
+    public float jumpDuration = 1f; // 점프에 걸리는 시간
 
     protected override void Start()
     {
@@ -37,32 +39,63 @@ public class JumpObject : InteractableObject
     }
 
     IEnumerator JumpSequence(CharacterModel model)
-    { 
-        Vector3 startPos = model.transform.position;
-        Vector3 endPos = targetPos.position;
+    {
+        Vector3 p0 = model.transform.position; // 시작점 (P0)
+        Vector3 p1 = apexPos.position;         // 제어점/최고점 (P1)
+        Vector3 p2 = targetPos.position;       // 도착점 (P2)
 
         float time = 0f;
-        while (time < 1f)
+        while (time < jumpDuration)
         {
             time += Time.deltaTime;
+            float t = time / jumpDuration;
 
-            float t = time / 1f;
-
+            // 커브를 통해 점프의 가감속(Easing)을 제어합니다.
             float curveT = jumpCurve.Evaluate(t);
 
-            // 3. 직선 위치 계산 (Base Position)
-            Vector3 basePos = Vector3.Lerp(startPos, endPos, curveT);
+            // ⭐️ 2차 베지어 곡선 (Quadratic Bezier Curve) 공식
+            Vector3 position = Mathf.Pow(1 - curveT, 2) * p0 +
+                               2 * (1 - curveT) * curveT * p1 +
+                               Mathf.Pow(curveT, 2) * p2;
 
-            // ⭐️ 4. 포물선 높이 계산 (Sine 함수 사용)
-            // t가 0일때 0, 0.5(중간)일때 최고점(1 * Height), 1일때 다시 0이 됩니다.
-            float arc = Mathf.Sin(t * Mathf.PI) * 25f;
-
-            // 5. 직선 위치에 포물선 높이(Y축)를 더해서 최종 위치 적용!
-            model.transform.position = basePos + new Vector3(0f, arc, 0f);
+            model.transform.position = position;
 
             yield return null;
         }
 
+        // 루프가 끝난 후 정확한 도착 지점에 맞춥니다.
+        model.transform.position = p2;
         model.EndJump();
     }
+
+#if UNITY_EDITOR
+    // 💡 에디터 씬(Scene) 창에서 점프 궤적을 미리 볼 수 있게 선을 그어줍니다.
+    private void OnDrawGizmos()
+    {
+        if (targetPos == null || apexPos == null) return;
+
+        Gizmos.color = Color.green;
+        Vector3 p0 = transform.position; // 대략적인 시작 위치 (오브젝트 위치 기준)
+        Vector3 p1 = apexPos.position;
+        Vector3 p2 = targetPos.position;
+
+        Vector3 prevPos = p0;
+        int segments = 20; // 선을 나눌 쪼개기 횟수 (부드러움 정도)
+
+        for (int i = 1; i <= segments; i++)
+        {
+            float t = i / (float)segments;
+            Vector3 nextPos = Mathf.Pow(1 - t, 2) * p0 +
+                              2 * (1 - t) * t * p1 +
+                              Mathf.Pow(t, 2) * p2;
+
+            Gizmos.DrawLine(prevPos, nextPos);
+            prevPos = nextPos;
+        }
+
+        // 최고점의 위치를 붉은 구체로 표시
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(p1, 0.5f);
+    }
+#endif
 }

@@ -35,7 +35,8 @@ public class C_Enums
         Quest,
         Upgrade,
         Shop,
-        Craft
+        Craft,
+        dungeonEnter
     }
 
     public enum CharacterStat
