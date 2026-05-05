@@ -17,6 +17,7 @@ public class NpcSO : ScriptableObject
     public bool canCraft = false;
     public CraftTableSO craftTableSO;
     public bool canTeleport = false;
+    public Transform[] teleportTargets;
 
     [Header("대화하기 대사 설정")]
     public string talkDialogID;

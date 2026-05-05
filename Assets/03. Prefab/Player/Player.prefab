@@ -3723,6 +3723,7 @@ GameObject:
   - component: {fileID: 3912951263054132293}
   - component: {fileID: 2542087223080165811}
   - component: {fileID: 402003624484510465}
+  - component: {fileID: 5543928764788041498}
   - component: {fileID: 4249445358006891484}
   - component: {fileID: 4935873310678924418}
   - component: {fileID: 1824521589550870621}
@@ -3743,7 +3744,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2037384909027316234}
@@ -3833,11 +3834,23 @@ MonoBehaviour:
   stunSO: {fileID: 11400000, guid: c029c3d867fe76549ab78fd424165bce, type: 2}
   clonePrefeb: {fileID: 5749607877044518315, guid: 217e1bf5cc6dad54bab2f738406df23d,
     type: 3}
+  attackTick: 0.1
+  damageMultiplier: 0.5
+  idenActiveEffect: {fileID: 0}
+  idenEnableEffect: {fileID: 2995589824717324049, guid: 1346c7f1cc38b1643bace9a575e2a764,
+    type: 3}
+  idenAttack1Effect: {fileID: 3711046705085894359, guid: d37a85de0bba37543ba1ac7fc06764de,
+    type: 3}
+  idenChargeEffect: {fileID: 0}
+  idenAttack2Effect: {fileID: 2106199863522115540, guid: 0c83a0e1dc478714285b588cb1f0f23a,
+    type: 3}
   canMove: 1
   canUse: 1
   canAttack: 1
   canSkill: 1
   isDie: 0
+  isIdenOn: 0
+  isWaitingForRelease: 0
 --- !u!114 &402003624484510465
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3865,6 +3878,19 @@ MonoBehaviour:
     type: 3}
   pointerPos: {fileID: -9186636312192583795, guid: 052faaac586de48259a63d0c4782560b,
     type: 3}
+--- !u!114 &5543928764788041498
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4510943724506603368}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26087f1798919e245b4f3913cabd5999, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  previewSkillData: {fileID: 11400000, guid: 994eb6e7d6a6f4147aacb2e8734b03f5, type: 2}
 --- !u!54 &4249445358006891484
 Rigidbody:
   m_ObjectHideFlags: 0

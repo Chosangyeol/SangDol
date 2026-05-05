@@ -10,4 +10,9 @@ public class Wolf : EnemyModel
 
         
     }
+
+    public override void AttackEnd()
+    {
+        base.AttackEnd();
+    }
 }

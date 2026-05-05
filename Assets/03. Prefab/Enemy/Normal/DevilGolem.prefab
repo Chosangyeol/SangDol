@@ -329,7 +329,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7420185534017696987}
   - component: {fileID: 4177991668713115663}
-  - component: {fileID: 4622343330244318007}
   m_Layer: 7
   m_Name: 1
   m_TagString: Untagged
@@ -417,28 +416,6 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.304778, y: -0.06042856, z: -0.00000011920929}
     m_Extent: {x: 0.5782651, y: 0.5841364, z: 0.6601772}
   m_DirtyAABB: 0
---- !u!64 &4622343330244318007
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3926198964914325390}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4300000, guid: d19f0e375a0203a4ca72964404dbd39e, type: 3}
 --- !u!1 &4275575337270899621
 GameObject:
   m_ObjectHideFlags: 0
@@ -578,6 +555,7 @@ GameObject:
   - component: {fileID: 6837752274871941930}
   - component: {fileID: 2406654977429417663}
   - component: {fileID: 585033301517224882}
+  - component: {fileID: 6479206867031218077}
   m_Layer: 7
   m_Name: DevilGolem
   m_TagString: Untagged
@@ -645,7 +623,7 @@ NavMeshAgent:
   m_Height: 0.86
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
+  m_ObstacleAvoidanceType: 0
 --- !u!114 &585033301517224882
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -669,6 +647,29 @@ MonoBehaviour:
   spawnPoint: {fileID: 0}
   isAggressive: 0
   canAttack: 0
+--- !u!136 &6479206867031218077
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5858953201300902105}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.4
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!1 &7512687143668896408
 GameObject:
   m_ObjectHideFlags: 0

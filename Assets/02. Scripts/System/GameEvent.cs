@@ -22,4 +22,6 @@ public static class GameEvent
 
     public static Action OnPlayerDie;
     public static Action<bool> OnPlayerPanic;
+
+    public static Action<bool, string, float,float,float> OnGaugeUpdate;
 }

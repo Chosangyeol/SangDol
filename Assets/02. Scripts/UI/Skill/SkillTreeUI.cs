@@ -12,15 +12,18 @@ public class SkillTreeUI : MonoBehaviour
     private C_SkillSystem _skillSystem;
     private List<SkillTreeSlot> slots = new();
 
-    public void Init(C_SkillSystem skillSystem, CharacterModel model)
+    private SkillToolTip _skillToolTip;
+
+    public void Init(C_SkillSystem skillSystem, CharacterModel model, SkillToolTip skillToolTip)
     {
         _model = model;
         _skillSystem = skillSystem;
+        _skillToolTip = skillToolTip;
 
         for (int i = 0; i < skillList.skillList.Count; i++)
         {
             SkillTreeSlot slot = Instantiate(slotPrefab, slotParent);
-            slot.Init(skillSystem, skillList.skillList[i].SkillInit(_model));
+            slot.Init(skillSystem, skillList.skillList[i].SkillInit(_model), _skillToolTip);
             slots.Add(slot);
         }
 
@@ -47,6 +50,7 @@ public class SkillTreeUI : MonoBehaviour
             return;
         }
 
+        _skillToolTip.ToggleSkillTooltip(false);
         gameObject.SetActive(!gameObject.activeSelf);
     }
 }

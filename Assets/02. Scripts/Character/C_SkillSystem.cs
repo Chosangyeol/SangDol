@@ -83,6 +83,15 @@ public class C_SkillSystem
 
     }
 
+    public void ReleaseSkill(C_Enums.SkillSlot slot, Vector3 targetPos)
+    {
+        if (activeSkills[slot] != null)
+        {
+            // 장착된 스킬의 ReleaseSkill 호출!
+            activeSkills[slot].ReleaseSkill(targetPos);
+        }
+    }
+
     public void RegisterSkillToSlot(C_Enums.SkillSlot slot, SkillBase skill)
     {
         activeSkills[slot] = skill;

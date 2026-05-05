@@ -129,6 +129,8 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   currentSector: 0
+  isEnterStart: 1
+  fieldEnemyListSO: {fileID: 0}
   dungeonUI: {fileID: 8380530154659597899}
   sectorName: {fileID: 5685357314197426216}
   sectorGoal: {fileID: 2636395598231033230}

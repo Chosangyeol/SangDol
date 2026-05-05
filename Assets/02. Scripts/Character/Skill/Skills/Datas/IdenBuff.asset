@@ -13,5 +13,9 @@ MonoBehaviour:
   m_Name: IdenBuff
   m_EditorClassIdentifier: 
   buffName: "\uC544\uB374"
+  buffIcon: {fileID: 0}
+  isStackable: 0
+  maxStack: 0
   buffDesc: "\uC544\uB374"
-  type: 0
+  type: 9
+  isBuff: 1

@@ -4015,6 +4015,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a41b19a3414e1774786ece436e06d56b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PoolManager
+  globalPoolList: {fileID: 0}
   currentStageList: {fileID: 11400000, guid: 9a6c55c58361e6b4c8da70874500b6f6, type: 2}
 --- !u!4 &1739766521
 Transform:
@@ -4264,6 +4265,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 32869511}
     m_Modifications:
+    - target: {fileID: 3220440682565326709, guid: f530e44cdf06c9247a629f5c4318a2e3,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: e823cd5b5d27c0f4b8256e7c12ee3e6d, type: 2}
     - target: {fileID: 3377181292992421420, guid: f530e44cdf06c9247a629f5c4318a2e3,
         type: 3}
       propertyPath: m_Name
@@ -6218,6 +6224,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6292796012629706706, guid: 4c09c35c3d85ce64db55b44f895ed03e,
         type: 3}
+      propertyPath: fieldEnemyListSO
+      value: 
+      objectReference: {fileID: 11400000, guid: 9a6c55c58361e6b4c8da70874500b6f6,
+        type: 2}
+    - target: {fileID: 6292796012629706706, guid: 4c09c35c3d85ce64db55b44f895ed03e,
+        type: 3}
       propertyPath: warpDatas.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -6261,7 +6273,7 @@ PrefabInstance:
     - target: {fileID: 6292796012629706706, guid: 4c09c35c3d85ce64db55b44f895ed03e,
         type: 3}
       propertyPath: warpDatas.Array.data[0].hasVideo
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6292796012629706706, guid: 4c09c35c3d85ce64db55b44f895ed03e,
         type: 3}

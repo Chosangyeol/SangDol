@@ -86,27 +86,28 @@ public class EnemyModel : EnemyBase
                 }
                 break;
             case EState.Patrol:
-                if (canAttack && canChase && isAggressive)
+                if (isAggressive)
                 {
-                    curState = EState.Attack;
-                    stateMachine.ChangeState(new AttackState(this));
-                    return;
-                }
-                else if (canChase && !canAttack && isAggressive)
-                {
-                    curState = EState.Chase;
-                    stateMachine.ChangeState(new ChaseState(this));
-                    return;
-                }
-                else if (!canChase && !canAttack)
-                {
-                    if (stateMachine.CurState is PatrolState patrol && !patrol.isPatrolling)
+                    if (canAttack)
                     {
-                        curState = EState.Idle;
-                        stateMachine.ChangeState(new IdleState(this));
+                        curState = EState.Attack;
+                        stateMachine.ChangeState(new AttackState(this));
+                        return;
+                    }
+                    else if (canChase)
+                    {
+                        curState = EState.Chase;
+                        stateMachine.ChangeState(new ChaseState(this));
                         return;
                     }
                 }
+                if (stateMachine.CurState is PatrolState patrol && !patrol.isPatrolling)
+                {
+                    curState = EState.Idle;
+                    stateMachine.ChangeState(new IdleState(this));
+                    return;
+                }
+
                 break;
             case EState.Chase:
                 if (canAttack)
@@ -207,6 +208,7 @@ public class EnemyModel : EnemyBase
     public virtual void AttackEnd()
     {
         canAttack = true;
+        Debug.Log("공격모션 끝");
     }
 
 

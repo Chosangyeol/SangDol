@@ -23,6 +23,8 @@ public class C_Controller
     public Vector3 attackDir;
     public bool isAttackHeld = false;
 
+    private bool prevAttackHeld = false;
+
     public C_Controller(CharacterModel model)
     {
         _model = model;
@@ -75,6 +77,20 @@ public class C_Controller
         }
     }
 
+    public void TeleportTo(Vector3 dest)
+    {
+        StopMove();
+
+        if (agent != null && agent.isActiveAndEnabled && agent.isOnNavMesh)
+        {
+            agent.Warp(dest);
+        }
+        else
+        {
+            tr.position = dest;
+        }
+    }
+
     public void RequestMove(Vector3 dest)
     {
         if (_model.Buff.isStun) return;
@@ -114,27 +130,60 @@ public class C_Controller
         _model.TryInteract();
     }
 
-    public void RequestBasicAttack(bool isHeld,Vector3 dest)
+    public void RequestBasicAttack(bool isHeld, Vector3 dest)
     {
         if (_model.Buff.isStun) return;
 
-        isAttackHeld = isHeld; // 누르고 있으면 true, 떼면 false가 됨
+        isAttackHeld = isHeld;
 
-        if (isAttackHeld)
+        // 🌟 핵심 방어 로직: 수라결 강제 종료 후 마우스를 뗄 때까지 입력 무시
+        if (_model.isWaitingForRelease)
         {
-            // 꾹 누르고 있는 동안에는 타겟 방향을 마우스 위치로 계속 갱신
-            attackDir = dest;
-
-            // 현재 공격 중이 아니라면 (서 있거나 달리는 중이라면) 즉시 1타 공격 시작
-            if (!isAttacking)
+            // 마침내 손을 뗐을 때 비로소 상태 완전 초기화
+            if (!isAttackHeld)
             {
-                StopMove();
-                FaceTo(dest);
-                StartAttackCombo();
+                _model.OnAttackEnd();
             }
-            // (이미 공격 중이라면 애니메이션 이벤트가 알아서 다음 타수를 이어줍니다!)
+            prevAttackHeld = isAttackHeld;
+            return; // 🌟 아래에 있는 일반 공격 로직이 절대 실행되지 않게 막음
         }
 
+        // 1. 마우스를 꾹 누르고 있는 상태 (또는 방금 누른 순간)
+        if (isAttackHeld)
+        {
+            attackDir = dest;
+
+            if (_model.isIdenOn)
+            {
+                if (!isAttacking)
+                {
+                    StopMove();
+                    FaceTo(dest);
+                    _model.OnComboStart();
+                }
+                else
+                {
+                    FaceTo(dest);
+                }
+            }
+            else
+            {
+                if (!isAttacking)
+                {
+                    StopMove();
+                    FaceTo(dest);
+                    StartAttackCombo();
+                }
+            }
+        }
+        // 2. 마우스를 방금 뗐을 때
+        else if (prevAttackHeld && !isAttackHeld)
+        {
+            // 상태 상관없이 무조건 OnAttackEnd를 호출해 깔끔하게 끊어줍니다.
+            _model.OnAttackEnd();
+        }
+
+        prevAttackHeld = isAttackHeld;
     }
 
     public void StartAttackCombo()
@@ -180,12 +229,17 @@ public class C_Controller
             _model.Anim.ResetTrigger("Attack");
     }
 
-    public void RequsetSkill(C_Enums.SkillSlot skillSlot, Vector3 dest)
+    public void RequestSkillKeyDown(C_Enums.SkillSlot slot, Vector3 targetPos)
     {
-        if (_model.Buff.isStun) return;
+        // C_SkillSystem의 기존 스킬 사용 로직 (차징 시작 또는 즉발)
+        _model.SkillSystem.UseSkill(slot, targetPos);
+    }
 
-        Debug.Log("스킬 " + skillSlot + " 사용 시도");
-        _model.SkillSystem.UseSkill(skillSlot, dest);
+    // 뗄 때
+    public void RequestSkillKeyUp(C_Enums.SkillSlot slot, Vector3 targetPos)
+    {
+        // C_SkillSystem에 새로 만든 손 뗌 로직 (차징 종료 및 타격 발동)
+        _model.SkillSystem.ReleaseSkill(slot, targetPos); // ※ C_SkillSystem에 이 함수를 추가해야 합니다!
     }
 
     public void RequestUseItem(C_Enums.UseSlot useSlot)

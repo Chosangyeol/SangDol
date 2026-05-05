@@ -11,14 +11,17 @@ public class Skill_Z : SkillBase
 
     public override bool UseSkill(Vector3 targetPos)
     {
-        if (canUse && _model.Stat.Stat.idenCurrent == 100)
+        if (base.UseSkill(targetPos) && _model.Stat.Stat.idenCurrent == 100)
         {
+            _model.PlayerController.StopMove();
+            _model.PlayerController.FaceTo(targetPos);
+
             if (skillData is Skill_ZSO zSO)
             {
                 SBuff sBuff = new SBuff(
                     _model.gameObject,
                     _model.gameObject,
-                    new StatBuff(_model, zSO.buffSO, 5f, C_Enums.CharacterStat.AttackDamage, false, 0.5f)
+                    new IdenBuff(_model, zSO.buffSO, 5f)
                     );
                 
                 _model.Buff.AddBuff(sBuff);

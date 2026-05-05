@@ -9,6 +9,7 @@ public class MainUI : MonoBehaviour
     [Header("스킬 슬룻")]
     public List<SkillSlot> skillSlots;
     public SkillSlot spaceSlot;
+    public SkillToolTip skillToolTip;
 
     [Header("소모품 슬롯")]
     public List<UseItemSlot> useItemSlots;
@@ -44,6 +45,8 @@ public class MainUI : MonoBehaviour
     public GameObject gaugeObject;
     public Slider gaugeFill;
     public TMP_Text gaugeTitle;
+    public RectTransform perfectZoneRect;
+    public Image perfectZoneImage;
 
     public void Init(C_SkillSystem skillSystem,C_Inventory inventory, CharacterModel model)
     {
@@ -55,10 +58,10 @@ public class MainUI : MonoBehaviour
 
         foreach (var slot in skillSlots)
         {
-            slot.Init(skillSystem);
+            slot.Init(skillSystem, skillToolTip);
         }
 
-        spaceSlot.Init(skillSystem);
+        spaceSlot.Init(skillSystem, skillToolTip);
 
         foreach (var slot in useItemSlots)
         {
@@ -80,6 +83,7 @@ public class MainUI : MonoBehaviour
         GameEvent.OnBossStateChange += UpdateBossUI;
         GameEvent.OnBossRoomEnterCount += BossCountdownAlarm;
         GameEvent.OnPlayerPanic += TogglePanicUI;
+        GameEvent.OnGaugeUpdate += SetGaugeUI;
     }
 
     private void RefreshAll()
@@ -165,24 +169,35 @@ public class MainUI : MonoBehaviour
         }
     }
 
-    public void SetGaugeUI(bool active, string title = "", float progress = 0f)
+    public void SetGaugeUI(bool active, string title = "", float progress = 0f, float pZoneStartRatio = -1f, float pZoneEndRatio = -1f)
     {
-        if (gaugeObject == null)
-        {
-            Debug.LogWarning("MainUI: Gauge Object가 할당되지 않았습니다.");
-            return;
-        }
+        if (gaugeObject == null) return;
 
-        // 상태가 같으면 SetActive를 중복 호출하지 않도록 최적화
         if (gaugeObject.activeSelf != active)
             gaugeObject.SetActive(active);
 
         if (active)
         {
             if (gaugeTitle != null) gaugeTitle.text = title;
-            if (gaugeFill != null)
+            if (gaugeFill != null) gaugeFill.value = progress;
+
+            // [추가] 퍼펙트 존 그리기 로직
+            if (perfectZoneRect != null && perfectZoneImage != null)
             {
-                gaugeFill.value = progress;
+                if (pZoneStartRatio >= 0f && pZoneEndRatio >= 0f)
+                {
+                    perfectZoneImage.enabled = true; // 이미지 켜기
+
+                    perfectZoneRect.anchorMin = new Vector2(pZoneStartRatio, 0f);
+                    perfectZoneRect.anchorMax = new Vector2(pZoneEndRatio, 1f);
+
+                    perfectZoneRect.offsetMin = Vector2.zero;
+                    perfectZoneRect.offsetMax = Vector2.zero;
+                }
+                else
+                {
+                    perfectZoneImage.enabled = false;
+                }
             }
         }
     }

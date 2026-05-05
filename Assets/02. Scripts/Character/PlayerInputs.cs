@@ -26,16 +26,28 @@ public class PlayerInputs : MonoBehaviour
     {
         if (model.isDie) return;
 
-        if (EventSystem.current.IsPointerOverGameObject())
-        {
-            return;
-        }
+        bool isPointerOverUI = EventSystem.current.IsPointerOverGameObject();
 
-        if (model != null && model.PlayerInput != null && model.canAttack)
+        if (model != null && model.PlayerInput != null)
         {
-            model.PlayerInput.OnAttackClick(isAttackHeld, GetPointerScreenPos());
+            // 🌟 수정된 공격 로직 🌟
+            // UI 위가 아니거나, 혹은 마우스를 뗐을 때(!isAttackHeld)
+            if (!isPointerOverUI || !isAttackHeld)
+            {
+                // 누를 때(true)는 canAttack이 true일 때만 전달!
+                if (isAttackHeld && model.canAttack)
+                {
+                    model.PlayerInput.OnAttackClick(true, GetPointerScreenPos());
+                }
+                // 뗄 때(false)는 canAttack 무시하고 무조건 전달!
+                else if (!isAttackHeld)
+                {
+                    model.PlayerInput.OnAttackClick(false, GetPointerScreenPos());
+                }
+            }
 
-            if (isMoveHeld)
+            // 🌟 수정된 이동 로직 (기존의 model.canAttack 조건에서 분리) 🌟
+            if (isMoveHeld && !isPointerOverUI && model.canMove)
             {
                 model.PlayerInput.OnMoveClick(GetPointerScreenPos());
             }
@@ -62,7 +74,9 @@ public class PlayerInputs : MonoBehaviour
         attackAction.action.canceled += OnAttackCanceled;
 
 
-        skillSlotAction.action.performed += OnSkillSlot;
+        skillSlotAction.action.started += OnSkillSlotStarted;
+        skillSlotAction.action.canceled += OnSkillSlotCanceled;
+
         useItemSlotAction.action.performed += OnUseItemSlot;
         uiAction.action.performed += OnUIInput;
     }
@@ -75,7 +89,8 @@ public class PlayerInputs : MonoBehaviour
         interactActon.action.performed -= OnInteract;
         attackAction.action.started -= OnAttackStarted;
         attackAction.action.canceled -= OnAttackCanceled;
-        skillSlotAction.action.performed -= OnSkillSlot;
+        skillSlotAction.action.started -= OnSkillSlotStarted;
+        skillSlotAction.action.canceled -= OnSkillSlotCanceled;
         useItemSlotAction.action.performed -= OnUseItemSlot;
         uiAction.action.performed -= OnUIInput;
     }
@@ -92,10 +107,21 @@ public class PlayerInputs : MonoBehaviour
     private void OnAttackStarted(InputAction.CallbackContext ctx) => isAttackHeld = true;
     private void OnAttackCanceled(InputAction.CallbackContext ctx) => isAttackHeld = false;
 
-    private void OnSkillSlot(InputAction.CallbackContext ctx)
+    private void OnSkillSlotStarted(InputAction.CallbackContext ctx)
+    {
+        if (EventSystem.current.IsPointerOverGameObject()) return; // UI 위면 무시
+
+        C_Enums.SkillSlot slot = GetSkillSlotFromInput(ctx);
+        // OnSkillInput 대신 명확하게 '누름'을 전달합니다 (모델쪽 함수 이름도 맞춰서 변경 필요)
+        model.PlayerInput.OnSkillKeyDown(slot, GetPointerScreenPos());
+    }
+
+    // 스킬 버튼에서 손을 뗐을 때 (차징 종료 및 발사)
+    private void OnSkillSlotCanceled(InputAction.CallbackContext ctx)
     {
         C_Enums.SkillSlot slot = GetSkillSlotFromInput(ctx);
-        model.PlayerInput.OnSkillInput(slot, GetPointerScreenPos());
+        // 손을 뗐다는 신호를 전달합니다.
+        model.PlayerInput.OnSkillKeyUp(slot, GetPointerScreenPos());
     }
 
     private void OnUseItemSlot(InputAction.CallbackContext ctx)

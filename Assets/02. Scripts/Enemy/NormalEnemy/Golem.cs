@@ -9,4 +9,9 @@ public class Golem : EnemyModel
         base.Attack();
 
     }
+
+    public override void AttackEnd()
+    {
+        base.AttackEnd();
+    }
 }

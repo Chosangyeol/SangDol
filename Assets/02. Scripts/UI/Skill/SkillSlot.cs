@@ -4,7 +4,13 @@ using UnityEngine.EventSystems;
 using TMPro;
 
 public class SkillSlot : MonoBehaviour,
-    IPointerClickHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler
+    IPointerClickHandler,
+    IBeginDragHandler,
+    IDragHandler,
+    IEndDragHandler,
+    IDropHandler,
+    IPointerEnterHandler,
+    IPointerExitHandler
 {
     [Header("스킬 슬룻 설정")]
     public C_Enums.SkillSlot skillSlot;
@@ -24,9 +30,9 @@ public class SkillSlot : MonoBehaviour,
     private RectTransform dragIconRect;
     private bool droppedOnSlot;
 
-
     private C_SkillSystem _skillSystem;
     private CanvasGroup _canvasGroup; // ⭐️ 추가: 투명도 조절용 컴포넌트
+    private SkillToolTip _skillTooltip;
 
     private SkillBase currentSkill => _skillSystem?.GetSkillToSlot(skillSlot);
     public SkillBase CurrentSkill => currentSkill;
@@ -36,9 +42,10 @@ public class SkillSlot : MonoBehaviour,
         UpdateSkillCool();
     }
 
-    public void Init(C_SkillSystem skillSystem)
+    public void Init(C_SkillSystem skillSystem, SkillToolTip skillToolTip)
     {
         _skillSystem = skillSystem;
+        _skillTooltip = skillToolTip;
 
         // ⭐️ 추가: CanvasGroup이 없다면 자동으로 붙여줍니다.
         _canvasGroup = GetComponent<CanvasGroup>();
@@ -112,8 +119,6 @@ public class SkillSlot : MonoBehaviour,
             coolOverlay.fillAmount = 0f;
         }
     }
-
-
 
     #region 클릭
     public void OnPointerClick(PointerEventData eventData)
@@ -203,6 +208,24 @@ public class SkillSlot : MonoBehaviour,
             Refresh();
             return;
         }
+    }
+    #endregion
+
+    #region 스킬 툴팁 출력
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (currentSkill == null) return;
+        if (_skillTooltip == null) return;
+
+        _skillTooltip.ToggleSkillTooltip(true, GetComponent<RectTransform>(), currentSkill);
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        if (currentSkill == null) return;
+        if (_skillTooltip == null) return;
+
+        _skillTooltip.ToggleSkillTooltip(false);
     }
     #endregion
 }

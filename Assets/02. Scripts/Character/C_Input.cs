@@ -43,14 +43,26 @@ public class C_Input
     }
 
 
-    public void OnSkillInput(C_Enums.SkillSlot skillSlot, Vector2 screenPos)
+    public void OnSkillKeyDown(C_Enums.SkillSlot skillSlot, Vector2 screenPos)
     {
         _model.CancelInteraction();
 
         if (!GetMouseInput(screenPos, out var point))
             return;
 
-        _controller.RequsetSkill(skillSlot, point);
+        // 컨트롤러에게 스킬 누름을 요청 (이름 변경됨)
+        _controller.RequestSkillKeyDown(skillSlot, point);
+    }
+
+    // 2. 스킬 버튼에서 손을 뗐을 때 (차징 발사를 위해 추가됨)
+    public void OnSkillKeyUp(C_Enums.SkillSlot skillSlot, Vector2 screenPos)
+    {
+        // 손을 뗄 때 마우스 위치가 허공일 수도 있으니 동일하게 포인트 계산
+        if (!GetMouseInput(screenPos, out var point))
+            return;
+
+        // 컨트롤러에게 스킬 뗌을 요청
+        _controller.RequestSkillKeyUp(skillSlot, point);
     }
 
     public void OnUseItemInput(C_Enums.UseSlot useSlot)

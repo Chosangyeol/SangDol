@@ -13,7 +13,8 @@ public enum EBuffType
     Poison,
     Heal,
     Immunity,
-    Invincibility
+    Invincibility,
+    Identity
 }
 
 public abstract class BuffBase

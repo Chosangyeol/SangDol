@@ -1161,6 +1161,7 @@ GameObject:
   - component: {fileID: 3710099279984199848}
   - component: {fileID: 1148331730834854411}
   - component: {fileID: 5786352343585698597}
+  - component: {fileID: 606126382730629568}
   m_Layer: 7
   m_Name: Wolf
   m_TagString: Untagged
@@ -1228,7 +1229,7 @@ NavMeshAgent:
   m_Height: 3.21
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
+  m_ObstacleAvoidanceType: 0
 --- !u!114 &5786352343585698597
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1252,6 +1253,29 @@ MonoBehaviour:
   spawnPoint: {fileID: 0}
   isAggressive: 0
   canAttack: 0
+--- !u!136 &606126382730629568
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4263010779071610442}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 1.5
+  m_Height: 10
+  m_Direction: 2
+  m_Center: {x: 0, y: 1.5, z: 0}
 --- !u!1 &4526850490685620194
 GameObject:
   m_ObjectHideFlags: 0
@@ -2161,7 +2185,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4209881188793227585}
   - component: {fileID: 6589357719745925763}
-  - component: {fileID: 6080410907699663329}
   m_Layer: 7
   m_Name: WolfBossmon_body
   m_TagString: Untagged
@@ -2300,28 +2323,6 @@ SkinnedMeshRenderer:
     m_Center: {x: 0.5828843, y: 0.49705523, z: -0.000005364418}
     m_Extent: {x: 6.070191, y: 2.028892, z: 2.1708045}
   m_DirtyAABB: 0
---- !u!64 &6080410907699663329
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8730473560787544563}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -5222077476010097717, guid: e6b070634da492a48a576974248d64b9, type: 3}
 --- !u!1 &8744001856719300007
 GameObject:
   m_ObjectHideFlags: 0

@@ -21,6 +21,15 @@ MonoBehaviour:
   requireLevel: 0
   maxLevel: 10
   skillCool: 6
+  damageMultipliers:
+  - 2
+  - 2.7
+  - 3.5
+  attackShape: 0
+  forwardOffset: 0
+  knockDownPower: 8
+  idenGain: 4
+  attackRadius: 3
+  boxSize: {x: 2, y: 2, z: 4}
   skillEffects:
-  - {fileID: 7752083996402044098, guid: 8419b00d8b6ddf34198834e732c088f2, type: 3}
-  - {fileID: -5438589630168675564, guid: 43f0faecc4d5f6546b43797c01736343, type: 3}
+  - {fileID: -6740706356975375327, guid: 87f2452fda068d04b884a4e59e748890, type: 3}

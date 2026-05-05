@@ -38,12 +38,25 @@ public class CharacterModel : MonoBehaviour
     public BuffSO stunSO;
     public GameObject clonePrefeb;
 
+    [Header("아덴 설정")]
+    public float attackTick = 0.2f;
+    public float damageMultiplier = 0.5f;
+    private Coroutine attackCoroutine;
+    public PoolableMono idenActiveEffect;
+    public PoolableMono idenEnableEffect;
+    private PoolableMono idenEffectObject;
+    public PoolableMono idenAttack1Effect;
+    public PoolableMono idenChargeEffect;
+    public PoolableMono idenAttack2Effect;
+
     [Header("캐릭터 상태")]
     public bool canMove = true;
     public bool canUse = true;
     public bool canAttack = true;
     public bool canSkill = true;
     public bool isDie = false;
+    public bool isIdenOn = false;
+    public bool isWaitingForRelease = false;
 
     private Animator anim;
     public Animator Anim => anim;
@@ -142,10 +155,7 @@ public class CharacterModel : MonoBehaviour
         StartCoroutine(routine);
     }
 
-    public void SetCanMove()
-    {
-        canMove = true;
-    }
+    
 
     public void UseDodge()
     {
@@ -180,24 +190,157 @@ public class CharacterModel : MonoBehaviour
     #region 일반 공격
     public void OnComboStart()
     {
-        if (playerController.nextAttackReady || playerController.isAttackHeld)
-            playerController.StartAttackCombo();
+        if (isIdenOn)
+        {
+            if (attackCoroutine == null)
+            {
+                playerController.isAttacking = true;
+                canMove = false; // 연타 중 이동 불가 처리
+
+                // 연타 루프 애니메이션 실행 (Trigger가 아닌 Bool 사용)
+                Anim.SetBool("IsIden", true);
+
+                attackCoroutine = StartCoroutine(RapidAttackRoutine());
+            }
+        }
+        // 2. 일반 상태일 때 -> 기존 콤보 공격 시작
+        else
+        {
+            if (playerController.nextAttackReady || playerController.isAttackHeld)
+                playerController.StartAttackCombo();
+        }
     }
 
     public void OnAttackEnd()
     {
-        if (playerController.isAttackHeld)
+        if (isIdenOn || attackCoroutine != null || isWaitingForRelease)
         {
-            playerController.currentCombo = 0; // 콤보 초기화
-            playerController.StartAttackCombo();
+            playerController.isAttacking = false;
+            canMove = true;
+
+            Anim.SetBool("IsIden", false);
+
+            if (attackCoroutine != null)
+            {
+                StopCoroutine(attackCoroutine);
+                attackCoroutine = null;
+            }
+            if (isWaitingForRelease)
+            {
+                isWaitingForRelease = false; // 상태 초기화
+                RemoveIdenAura();            // 비로소 오라 이펙트 끄기
+            }
         }
         else
         {
-            // 마우스를 뗐다면 깔끔하게 공격 상태 완전 종료
-            playerController.isAttacking = false;
-            canMove = true;
-            playerController.nextAttackReady = false;
-            playerController.currentCombo = 0;
+            // (일반 공격 처리 로직 동일)
+            if (playerController.isAttackHeld)
+            {
+                playerController.currentCombo = 0;
+                playerController.StartAttackCombo();
+            }
+            else
+            {
+                playerController.isAttacking = false;
+                canMove = true;
+                playerController.nextAttackReady = false;
+                playerController.currentCombo = 0;
+            }
+        }
+    }
+
+    private IEnumerator RapidAttackRoutine()
+    {
+        while (true) // 마우스를 떼서 OnAttackEnd가 호출될 때까지 무한 반복
+        {
+            PerformRapidHit(); // 데미지 판정
+            yield return new WaitForSeconds(attackTick); // 틱 주기만큼 대기
+        }
+    }
+
+    private void PerformRapidHit()
+    {
+        // 수라결의 히트박스 (원형 또는 박스형 등 기획에 맞게 수정)
+        float hitRadius = 3.5f;
+        float hitAngle = 120f; // 수라결은 범위가 좀 더 넓게 설정
+
+        StartCoroutine(IdenRapidEffect());
+
+        Collider[] targets = Physics.OverlapSphere(transform.position, hitRadius);
+
+        float baseDmg = Stat.Stat.attackDamage.FinalValue * damageMultiplier;
+        bool isCritical = GetCritical();
+        if (isCritical) baseDmg *= Stat.Stat.criticalDamage.FinalValue;
+
+        SDamageInfo info = new SDamageInfo()
+        {
+            damage = baseDmg,
+            source = this.gameObject,
+            knockDownPower = 1,
+            isCounterable = true,
+            isCritical = isCritical,
+            isHeadattack = true, // 수라결은 보통 헤드어택
+            isBackattack = false
+        };
+
+        HashSet<EnemyBase> hitEnemies = new HashSet<EnemyBase>();
+
+        foreach (Collider target in targets)
+        {
+            EnemyBase enemy = target.GetComponentInParent<EnemyBase>();
+            if (enemy != null && !hitEnemies.Contains(enemy))
+            {
+                Vector3 dir = (enemy.transform.position - transform.position).normalized;
+                dir.y = 0;
+                Vector3 myForward = transform.forward;
+                myForward.y = 0;
+
+                if (Vector3.Angle(myForward, dir) <= hitAngle / 2f)
+                {
+                    hitEnemies.Add(enemy); // 중복 타격 방지
+                    enemy.Damaged(info);
+
+                    if (target.TryGetComponent<BossModel>(out BossModel boss))
+                        GameEvent.OnBossStateChange?.Invoke(boss);
+
+                    OnHitTarget?.Invoke(this, info.damage, true, enemy);
+                }
+            }
+        }
+    }
+
+    IEnumerator IdenRapidEffect()
+    {
+        PoolableMono effect = PoolManager.Instance.Pop(idenAttack1Effect.name);
+        effect.transform.position = transform.position + transform.forward * 2f; // 예시로 캐릭터 머리 위에 위치
+        effect.transform.rotation = Quaternion.LookRotation(transform.forward);
+        yield return new WaitForSeconds(attackTick);
+        PoolManager.Instance.Push(effect);
+    }
+
+    public void IdenFinalAttack()
+    {
+        StartCoroutine(IdenFinalAttackEffect());
+    }
+
+    IEnumerator IdenFinalAttackEffect()
+    {
+        PoolableMono effect = PoolManager.Instance.Pop(idenAttack2Effect.name);
+        effect.transform.position = transform.position + transform.forward;
+        effect.transform.rotation = Quaternion.LookRotation(transform.forward);
+        yield return new WaitForSeconds(1f);
+        PoolManager.Instance.Push(effect);
+    }
+
+    private void RemoveIdenAura()
+    {
+        if (isIdenOn) return;
+
+        if (idenEffectObject != null)
+        {
+            idenEffectObject.transform.SetParent(null);
+            PoolManager.Instance.Push(idenEffectObject);
+            idenEffectObject = null;
         }
     }
 
@@ -278,8 +421,6 @@ public class CharacterModel : MonoBehaviour
 
             if (target.TryGetComponent<ICounterable>(out ICounterable counterable))
             {
-                // (선택 사항) 플레이어가 허공에 칼을 휘둘렀는데 뒤에 있던 룩이 카운터 맞는 것을 방지하려면,
-                // 카운터도 공격 범위(부채꼴) 안에 있을 때만 발동하도록 각도 검사를 해주는 것이 좋습니다.
                 Vector3 dir = (target.transform.position - transform.position).normalized;
                 dir.y = 0;
                 float angle = Vector3.Angle(transform.forward, dir);
@@ -346,16 +487,46 @@ public class CharacterModel : MonoBehaviour
     #endregion
 
     #region 캐릭터 상태 및 상태이상
+    public void SetCanMove()
+    {
+        canMove = true;
+    }
+
+    public void SetCantMove()
+    {
+        canMove = false;
+    }
+
+    public void SetCanAttack()
+    {
+        canAttack = true;
+    }
+
+    public void SetCantAttack()
+    {
+        canAttack = false;
+    }
+
+    public void SetCanSkill()
+    {
+        canSkill = true;
+    }
+
+    public void SetCantSkill()
+    {
+        canSkill = false;
+    }
+
     public void StunEnable()
     {
         Buff.StunEnable();
-        Anim.SetBool("isStun", true);
+        Anim.SetBool("IsStun", true);
     }
 
     public void StunDisable()
     {
         Buff.StunDisable();
-        Anim.SetBool("isStun", false);
+        Anim.SetBool("IsStun", false);
     }
 
     public void ImmunityEnable()
@@ -389,6 +560,47 @@ public class CharacterModel : MonoBehaviour
         Buff.PanicDisable();
         GameEvent.OnPlayerPanic?.Invoke(buff.isPanic);
     }
+
+    public void IdenEnable()
+    {
+        canMove = false;
+        canAttack = false;
+        Anim.SetTrigger("IdenOn");
+        isIdenOn = true;
+
+        idenEffectObject = PoolManager.Instance.Pop(idenEnableEffect.name);
+
+        idenEffectObject.transform.SetParent(this.transform);
+        idenEffectObject.transform.localPosition = new Vector3(0, 0, 0);
+
+    }
+
+    public void IdenDisable()
+    {
+        isIdenOn = false;
+
+        if (attackCoroutine != null)
+        {
+            StopCoroutine(attackCoroutine);
+            attackCoroutine = null;
+            Anim.SetBool("IsIden", false);
+
+            Anim.SetTrigger("IdenFinish"); // 막타 애니메이션 실행
+
+            isWaitingForRelease = true; // 막타 치는 중이니 마우스 뗄 때까지 기다리라고 상태 변경
+            playerController.isAttacking = true;
+
+        }
+        else
+        {
+            // 2. 가만히 서있거나 이동 중에 지속시간이 끝났다면
+            canMove = true;
+            canAttack = true;
+
+            RemoveIdenAura();
+        }
+    }
+
     #endregion
 
     #region 캐릭터 스탯 관리

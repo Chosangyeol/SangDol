@@ -211,7 +211,8 @@ MonoBehaviour:
   m_fontAsset: {fileID: 11400000, guid: 61540c2da40e9fe40922d0260893872a, type: 2}
   m_sharedMaterial: {fileID: -5347057309129365486, guid: 61540c2da40e9fe40922d0260893872a,
     type: 2}
-  m_fontSharedMaterials: []
+  m_fontSharedMaterials:
+  - {fileID: -5347057309129365486, guid: 61540c2da40e9fe40922d0260893872a, type: 2}
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
@@ -418,6 +419,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ec714818a93e8f4e8fc5f846a620fee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fieldEnemyListSO: {fileID: 0}
   spawners:
   - {fileID: 1844428202}
   limitDistance: 30
@@ -844,6 +846,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a41b19a3414e1774786ece436e06d56b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  globalPoolList: {fileID: 0}
   currentStageList: {fileID: 11400000, guid: 0983e9dd679719e4b9a01a345a80a1b6, type: 2}
 --- !u!4 &1359464090
 Transform:

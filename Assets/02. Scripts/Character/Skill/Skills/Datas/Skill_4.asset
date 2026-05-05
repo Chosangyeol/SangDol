@@ -18,6 +18,30 @@ MonoBehaviour:
   skillIcon: {fileID: 21300000, guid: 4605338a5a51383478a6b8eb3707e90c, type: 3}
   requireLevel: 0
   maxLevel: 10
-  skillCool: 16
+  skillCool: 1
+  damageMultipliers:
+  - 3
+  - 3
+  - 3
+  canMoveSkill: 1
+  isChargeSkill: 1
+  isHoldingSkill: 0
+  maxChargeTime: 3
+  chargeDamageMultipliers:
+  - 2
+  chargeStageTimes:
+  - 0
+  chargeScaleMultipliers:
+  - 1
+  hasPerfectZone: 1
+  perfectZoneStart: 2
+  perfectZoneEnd: 2.4
+  attackShape: 0
+  forwardOffset: 0
+  knockDownPower: 4
+  idenGain: 1
+  attackRadius: 3
+  boxSize: {x: 2, y: 2, z: 4}
   skillEffects:
-  - {fileID: 235692528368503918, guid: 5b0fae5e92c9f394dbc47173f0ee3e5d, type: 3}
+  - {fileID: -1988153021935411327, guid: d4fb351fff29eee4799e24294e625ff6, type: 3}
+  - {fileID: 7851212121601158277, guid: 38b7a2dcdd6ad6040b0bc0d60a62ac28, type: 3}

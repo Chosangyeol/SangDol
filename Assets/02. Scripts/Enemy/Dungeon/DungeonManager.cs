@@ -45,6 +45,7 @@ public class DungeonManager : MonoBehaviour
     public List<SectorController> allSectors;
     public int currentSector = 0;
     public bool isEnterStart = true;
+    [SerializeField] PoolingListSO fieldEnemyListSO;
 
     [Header("던전 UI")]
     public GameObject dungeonUI;
@@ -59,6 +60,11 @@ public class DungeonManager : MonoBehaviour
 
     private void Start()
     {
+        if (PoolManager.Instance != null && fieldEnemyListSO != null)
+        {
+            PoolManager.Instance.LoadStagePools(fieldEnemyListSO);
+        }
+
         dungeonStepIndex = 0;
         currentSector = 0;
         _model = GameObject.FindObjectOfType<CharacterModel>();

@@ -23,6 +23,7 @@ MonoBehaviour:
   attackSpeed: 2
   down: 100
   detactRange: 15
-  attackRange: 3
+  attackRange: 4
   expAmount: 0
   goldAmount: 0
+  dropTableSO: {fileID: 0}

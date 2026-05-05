@@ -12,6 +12,9 @@ EditorBuildSettings:
     path: Assets/01. Scene/Main.unity
     guid: 54a59ef41dacced4c8f3da625c5c3155
   - enabled: 1
+    path: Assets/01. Scene/Map1-Forest.unity
+    guid: fbc652d628c15894e9b8aa43fb6a40f6
+  - enabled: 1
     path: Assets/01. Scene/FieldTestScenes/FieldTest1.unity
     guid: 094bfdc2bcea31d46893681506b6044f
   - enabled: 1

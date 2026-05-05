@@ -45,4 +45,14 @@ public class Pool<T> where T : PoolableMono
         obj.gameObject.SetActive(false);
         _pool.Push(obj);
     }
+
+    public void Clear()
+    {
+        while (_pool.Count > 0)
+        {
+            T obj = _pool.Pop();
+            if (obj != null)
+             GameObject.Destroy(obj.gameObject);
+        }
+    }
 }

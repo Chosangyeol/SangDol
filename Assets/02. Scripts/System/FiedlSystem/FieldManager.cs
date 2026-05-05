@@ -7,6 +7,7 @@ public class FieldManager : MonoBehaviour
     public static FieldManager instance;
 
     [Header("몬스터 스포너 설정")]
+    [SerializeField] PoolingListSO fieldEnemyListSO;
     [SerializeField] List<EnemySpawner> spawners;
     [SerializeField] float limitDistance = 20f;
 
@@ -25,6 +26,11 @@ public class FieldManager : MonoBehaviour
     private void Start()
     {
         _model = FindAnyObjectByType<CharacterModel>();
+
+        if (PoolManager.Instance != null && fieldEnemyListSO != null)
+        {
+            PoolManager.Instance.LoadStagePools(fieldEnemyListSO);
+        }
 
         StartCoroutine(CheckSpawnerActivate());
     }

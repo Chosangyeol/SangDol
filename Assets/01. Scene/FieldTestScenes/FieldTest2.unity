@@ -618,24 +618,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawnData:
-  - spanwPos: {fileID: 1041310501}
-    enemyPrefab: {fileID: 155867340947502665, guid: 1d980bdbed1f74e4d85b4dd4ab5fa37e,
-      type: 3}
-    respawnTime: 5
-  - spanwPos: {fileID: 1353820191}
-    enemyPrefab: {fileID: 4263010779071610442, guid: fee21c22422684644b10c239822c274f,
-      type: 3}
-    respawnTime: 5
   - spanwPos: {fileID: 17761391}
-    enemyPrefab: {fileID: 1342959200176554030, guid: 71c2b86e4d7bc49b894c67d7b7a7b83f,
-      type: 3}
-    respawnTime: 5
-  - spanwPos: {fileID: 17761391}
-    enemyPrefab: {fileID: 5858953201300902105, guid: e812c04705f47d645beb13e90ec0ff93,
-      type: 3}
-    respawnTime: 5
-  - spanwPos: {fileID: 17761391}
-    enemyPrefab: {fileID: 4902596315025441598, guid: 07216ef3fb53e7e4d917e5df0f0d84d1,
+    enemyPrefab: {fileID: 4803203441120150360, guid: 240b8117c3c5c4b4caab2d8295646fc1,
       type: 3}
     respawnTime: 5
   isActive: 0
@@ -655,51 +639,6 @@ Transform:
   - {fileID: 1041310501}
   - {fileID: 1353820191}
   - {fileID: 17761391}
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1685145587
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1685145589}
-  - component: {fileID: 1685145588}
-  m_Layer: 0
-  m_Name: PoolManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1685145588
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1685145587}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a41b19a3414e1774786ece436e06d56b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  currentStageList: {fileID: 11400000, guid: 0983e9dd679719e4b9a01a345a80a1b6, type: 2}
---- !u!4 &1685145589
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1685145587}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1705028414
@@ -882,6 +821,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ec714818a93e8f4e8fc5f846a620fee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fieldEnemyListSO: {fileID: 11400000, guid: 0983e9dd679719e4b9a01a345a80a1b6, type: 2}
   spawners:
   - {fileID: 1674434386}
   limitDistance: 10
@@ -1049,4 +989,3 @@ SceneRoots:
   - {fileID: 1972784001}
   - {fileID: 1674434387}
   - {fileID: 1733778119}
-  - {fileID: 1685145589}
