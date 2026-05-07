@@ -2,12 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
-using UnityEditor.Searcher;
-
-
 
 #if UNITY_EDITOR
 using UnityEditor;
+using UnityEditor.Searcher;
 #endif
 
 [CreateAssetMenu(fileName = "New ItemDataBaseSO", menuName = "System/ItemDataBaseSO")]
@@ -17,13 +15,8 @@ public class ItemDataBaseSO : ScriptableObject
     public List<ItemBaseSO> itemDataBase = new List<ItemBaseSO>();
     public List<EquipItemSO> equipItemDataBase = new List<EquipItemSO>();
 
-#if UNITY_EDITOR
     [ContextMenu("CSV에서 아이템 SO 파일 자동 생성/갱신하기")]
-    public void GenerateItemSOFromCSV()
-    {
-        GenerateEquipItemSO();
-        GenerateItemSO();
-    }
+    
 
     public ItemBaseSO GetItemByID(string itemID)
     {
@@ -50,6 +43,14 @@ public class ItemDataBaseSO : ScriptableObject
         // 해당하는 범위를 찾지 못했거나, 리스트에 아이템이 없는 경우
         Debug.LogWarning($"데이터베이스에 ID가 '{itemID}'인 아이템을 찾을 수 없습니다! (ID 범위를 확인해주세요)");
         return null;
+    }
+
+
+#if UNITY_EDITOR
+    public void GenerateItemSOFromCSV()
+    {
+        GenerateEquipItemSO();
+        GenerateItemSO();
     }
 
     public void GenerateEquipItemSO()

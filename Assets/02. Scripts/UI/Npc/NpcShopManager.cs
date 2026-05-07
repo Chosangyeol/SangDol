@@ -58,9 +58,12 @@ public class NpcShopManager : MonoBehaviour
             if (string.IsNullOrWhiteSpace(lines[i])) continue;
 
             string[] row = lines[i].Split(',');
-            
-            ItemBaseSO itemSO = globalItemData.GetItemByID(row[0]);
-            int.TryParse(row[1], out int itemPrice);
+
+            // 🌟 수정된 부분: Trim()을 사용해 양옆의 공백 및 눈에 보이지 않는 \r 찌꺼기를 완벽히 제거합니다.
+            string itemID = row[0].Trim();
+            ItemBaseSO itemSO = globalItemData.GetItemByID(itemID);
+
+            int.TryParse(row[1].Trim(), out int itemPrice);
 
             if (itemSO != null)
             {
