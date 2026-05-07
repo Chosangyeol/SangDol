@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.AI;
 using UnityEngine.SceneManagement;
 using UnityEngine.Rendering.Universal;
@@ -12,7 +13,9 @@ public class SceneChanger : MonoBehaviour
 
     [Header("로딩 UI")]
     [SerializeField] private GameObject loadingCanvas;
-    [SerializeField] private UnityEngine.UI.Slider progressBar;
+    [SerializeField] private Image loadingBackground;
+    [SerializeField] private Slider progressBar;
+    [SerializeField] private Sprite defaultLoadingImage;
 
     [Header("플레이어")]
     public GameObject playerObject;
@@ -53,12 +56,15 @@ public class SceneChanger : MonoBehaviour
         SceneManager.LoadScene(scene);
     }
 
-    public void LoadScene(string sceneName, string spawnPointName = "Spawn_Default")
+    public void LoadScene(string sceneName, string spawnPointName = "Spawn_Default", Sprite image = null)
     {
-        StartCoroutine(LoadSequence(sceneName, spawnPointName));
+        if (image == null)
+            image = defaultLoadingImage;
+
+        StartCoroutine(LoadSequence(sceneName, spawnPointName, image));
     }
 
-    private IEnumerator LoadSequence(string nextScene, string spawnPointName)
+    private IEnumerator LoadSequence(string nextScene, string spawnPointName, Sprite image)
     {
         if (playerObject != null)
         {
@@ -68,6 +74,7 @@ public class SceneChanger : MonoBehaviour
         }
 
         loadingCanvas.SetActive(true);
+        loadingBackground.sprite = image;
 
         // 3. 이전 씬 언로드
         if (!string.IsNullOrEmpty(_currentScene))
@@ -83,9 +90,21 @@ public class SceneChanger : MonoBehaviour
         AsyncOperation op = SceneManager.LoadSceneAsync(nextScene, LoadSceneMode.Additive);
         op.allowSceneActivation = false;
 
-        while (op.progress < 0.9f)
+        // 🌟 5. 고정 2초 로딩 및 가짜 프로그레스 바 처리
+        float timer = 0f;
+        float loadTime = 3f; // 고정으로 보여줄 시간 (2초)
+
+        // 타이머가 2초를 덜 채웠거나, 실제 씬 로딩이 덜 끝났다면 계속 대기
+        while (timer < loadTime || op.progress < 0.9f)
         {
-            if (progressBar != null) progressBar.value = op.progress;
+            timer += Time.deltaTime;
+
+            if (progressBar != null)
+            {
+                // 실제 로딩 속도와 상관없이 2초에 걸쳐 게이지가 0에서 1로 부드럽게 차오릅니다.
+                progressBar.value = Mathf.Clamp01(timer / loadTime);
+            }
+
             yield return null;
         }
 
@@ -114,7 +133,10 @@ public class SceneChanger : MonoBehaviour
 
         DynamicGI.UpdateEnvironment();
         RenderSettings.skybox = RenderSettings.skybox;
-        yield return new WaitForSeconds(0.5f);
+
+        // (선택) 이미 위에서 2초를 확실하게 대기했기 때문에, 마지막의 0.5초 대기는 제거하셔도 무방합니다.
+        // yield return new WaitForSeconds(0.5f); 
+
         loadingCanvas.SetActive(false);
     }
 

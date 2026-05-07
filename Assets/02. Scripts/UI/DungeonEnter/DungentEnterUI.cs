@@ -25,7 +25,7 @@ public class DungentEnterUI : MonoBehaviour
 
     public void EnterDungeon()
     {
-        SceneChanger.instance.LoadScene(dataSO.dungeonSceneName);
+        SceneChanger.instance.LoadScene(dataSO.dungeonSceneName,"Spawn_Default",dataSO.loadingImage);
         Toggle(true);
     }
 

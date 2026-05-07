@@ -86,14 +86,24 @@ public class SkillToolTip : MonoBehaviour
             }
         }
 
-        if (skill.SkillLevel == 0)
+        if (skill.skillData.hasDamage)
         {
-            _skillDamage.text = $"데미지: {skill.skillData.damageMultipliers[0] * 100f}%";
+            _skillDamage.gameObject.SetActive(true);
+            if (skill.SkillLevel == 0)
+            {
+                _skillDamage.text = $"데미지: {skill.skillData.damageMultipliers[0] * 100f}%";
+            }
+            else
+            {
+                _skillDamage.text = $"데미지: {skill.GetCurrentDamageMultiplier() * 100f}%";
+            }
         }
         else
         {
-            _skillDamage.text = $"데미지: {skill.GetCurrentDamageMultiplier() * 100f}%";
+            _skillDamage.gameObject.SetActive(false);
         }
+
+
         _skillDesc.text = skill.skillData.skillDesc;
 
         Canvas.ForceUpdateCanvases();

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: IdenBuff
   m_EditorClassIdentifier: 
   buffName: "\uC544\uB374"
-  buffIcon: {fileID: 0}
+  buffIcon: {fileID: 21300000, guid: f5de24a8a4cb263479fc25b760580b76, type: 3}
   isStackable: 0
   maxStack: 0
   buffDesc: "\uC544\uB374"

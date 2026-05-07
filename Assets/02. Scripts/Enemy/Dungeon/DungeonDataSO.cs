@@ -11,6 +11,7 @@ public class DungeonDataSO : ScriptableObject
     public string dungeonDescription;
 
     public Sprite dungeonBackGroundImage;
+    public Sprite loadingImage;
     public int dungeonRewardGold;
     public string[] dungeonRewardItemId;
 }

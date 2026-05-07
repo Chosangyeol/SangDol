@@ -16,6 +16,7 @@ public abstract class SkillBaseSO : ScriptableObject
     public int requireLevel;
     public int maxLevel;
     public float skillCool;
+    public bool hasDamage = true;
     public float[] damageMultipliers;
     public bool canMoveSkill = false;
 

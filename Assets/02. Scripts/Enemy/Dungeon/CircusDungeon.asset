@@ -17,6 +17,7 @@ MonoBehaviour:
   dungeonDescription: "\uD14C\uC2A4\uD2B8 \uB358\uC804 \uC124\uBA85"
   dungeonBackGroundImage: {fileID: 21300000, guid: 60424f866ef432046a8da8744e0f54f9,
     type: 3}
+  loadingImage: {fileID: 21300000, guid: 3e318b04a4fd57244bbd5319be05b04f, type: 3}
   dungeonRewardGold: 1000
   dungeonRewardItemId:
   - 10001

@@ -10,15 +10,14 @@ public class QuestPreview : MonoBehaviour
     [SerializeField] TMP_Text tmpQuestName;
     [SerializeField] TMP_Text tmpQuestDialog;
     [SerializeField] TMP_Text tmpQuestTarget;
+    [SerializeField] ItemTooltip tooltip;
 
     [Header("퀘스트 보상")]
     [SerializeField] TMP_Text tmpQuestGoldReward;
     [SerializeField] TMP_Text tmpQuestExpReward;
-    [SerializeField] Image imgQuestItemImage1;
+    [SerializeField] RewardItemSlot[] questRewardItemSlots;
     [SerializeField] TMP_Text tmpQuestItemReward1;
-    [SerializeField] Image imgQuestItemImage2;
     [SerializeField] TMP_Text tmpQuestItemReward2;
-    [SerializeField] Image imgQuestItemImage3;
     [SerializeField] TMP_Text tmpQuestItemReward3;
 
     public void Toggle(bool onlyFalse = false)
@@ -33,9 +32,6 @@ public class QuestPreview : MonoBehaviour
 
     public void SetQuestPreview(string questID)
     {
-        imgQuestItemImage1.gameObject.SetActive(false);
-        imgQuestItemImage2.gameObject.SetActive(false);
-        imgQuestItemImage3.gameObject.SetActive(false);
         tmpQuestItemReward1.gameObject.SetActive(false);
         tmpQuestItemReward2.gameObject.SetActive(false);
         tmpQuestItemReward3.gameObject.SetActive(false);
@@ -66,28 +62,23 @@ public class QuestPreview : MonoBehaviour
         if (questData.rewardItems.Count != 0)
         {
             for (int i = 0; i < questData.rewardItems.Count; i++)
-            {
+            {                    
+                ItemBaseSO rewardItem = ItemManager.Instance.GetItemBaseSO(questData.rewardItems[i].itemID);
                 switch (i)
                 {
                     case 0:
-                        imgQuestItemImage1.gameObject.SetActive(true);
+                        questRewardItemSlots[i].InitSlot(rewardItem, tooltip);
                         tmpQuestItemReward1.gameObject.SetActive(true);
-
-                        imgQuestItemImage1.sprite = ItemManager.Instance.GetItemBaseSO(questData.rewardItems[i].itemID).itemIcon;
                         tmpQuestItemReward1.text = $"{questData.rewardItems[i].count}개";
                         break;
                     case 1:
-                        imgQuestItemImage2.gameObject.SetActive(true);
+                        questRewardItemSlots[i].InitSlot(rewardItem, tooltip);
                         tmpQuestItemReward2.gameObject.SetActive(true);
-
-                        imgQuestItemImage2.sprite = ItemManager.Instance.GetItemBaseSO(questData.rewardItems[i].itemID).itemIcon;
                         tmpQuestItemReward2.text = $"{questData.rewardItems[i].count}개";
                         break;
                     case 2:
-                        imgQuestItemImage3.gameObject.SetActive(true);
+                        questRewardItemSlots[i].InitSlot(rewardItem, tooltip);
                         tmpQuestItemReward3.gameObject.SetActive(true);
-
-                        imgQuestItemImage3.sprite = ItemManager.Instance.GetItemBaseSO(questData.rewardItems[i].itemID).itemIcon;
                         tmpQuestItemReward3.text = $"{questData.rewardItems[i].count}개";
                         break;
                 }
