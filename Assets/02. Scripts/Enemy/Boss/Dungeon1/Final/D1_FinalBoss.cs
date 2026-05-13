@@ -160,7 +160,7 @@ public class D1_FinalBoss : BossModel
         else if (pattern.patternName == "칩막기")
             StartCoroutine(Special_Chip());
         else if (pattern.patternName == "야바위")
-            StartCoroutine(Special_Mix());
+            StartCoroutine(Special_Chip());
         else if (pattern.patternName == "체크메이트")
             StartCoroutine(Special_Chess());
     }
