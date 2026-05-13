@@ -6,6 +6,9 @@ public class FieldManager : MonoBehaviour
 {
     public static FieldManager instance;
 
+    [Header("필드 설정")]
+    public C_Enums.BGM_List bgm;
+
     [Header("몬스터 스포너 설정")]
     [SerializeField] PoolingListSO fieldEnemyListSO;
     [SerializeField] List<EnemySpawner> spawners;
@@ -31,6 +34,8 @@ public class FieldManager : MonoBehaviour
         {
             PoolManager.Instance.LoadStagePools(fieldEnemyListSO);
         }
+
+        AudioManager.instance.PlayBGM(bgm);
 
         StartCoroutine(CheckSpawnerActivate());
     }

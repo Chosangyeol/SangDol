@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -11,6 +12,8 @@ public class TitleManager : MonoBehaviour
     public CanvasGroup serverSelectUI;
     public CanvasGroup touchText;
     public float speed = 1f;
+
+    private bool isStart = false;
 
     public string targetScene;
     public Sprite loadingImage;
@@ -34,6 +37,10 @@ public class TitleManager : MonoBehaviour
 
     public void StartGame()
     {
+        if (isStart) return;
+
+        isStart = true;
+
         StartCoroutine(StartGameRoutine());
     }
 

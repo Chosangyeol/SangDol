@@ -28,7 +28,7 @@ public class EnemyBase : PoolableMono
 
     protected virtual void Awake()
     {
-        _stat = new EnemyStat(statSO);
+        _stat = new EnemyStat(statSO,this);
         _target = FindAnyObjectByType<CharacterModel>();
         _anim = GetComponentInChildren<Animator>();
     }

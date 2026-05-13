@@ -94,10 +94,10 @@ public class D1_Rook : MonoBehaviour, ICounterable
         Debug.Log("카운터 성공");
         canCounter = false;
         StopAllCoroutines();
-        StartCoroutine(Counter(1));
+        StartCoroutine(KnockDown(1, true));
     }
 
-    public IEnumerator Counter(float duration)
+    public IEnumerator KnockDown(float duration, bool isReset)
     {
 
         yield return new WaitForSeconds(duration);

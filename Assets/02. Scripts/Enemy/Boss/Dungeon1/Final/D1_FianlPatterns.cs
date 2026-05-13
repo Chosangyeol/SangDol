@@ -140,7 +140,7 @@ public class D1_Final_Normal2 : BossPatternBase
             yield return new WaitForSeconds(0.2f);
         }
 
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(6f);
 
         boss.Anim.SetTrigger("Normal2End");
 
@@ -269,7 +269,6 @@ public class D1_Final_Normal3 : BossPatternBase
         {
             boss.transform.Translate(Vector3.down * 100 * Time.deltaTime, Space.World);
             yield return null;
-
         }
 
         Vector3 landPos = boss.transform.position;
@@ -285,12 +284,16 @@ public class D1_Final_Normal3 : BossPatternBase
             model.Damaged(damagePercent, true);
         }
 
-        landPos.y = 0f;
+        landPos.y = boss.transform.position.y;
+
+        AudioManager.instance.PlaySFX(C_Enums.SFX_List.D1_Final_N3_Down);
 
         GameObject warning2 = GameObject.Instantiate(normal3Warning2, landPos, Quaternion.identity);
         boss.patternObjects.Add(warning2);
 
         yield return new WaitForSeconds(1f);
+
+        AudioManager.instance.PlaySFX(C_Enums.SFX_List.D1_Final_N3_Down);
 
         GameObject.Destroy(warning2);
 

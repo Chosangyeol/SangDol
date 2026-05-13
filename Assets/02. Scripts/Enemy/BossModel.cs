@@ -228,27 +228,27 @@ public class BossModel : EnemyBase, ICounterable
         Debug.Log("카운터 성공");
         canCounter = false;
         ForceStopCurrentAction();
-        StartCoroutine(Counter(4f));
+        StartCoroutine(KnockDown(4f, false));
     }
 
-    public void KnockDown()
-    {
-
-    }
-
-    public IEnumerator Counter(float duration)
+    public IEnumerator KnockDown(float duration,bool isReset)
     {
         isKnockDown = true;
 
         GameEvent.OnBossStateChange?.Invoke(this);
 
-        Anim.SetBool("KnockDown",true);
+        Anim.SetTrigger("KnockDown");
 
         yield return new WaitForSeconds(duration);
 
-        Anim.SetBool("KnockDown", false);
+        Anim.SetTrigger("StandUp");
+
+        yield return new WaitForSeconds(4f);
 
         isKnockDown = false;
+
+        if (isReset)
+            _stat.curDown = _stat.maxDown;
 
         GameEvent.OnBossStateChange?.Invoke(this);
     }

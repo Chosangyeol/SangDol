@@ -9260,7 +9260,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8d29a7b943dac9428657c08ac9150d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pointName: Spawn_Default/
+  pointName: Spawn_Default
 --- !u!1 &1359873796
 GameObject:
   m_ObjectHideFlags: 0
@@ -11734,7 +11734,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8d29a7b943dac9428657c08ac9150d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pointName: Spawn_Default
+  pointName: Spawn_Default/
 --- !u!65 &1629960675
 BoxCollider:
   m_ObjectHideFlags: 0

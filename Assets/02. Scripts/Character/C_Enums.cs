@@ -91,6 +91,7 @@ public class C_Enums
         D1_Final_N1,
         D1_Final_N2,
         D1_Final_N3,
+        D1_Final_N3_Down,
         D1_Final_N4,
         D1_Final_N5,
         D1_Final_S1,
@@ -106,6 +107,7 @@ public class C_Enums
         Title,
         D1_Final_BGM1,
         D1_Final_BGM2,
-        D1_Final_BGM3
+        D1_Final_BGM3,
+        Forest
     }
 }

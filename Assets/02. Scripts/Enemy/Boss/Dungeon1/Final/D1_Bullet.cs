@@ -54,7 +54,7 @@ public class D1_Bullet : MonoBehaviour
             if (other.gameObject.CompareTag("Boss"))
             {
                 BossModel _boss = other.GetComponent<D1_FinalBoss>();
-                _boss.StartCoroutine(_boss.Counter(10f));
+                _boss.StartCoroutine(_boss.KnockDown(5f,false));
                 Destroy(this.gameObject);
             }
         }  

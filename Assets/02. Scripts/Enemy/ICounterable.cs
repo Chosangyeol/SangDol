@@ -11,5 +11,5 @@ public interface ICounterable
 
     void OnCounterSuccess(SDamageInfo info);
 
-    IEnumerator Counter(float duration);
+    IEnumerator KnockDown(float duration,bool isReset);
 }

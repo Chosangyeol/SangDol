@@ -74,6 +74,16 @@ public class NpcDialogManager : MonoBehaviour
             Debug.Log("대화 하기 실행 ");
         });
         
+        if (npc.canTeleport)
+        {
+            CreateButton("빠른 이동", () =>
+            {
+                _model.Navmesh.enabled = false;
+                _model.transform.position = npc.teleportTargets[0].position;
+                _model.Navmesh.enabled = true;
+            });
+        }
+
         if (npc.npcQuests != null)
         {
             foreach (var q in npc.npcQuests)

@@ -389,7 +389,7 @@ public class D1_FinalBoss : BossModel
 
         yield return StartCoroutine(ReadyForSpecial());
 
-        Vector3 spawnPos = center.position + new Vector3(0, -1.43f, 0);
+        Vector3 spawnPos = center.position + new Vector3(0, -1.3f, 0);
         GameObject special = Instantiate(Special2.prefab, spawnPos, Quaternion.identity);
         patternObjects.Add(special);
         special.GetComponentInChildren<SurvivalPattern1>().Init(this);

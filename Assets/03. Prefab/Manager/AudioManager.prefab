@@ -167,28 +167,32 @@ MonoBehaviour:
   - soundName: 17
     clip: {fileID: 8300000, guid: 12f3a07c93e1fb941a1e7f427af8f7bf, type: 3}
   - soundName: 18
-    clip: {fileID: 8300000, guid: 3b311620f56e92243866b0ee29a35f20, type: 3}
+    clip: {fileID: 8300000, guid: b701d03c4baf1104690896b3f50ce457, type: 3}
   - soundName: 19
-    clip: {fileID: 8300000, guid: ff429f471c48e264180e422e5c20072a, type: 3}
-  - soundName: 20
-    clip: {fileID: 0}
-  - soundName: 21
-    clip: {fileID: 8300000, guid: adf97503e0e5b8d43b3ded976bdece8a, type: 3}
-  - soundName: 22
-    clip: {fileID: 0}
-  - soundName: 23
     clip: {fileID: 8300000, guid: 3b311620f56e92243866b0ee29a35f20, type: 3}
-  - soundName: 24
+  - soundName: 20
+    clip: {fileID: 8300000, guid: ff429f471c48e264180e422e5c20072a, type: 3}
+  - soundName: 21
     clip: {fileID: 0}
+  - soundName: 22
+    clip: {fileID: 8300000, guid: adf97503e0e5b8d43b3ded976bdece8a, type: 3}
+  - soundName: 23
+    clip: {fileID: 0}
+  - soundName: 24
+    clip: {fileID: 8300000, guid: 3b311620f56e92243866b0ee29a35f20, type: 3}
   - soundName: 25
+    clip: {fileID: 0}
+  - soundName: 26
     clip: {fileID: 8300000, guid: f38e8a5441222d644a907bcec280b780, type: 3}
   bgmDatabase:
   - soundName: 0
-    clip: {fileID: 8300000, guid: d995f4b46cad6dd4f8c2c6c70ae17440, type: 3}
+    clip: {fileID: 8300000, guid: 451a03b82cf4f3b41b0ef95277e682e5, type: 3}
   - soundName: 1
     clip: {fileID: 8300000, guid: 10586b61c1334cc4aaeb5165b7e4868e, type: 3}
   - soundName: 2
-    clip: {fileID: 8300000, guid: d87ed58c81978f34fbc68e276d9a0e92, type: 3}
+    clip: {fileID: 8300000, guid: 4040de7b17bddfe41a471d9f7301fb39, type: 3}
   - soundName: 3
     clip: {fileID: 8300000, guid: b37934402d3e15f49bf77374fecb289b, type: 3}
+  - soundName: 4
+    clip: {fileID: 8300000, guid: 74051f7857e67fa4bb5c93a393804f3d, type: 3}
   sfxPoolSize: 15

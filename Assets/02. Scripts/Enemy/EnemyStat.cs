@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class EnemyStat
 {
+    public EnemyBase owner;
+
     public string enemyName;
     public int currentLevel;
     public int maxHp;
@@ -17,7 +19,7 @@ public class EnemyStat
     public float attackRange;
 
 
-    public EnemyStat(EnemyStatSO statSO)
+    public EnemyStat(EnemyStatSO statSO, EnemyBase owner)
     {
         enemyName = statSO.enemyName;
         currentLevel = (int)statSO.level;
@@ -42,6 +44,7 @@ public class EnemyStat
 
         detactRange = statSO.detactRange;
         attackRange = statSO.attackRange;
+        this.owner = owner;
     }
 
     public void Damaged(SDamageInfo info)
@@ -58,8 +61,11 @@ public class EnemyStat
         if (canDown)
         {
             curDown -= info.knockDownPower;
-            if (curDown <= 0)
+            if (curDown <= 0 && owner.TryGetComponent<ICounterable>(out ICounterable counterable))
+            {
                 curDown = 0;
+                owner.StartCoroutine(counterable.KnockDown(8, true));
+            }
         }
         if (curHp <= 0)
             curHp = 0;
