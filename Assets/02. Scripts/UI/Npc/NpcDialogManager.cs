@@ -15,14 +15,23 @@ public class NpcDialogManager : MonoBehaviour
     public Transform buttonGroup;
     public GameObject buttonPrefab;
 
+    private CharacterModel _model;
+
     private void Awake()
     {
         if (Instance == null) Instance = this;
     }
 
+    private void Start()
+    {
+        _model = FindObjectOfType<CharacterModel>();
+    }
+
     public void OpenNpcUI(NpcSO npc)
     {
         GameEvent.OnUIInvisable?.Invoke();
+
+        _model.ControlDisable();
 
         npcDialogPanel.SetActive(true);
         buttonGroup.gameObject.SetActive(true);
@@ -84,7 +93,7 @@ public class NpcDialogManager : MonoBehaviour
                 {
                     showButton = true;
                 }
-                else if (state == QuestState.CanClear)
+                else if (state == QuestState.CanClear && QuestManager.Instance.GetQuestData(q.questID).clearNpcID == npc.npcID)
                 {
                     showButton = true;
                     prefix = "[완료 가능]";
@@ -125,6 +134,7 @@ public class NpcDialogManager : MonoBehaviour
     public void CloseUI()
     {
         npcDialogPanel.SetActive(false);
+        _model.ControlEnable();
         GameEvent.OnMainUIviable?.Invoke();
     }    
 }

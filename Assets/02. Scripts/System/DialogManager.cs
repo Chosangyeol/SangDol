@@ -202,10 +202,9 @@ public class DialogManager : MonoBehaviour
     // 4. 대화 종료 기능
     private void EndDialogue()
     {
-        dialoguePanel.SetActive(false);
         choicePanel.SetActive(false);
 
-        GameEvent.OnMainUIviable?.Invoke(); // 대화 종료 시 메인 UI 다시 보이도록 이벤트 호출
+        NpcDialogManager.Instance.CloseUI();
         Debug.Log("대화가 종료되었습니다.");
 
         // 시네머신 카메라 우선순위 원상복구 로직 호출 위치

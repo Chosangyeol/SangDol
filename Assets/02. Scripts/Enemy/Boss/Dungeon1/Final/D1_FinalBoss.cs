@@ -154,7 +154,7 @@ public class D1_FinalBoss : BossModel
         Debug.Log($"🚨 [기믹 발동] {pattern.patternName} 시작!");
 
         if (pattern.patternName == "쇼타임")
-            StartCoroutine(Special_Chess());
+            StartCoroutine(Special_ShowTime());
         else if (pattern.patternName == "운명의 점")
             StartCoroutine(Special_Aracna());
         else if (pattern.patternName == "칩막기")
@@ -335,7 +335,11 @@ public class D1_FinalBoss : BossModel
 
     IEnumerator Special_ShowTime()
     {
+        transform.LookAt(playerStartPos);
+
         yield return new WaitForSeconds(2f);
+
+        Anim.SetTrigger("Special1");
 
         GameObject warning1 = Instantiate(Special1.warning1, center);
         patternObjects.Add(warning1);

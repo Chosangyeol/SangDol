@@ -31,7 +31,10 @@ public class JumpObject : InteractableObject
         model.canSkill = false;
         model.canUse = false;
 
-        model.transform.LookAt(targetPos);
+        Vector3 targetPosFix = targetPos.position;
+        targetPosFix.y = model.transform.position.y;
+
+        model.transform.LookAt(targetPosFix);
 
         StartCoroutine(JumpSequence(model));
 

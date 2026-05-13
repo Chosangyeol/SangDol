@@ -227,8 +227,8 @@ public class CharacterModel : MonoBehaviour
             }
             if (isWaitingForRelease)
             {
-                isWaitingForRelease = false; // 상태 초기화
-                RemoveIdenAura();            // 비로소 오라 이펙트 끄기
+                isWaitingForRelease = false;
+                RemoveIdenAura();            
             }
         }
         else
@@ -242,7 +242,6 @@ public class CharacterModel : MonoBehaviour
             else
             {
                 playerController.isAttacking = false;
-                canMove = true;
                 playerController.nextAttackReady = false;
                 playerController.currentCombo = 0;
             }
@@ -352,17 +351,17 @@ public class CharacterModel : MonoBehaviour
 
         switch (playerController.currentCombo)
         {
-            case 1:
+            case 0:
                 hitRadius = 3f;
                 hitAngle = 90f;
                 damageMultiplier = 1f; // 첫 번째 공격은 기본 데미지
                 break;
-            case 2:
+            case 1:
                 hitRadius = 3f;
                 hitAngle = 90f;
                 damageMultiplier = 1f; // 두 번째 공격은 20% 증가
                 break;
-            case 3:
+            case 2:
                 hitRadius = 4f;
                 hitAngle = 90f;
                 damageMultiplier = 1.2f; // 세 번째 공격은 50% 증가
@@ -431,6 +430,9 @@ public class CharacterModel : MonoBehaviour
                 }
             }
         }
+
+        
+
         canMove = true;
     }
 
@@ -482,11 +484,38 @@ public class CharacterModel : MonoBehaviour
                 }
             }        
         }
+        
+
         canMove = true;
+    }
+
+
+    public void PlayAttackSound(int num)
+    {
+        if (num < 2)
+            AudioManager.instance.PlaySFX(C_Enums.SFX_List.Player_Attack1);
+        else if (num == 2)
+            AudioManager.instance.PlaySFX(C_Enums.SFX_List.Player_Attack2);
+        else if (num == 3)
+            AudioManager.instance.PlaySFX(C_Enums.SFX_List.Player_Attack4);
     }
     #endregion
 
     #region 캐릭터 상태 및 상태이상
+    public void ControlEnable()
+    {
+        SetCanAttack();
+        SetCanMove();
+        SetCanSkill();
+    }
+
+    public void ControlDisable()
+    {
+        SetCantAttack();
+        SetCantMove();
+        SetCantSkill();
+    }
+
     public void SetCanMove()
     {
         canMove = true;
@@ -654,7 +683,6 @@ public class CharacterModel : MonoBehaviour
         Anim.SetTrigger("Revive");
 
         isDie = false;
-
     }
 
     public void GainIden(float amount)

@@ -60,7 +60,6 @@ public class C_SkillSystem
     {
         if (activeSkills.ContainsKey(slot))
         {
-            Debug.Log(activeSkills[slot]);
             return activeSkills[slot];
         }
         return null;

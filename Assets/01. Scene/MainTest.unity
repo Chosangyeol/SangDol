@@ -1767,10 +1767,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: ffe5ad78b7af7514ba2f1802b751d334,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 778811287}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: ffe5ad78b7af7514ba2f1802b751d334,
-        type: 3}
-      insertIndex: -1
       addedObject: {fileID: 778811286}
   m_SourcePrefab: {fileID: 100100000, guid: ffe5ad78b7af7514ba2f1802b751d334, type: 3}
 --- !u!4 &778811284 stripped
@@ -1807,37 +1803,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 1588110511326799053, guid: ffe5ad78b7af7514ba2f1802b751d334, type: 3}
---- !u!114 &778811287
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 778811285}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_AgentTypeID: 0
-  m_CollectObjects: 0
-  m_Size: {x: 10, y: 10, z: 10}
-  m_Center: {x: 0, y: 2, z: 0}
-  m_LayerMask:
-    serializedVersion: 2
-    m_Bits: 576
-  m_UseGeometry: 0
-  m_DefaultArea: 0
-  m_GenerateLinks: 0
-  m_IgnoreNavMeshAgent: 1
-  m_IgnoreNavMeshObstacle: 1
-  m_OverrideTileSize: 0
-  m_TileSize: 256
-  m_OverrideVoxelSize: 0
-  m_VoxelSize: 0.16666667
-  m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 23800000, guid: 73d4ee6f96544074ea0c8be5645f5e30, type: 2}
-  m_BuildHeightMesh: 0
 --- !u!1 &789003456
 GameObject:
   m_ObjectHideFlags: 0
@@ -3717,7 +3682,7 @@ MonoBehaviour:
   m_Center: {x: 0, y: 2, z: 0}
   m_LayerMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 576
   m_UseGeometry: 0
   m_DefaultArea: 0
   m_GenerateLinks: 0
@@ -6273,7 +6238,7 @@ PrefabInstance:
     - target: {fileID: 6292796012629706706, guid: 4c09c35c3d85ce64db55b44f895ed03e,
         type: 3}
       propertyPath: warpDatas.Array.data[0].hasVideo
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6292796012629706706, guid: 4c09c35c3d85ce64db55b44f895ed03e,
         type: 3}

@@ -44,7 +44,7 @@ public class D1_Final_Normal1 : BossPatternBase
 
     private IEnumerator SpawnBox(BossModel boss, float delay)
     {
-        boss.Anim.SetTrigger(patternName);
+        boss.Anim.SetTrigger("Normal1Start");
 
         yield return new WaitForSeconds(delay);
 
@@ -76,6 +76,10 @@ public class D1_Final_Normal1 : BossPatternBase
                 continue;
             }
         }
+
+        boss.Anim.SetTrigger("Normal1End");
+
+        yield return new WaitForSeconds(1f);
 
         boss.OnPatternEnd();
     }
@@ -116,7 +120,7 @@ public class D1_Final_Normal2 : BossPatternBase
 
     private IEnumerator SpawnKnife(BossModel boss, float delay)
     {
-        boss.Anim.SetTrigger(patternName);
+        boss.Anim.SetTrigger("Normal2Start");
 
         yield return new WaitForSeconds(delay);
 
@@ -135,6 +139,10 @@ public class D1_Final_Normal2 : BossPatternBase
 
             yield return new WaitForSeconds(0.2f);
         }
+
+        yield return new WaitForSeconds(5f);
+
+        boss.Anim.SetTrigger("Normal2End");
 
         boss.OnPatternEnd();
     }
@@ -174,7 +182,7 @@ public class D1_Final_Normal3 : BossPatternBase
 
         GameObject swing = GameObject.Instantiate(
             normal3Swing,
-            boss.transform.position + new Vector3(0,20f,3f), // 위치 수정
+            boss.transform.position + new Vector3(0,20f,0f) + (boss.transform.forward * 3), // 위치 수정
             boss.transform.rotation
             );
 
@@ -195,7 +203,7 @@ public class D1_Final_Normal3 : BossPatternBase
         boss.Agent.enabled = false;
 
         Vector3 startPos = boss.transform.position;
-        Vector3 targetPos = swing.transform.position + Vector3.up * 2.5f;
+        Vector3 targetPos = swing.transform.position + Vector3.up * 1.5f;
 
         float time = 0f;
 
@@ -265,7 +273,7 @@ public class D1_Final_Normal3 : BossPatternBase
         }
 
         Vector3 landPos = boss.transform.position;
-        landPos.y = 0.5f;
+        landPos.y = 0f;
         boss.transform.position = landPos;
 
         int playerLayer = LayerMask.GetMask("Player");

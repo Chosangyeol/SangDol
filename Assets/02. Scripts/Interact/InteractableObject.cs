@@ -15,6 +15,7 @@ public class InteractableObject : PoolableMono, IInteractable
     [Header("UI Settings")]
     [SerializeField] protected Transform interactUIPoint;
     public GameObject interactUI;
+    public Canvas interactUICanvas;
     public TMP_Text interactText;
     public Vector3 offset;
 
@@ -23,7 +24,7 @@ public class InteractableObject : PoolableMono, IInteractable
     public bool IsAutoProgress = false;
     public float RequiredHoldTime = 2.0f;
 
-    private Camera _mainCam;
+    protected Camera _mainCam;
     private CapsuleCollider col;
 
     public GameObject interactObject;
@@ -75,7 +76,7 @@ public class InteractableObject : PoolableMono, IInteractable
         if (interactUI != null) interactUI.SetActive(false);
     }
 
-    private void LateUpdate()
+    protected virtual void LateUpdate()
     {
         if (!CanInteract || interactUI == null || !interactUI.activeSelf) return;
 

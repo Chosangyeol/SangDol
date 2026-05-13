@@ -19,15 +19,17 @@ public class QuestData
 {
     public string questID;
     public string questName;
+    public string questDialog;
     public string questType;
     public string questTarget;
     public int questCount;
+
+    public string clearNpcID;
 
     public int rewardGold;
     public int rewardExp;
     public List<RewardItem> rewardItems = new List<RewardItem>();
 
-    public string questDialog;
 }
 
 public class QuestManager : MonoBehaviour
@@ -109,30 +111,31 @@ public class QuestManager : MonoBehaviour
             data.questID = columns[0];
             data.questName = columns[1];
             data.questDialog = columns[2];
+            data.clearNpcID = columns[3];
 
-            if (columns.Length > 3) data.questType = columns[3];
-            if (columns.Length > 4) data.questTarget = columns[4];
-            if (columns.Length > 5) int.TryParse(columns[5], out data.questCount);
-            if (columns.Length > 6) int.TryParse(columns[6], out data.rewardGold);
-            if (columns.Length > 7) int.TryParse(columns[7], out data.rewardExp);
+            if (columns.Length > 4) data.questType = columns[4];
+            if (columns.Length > 5) data.questTarget = columns[5];
+            if (columns.Length > 6) int.TryParse(columns[6], out data.questCount);
+            if (columns.Length > 7) int.TryParse(columns[7], out data.rewardGold);
+            if (columns.Length > 8) int.TryParse(columns[8], out data.rewardExp);
 
             // 보상 1 (Index 8, 9)
-            if (columns.Length > 9 && !string.IsNullOrWhiteSpace(columns[8]))
+            if (columns.Length > 10 && !string.IsNullOrWhiteSpace(columns[9]))
             {
-                int.TryParse(columns[9], out int count);
-                data.rewardItems.Add(new RewardItem { itemID = columns[8], count = count });
+                int.TryParse(columns[10], out int count);
+                data.rewardItems.Add(new RewardItem { itemID = columns[9], count = count });
             }
             // 보상 2 (Index 10, 11)
-            if (columns.Length > 11 && !string.IsNullOrWhiteSpace(columns[10]))
+            if (columns.Length > 12 && !string.IsNullOrWhiteSpace(columns[11]))
             {
-                int.TryParse(columns[11], out int count);
-                data.rewardItems.Add(new RewardItem { itemID = columns[10], count = count });
+                int.TryParse(columns[12], out int count);
+                data.rewardItems.Add(new RewardItem { itemID = columns[11], count = count });
             }
             // 보상 3 (Index 12, 13)
-            if (columns.Length > 13 && !string.IsNullOrWhiteSpace(columns[12]))
+            if (columns.Length > 14 && !string.IsNullOrWhiteSpace(columns[13]))
             {
-                int.TryParse(columns[13], out int count);
-                data.rewardItems.Add(new RewardItem { itemID = columns[12], count = count });
+                int.TryParse(columns[14], out int count);
+                data.rewardItems.Add(new RewardItem { itemID = columns[13], count = count });
             }
 
             

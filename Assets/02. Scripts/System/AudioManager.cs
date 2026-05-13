@@ -135,18 +135,31 @@ public class AudioManager : MonoBehaviour
         PlaySFX(clipToPlay);
     }
 
+    private int oldestSfxIndex = 0;
+
     public void PlaySFX(AudioClip clip)
     {
         if (clip == null) return;
 
+        Debug.Log(clip.name);
+
+        // 1. 재생 중이 아닌(비어있는) 오디오 소스를 찾아서 재생
         for (int i = 0; i < sfxPlayers.Length; i++)
         {
             if (!sfxPlayers[i].isPlaying)
             {
-                sfxPlayers[i].clip = clip;
-                sfxPlayers[i].Play();
+                // PlayOneShot을 사용하면 사운드가 자연스럽게 겹치며 꼬임이 덜합니다.
+                sfxPlayers[i].pitch = 1f; // 피치 초기화
+                sfxPlayers[i].PlayOneShot(clip);
                 return;
             }
         }
+
+        sfxPlayers[oldestSfxIndex].Stop(); // 가장 오래된 소리 강제 종료
+        sfxPlayers[oldestSfxIndex].pitch = 1f;
+        sfxPlayers[oldestSfxIndex].PlayOneShot(clip);
+
+        // 다음번 풀이 꽉 찼을 때를 대비해 인덱스를 다음 칸으로 이동 (15를 넘어가면 다시 0으로)
+        oldestSfxIndex = (oldestSfxIndex + 1) % sfxPlayers.Length;
     }
 }

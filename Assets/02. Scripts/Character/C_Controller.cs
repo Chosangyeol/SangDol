@@ -136,16 +136,14 @@ public class C_Controller
 
         isAttackHeld = isHeld;
 
-        // 🌟 핵심 방어 로직: 수라결 강제 종료 후 마우스를 뗄 때까지 입력 무시
         if (_model.isWaitingForRelease)
         {
-            // 마침내 손을 뗐을 때 비로소 상태 완전 초기화
             if (!isAttackHeld)
             {
                 _model.OnAttackEnd();
             }
             prevAttackHeld = isAttackHeld;
-            return; // 🌟 아래에 있는 일반 공격 로직이 절대 실행되지 않게 막음
+            return;
         }
 
         // 1. 마우스를 꾹 누르고 있는 상태 (또는 방금 누른 순간)
@@ -192,7 +190,6 @@ public class C_Controller
 
         isAttacking = true;
         nextAttackReady = false;
-        _model.canMove = false;
         lastAttackTime = Time.time;
 
         currentCombo++;
@@ -205,14 +202,6 @@ public class C_Controller
 
             _model.Anim.SetInteger("Combo", currentCombo);
             _model.Anim.SetTrigger("Attack");
-
-            if (currentCombo < 3)
-                AudioManager.instance.PlaySFX(C_Enums.SFX_List.Player_Attack1);
-            else if (currentCombo == 3)
-                AudioManager.instance.PlaySFX(C_Enums.SFX_List.Player_Attack2);
-            else if (currentCombo == 4)
-                AudioManager.instance.PlaySFX(C_Enums.SFX_List.Player_Attack4);
-
         }
     }
 
@@ -221,7 +210,6 @@ public class C_Controller
         if (_model.Buff.isStun) return;
 
         isAttacking = false;
-        _model.canMove = false;
         nextAttackReady = false;
         currentCombo = 0;
 

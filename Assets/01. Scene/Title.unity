@@ -1289,7 +1289,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -100}
+  m_AnchoredPosition: {x: 0, y: -219}
   m_SizeDelta: {x: 700, y: 500}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1148962355
@@ -2041,7 +2041,7 @@ MonoBehaviour:
   serverSelectUI: {fileID: 1148962357}
   touchText: {fileID: 823729641}
   speed: 1
-  targetScene: Map1-Forest
+  targetScene: Circus-Main-Hall
   loadingImage: {fileID: 21300000, guid: 97346f0f15725d1439d1c0741c064865, type: 3}
 --- !u!4 &1777302858
 Transform:

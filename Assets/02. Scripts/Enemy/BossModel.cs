@@ -231,13 +231,22 @@ public class BossModel : EnemyBase, ICounterable
         StartCoroutine(Counter(4f));
     }
 
+    public void KnockDown()
+    {
+
+    }
+
     public IEnumerator Counter(float duration)
     {
         isKnockDown = true;
 
         GameEvent.OnBossStateChange?.Invoke(this);
 
+        Anim.SetBool("KnockDown",true);
+
         yield return new WaitForSeconds(duration);
+
+        Anim.SetBool("KnockDown", false);
 
         isKnockDown = false;
 

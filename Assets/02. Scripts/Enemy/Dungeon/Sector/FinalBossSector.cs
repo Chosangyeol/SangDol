@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class FinalBossSector : MonoBehaviour, ISectorCondition
 {
@@ -39,24 +40,35 @@ public class FinalBossSector : MonoBehaviour, ISectorCondition
         if (data.delay > 0)
             yield return new WaitForSeconds(data.delay);
 
-        EnemyBase enemy = PoolManager.Instance.Pop(data.enemyPrefab.name) as EnemyBase;
-        if (enemy != null)
+        PoolableMono enemy = PoolManager.Instance.Pop(data.enemyPrefab.name);
+
+        NavMeshAgent agent = enemy.GetComponent<NavMeshAgent>();
+        if (agent != null)
         {
-            // 위치 설정 및 리셋
+            agent.enabled = false;
             enemy.transform.position = data.spawnPoint.position;
             enemy.transform.rotation = data.spawnPoint.rotation;
-            enemy.Reset();
-
-            if (enemy is BossModel model)
-            {
-                model.OnReturnToPool = (e) => {
-                    // 필요 시 여기서 사망 알림 등만 처리
-                    DungeonManager.instance.UpdateDungeonUI();
-                };
-            }
-            _spawnedEnemies.Add(enemy);
-            DungeonManager.instance.UpdateDungeonUI();
+            agent.enabled = true;
         }
+        else
+        {
+            enemy.transform.position = data.spawnPoint.position;
+            enemy.transform.rotation = data.spawnPoint.rotation;
+        }
+
+        // 3. 위치가 완벽히 세팅된 후 초기화 로직 실행
+        enemy.Reset();
+
+        if (enemy is BossModel model)
+        {
+            model.OnReturnToPool = (e) => {
+                // 필요 시 여기서 사망 알림 등만 처리
+                DungeonManager.instance.UpdateDungeonUI();
+            };
+        }
+        _spawnedEnemies.Add(enemy.GetComponent<EnemyBase>());
+        DungeonManager.instance.UpdateDungeonUI();
+
     }
 
     public void ResetCondition()

@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6cab585525aeb0f42a1889f4aba7b415, type: 3}
+  m_Name: Ellen
+  m_EditorClassIdentifier: 
+  npcID: 30003
+  npcName: "\uC5D8\uB9B0"
+  defaultDialogID: D_30001_001
+  hasShop: 0
+  shopID: 
+  canUpgrade: 0
+  canCraft: 0
+  craftTableSO: {fileID: 0}
+  canTeleport: 0
+  teleportTargets: []
+  talkDialogID: D_30001_002
+  npcQuests:
+  - questID: Q_30001_001
+    requiredQuestID: 
+    startDialogID: D_30001_003
+    inProgressDialogueID: D_30001_009
+    clearDialogueID: D_30001_010
+  - questID: Q_30001_002
+    requiredQuestID: 
+    startDialogID: D_30001_012
+    inProgressDialogueID: D_30001_015
+    clearDialogueID: D_30001_016
+  - questID: Q_30001_003
+    requiredQuestID: 
+    startDialogID: D_30001_018
+    inProgressDialogueID: D_30001_021
+    clearDialogueID: D_30001_022

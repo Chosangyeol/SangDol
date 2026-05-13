@@ -21,8 +21,6 @@ public class WarpData
     [Header("보스전 전용")]
     public bool isBossRoom = false;
 
-    [Header("체크포인트")]
-
     [Header("연출 설정")]
     public bool hasVideo;
     public VideoClip clip;
@@ -39,6 +37,7 @@ public class DungeonManager : MonoBehaviour
     [SerializeField] private int dungeonStepIndex = 0;
     [SerializeField] private List<WarpData> warpDatas = new List<WarpData>();
     private CharacterModel _model;
+    private Transform _playerRevivePos;
 
     [Header("던전 구성")]
     public string dungeonName;
@@ -117,6 +116,9 @@ public class DungeonManager : MonoBehaviour
 
         _model.SetControlable(false);
 
+        if (warpDatas[index].playerRespawn != null)
+            _playerRevivePos = warpDatas[index].playerRespawn;
+
         GameEvent.OnBossRoomEnterCount?.Invoke(true, 0f);
 
         yield return new WaitForSeconds(2f);
@@ -170,7 +172,7 @@ public class DungeonManager : MonoBehaviour
 
         yield return new WaitForSeconds(3f);
 
-        _model.transform.position = warpDatas[dungeonStepIndex].playerRespawn.position;
+        _model.transform.position = _playerRevivePos.position;
 
         _model.Revive();
 
@@ -187,8 +189,6 @@ public class DungeonManager : MonoBehaviour
 
         }
         yield return new WaitForSeconds(3f);
-
-        _model.SetControlable(true);
     }
     #endregion
 
