@@ -20,10 +20,11 @@ MonoBehaviour:
   requireLevel: 0
   maxLevel: 10
   skillCool: 1
+  hasDamage: 1
   damageMultipliers:
-  - 400
-  - 450
-  - 500
+  - 4
+  - 4.5
+  - 5
   canMoveSkill: 0
   isChargeSkill: 1
   isHoldingSkill: 0

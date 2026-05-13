@@ -109,7 +109,7 @@ public class CharacterStat
     {
         // °íÁ¤°ª
         this.characterName = name;
-        this.currentLevel = 1;
+        this.currentLevel = 9;
         this.maxExp = 100;
         this.idenMax = 100;
         this.idenCurrent = 100;

@@ -111,6 +111,14 @@ public class AudioManager : MonoBehaviour
         bgmPlayer.Play();
     }
 
+    public void StopBGM()
+    {
+        if (bgmPlayer != null)
+        {
+            bgmPlayer.Stop();
+        }
+    }
+
     public void PlaySFX(C_Enums.SFX_List data)
     {
         AudioClip clipToPlay = null;

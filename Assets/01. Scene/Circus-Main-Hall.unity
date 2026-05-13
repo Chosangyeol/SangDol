@@ -7816,7 +7816,7 @@ PrefabInstance:
     - target: {fileID: 6292796012629706706, guid: 4c09c35c3d85ce64db55b44f895ed03e,
         type: 3}
       propertyPath: warpDatas.Array.data[1].hasVideo
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6292796012629706706, guid: 4c09c35c3d85ce64db55b44f895ed03e,
         type: 3}
