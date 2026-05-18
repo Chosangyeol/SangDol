@@ -41400,7 +41400,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bgm: 4
   fieldEnemyListSO: {fileID: 11400000, guid: 0983e9dd679719e4b9a01a345a80a1b6, type: 2}
-  spawners: []
+  spawners:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   limitDistance: 50
 --- !u!1001 &1186029578
 PrefabInstance:
