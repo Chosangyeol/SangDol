@@ -90,7 +90,6 @@ public class SceneChanger : MonoBehaviour
         AsyncOperation op = SceneManager.LoadSceneAsync(nextScene, LoadSceneMode.Additive);
         op.allowSceneActivation = false;
 
-        // 🌟 5. 고정 2초 로딩 및 가짜 프로그레스 바 처리
         float timer = 0f;
         float loadTime = 3f; // 고정으로 보여줄 시간 (2초)
 

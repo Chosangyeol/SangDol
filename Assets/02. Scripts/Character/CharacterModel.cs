@@ -8,8 +8,6 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Rendering;
-using static C_Enums;
-using static UnityEngine.EventSystems.EventTrigger;
 
 public class CharacterModel : MonoBehaviour
 {
@@ -978,7 +976,7 @@ public class CharacterModel : MonoBehaviour
                 break;
 
             case InteractType.Jump:
-                Anim.SetBool("Interact_Jump", true);
+                Anim.SetTrigger("Jump");
                 break;
             default:
                 break;
@@ -987,14 +985,9 @@ public class CharacterModel : MonoBehaviour
 
     public void EndJump()
     {
-        canAttack = true;
-        canMove = true;
-        canSkill = true;
-        canUse = true;
-
         Navmesh.enabled = true;
 
-        Anim.SetBool("Interact_Jump", false);
+        Anim.SetTrigger("JumpEnd");
     }
 
     #endregion

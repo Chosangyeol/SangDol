@@ -26,10 +26,7 @@ public class JumpObject : InteractableObject
 
         model.Navmesh.enabled = false;
 
-        model.canAttack = false;
-        model.canMove = false;
-        model.canSkill = false;
-        model.canUse = false;
+        model.ControlDisable();
 
         Vector3 targetPosFix = targetPos.position;
         targetPosFix.y = model.transform.position.y;
