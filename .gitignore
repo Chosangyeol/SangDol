@@ -99,7 +99,4 @@ InitTestScene*.unity*
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
 /Assets/IdaFaber
 /Assets/MainGame/Tutorial
-Build.zip
-/Assets/MedievalKingdomUI
-Build_0514.zip
-Build_0514REAL.zip
+# /Assets/MedievalKingdomUI

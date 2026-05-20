@@ -100,7 +100,10 @@ public class SkillSlot : MonoBehaviour,
         {
             // ⭐️ 쿨타임 중: 슬롯 전체를 보이게 만듦 (투명도 1)
             if (showOnlyOnCooldown && _canvasGroup != null)
+            {
                 _canvasGroup.alpha = 1f;
+                iconImage.raycastTarget = true  ;
+            }
 
             if (!coolTimeText.IsActive())
                 coolTimeText.gameObject.SetActive(true);
@@ -113,7 +116,10 @@ public class SkillSlot : MonoBehaviour,
         {
             // ⭐️ 사용 가능: 슬롯 전체를 숨김 (투명도 0)
             if (showOnlyOnCooldown && _canvasGroup != null)
+            {
                 _canvasGroup.alpha = 0f;
+                iconImage.raycastTarget = false;
+            }
 
             coolTimeText.gameObject.SetActive(false);
             coolOverlay.fillAmount = 0f;
