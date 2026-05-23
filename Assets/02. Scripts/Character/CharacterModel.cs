@@ -502,6 +502,8 @@ public class CharacterModel : MonoBehaviour
     #region 캐릭터 상태 및 상태이상
     public void ControlEnable()
     {
+        navMesh.enabled = true;
+
         SetCanAttack();
         SetCanMove();
         SetCanSkill();
@@ -509,6 +511,8 @@ public class CharacterModel : MonoBehaviour
 
     public void ControlDisable()
     {
+        navMesh.enabled = false;
+
         SetCantAttack();
         SetCantMove();
         SetCantSkill();
@@ -655,6 +659,8 @@ public class CharacterModel : MonoBehaviour
     {
         Debug.Log("캐릭터가 사망했습니다.");
 
+        navMesh.enabled = false;
+
         canMove = false;
         isDie = true;
 
@@ -665,6 +671,7 @@ public class CharacterModel : MonoBehaviour
 
         if (DungeonManager.instance != null)
             DungeonManager.instance.ReplacePlayer();
+
         GameEvent.OnPlayerDie?.Invoke();
         GameEvent.OnBossStateChange?.Invoke(null);
     }

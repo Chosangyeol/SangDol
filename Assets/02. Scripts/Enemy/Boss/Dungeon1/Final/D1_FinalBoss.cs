@@ -144,9 +144,14 @@ public class D1_FinalBoss : BossModel
         normalPatterns.Add(new D1_Final_Normal4(pattern4));
         normalPatterns.Add(new D1_Final_Normal5(pattern5));
 
+        
+    }
+
+    public override void Reset()
+    {
+        base.Reset();
         AudioManager.instance.PlayBGM(C_Enums.BGM_List.D1_Final_BGM2);
         AudioManager.instance.PlaySFX(C_Enums.SFX_List.D1_Final_Enter);
-
     }
 
     protected override void StartSpecialPattern(BossSpecialPattern pattern)
@@ -154,13 +159,13 @@ public class D1_FinalBoss : BossModel
         Debug.Log($"🚨 [기믹 발동] {pattern.patternName} 시작!");
 
         if (pattern.patternName == "쇼타임")
-            StartCoroutine(Special_ShowTime());
+            StartCoroutine(Special_Mix());
         else if (pattern.patternName == "운명의 점")
             StartCoroutine(Special_Aracna());
         else if (pattern.patternName == "칩막기")
             StartCoroutine(Special_Chip());
         else if (pattern.patternName == "야바위")
-            StartCoroutine(Special_Chip());
+            StartCoroutine(Special_Mix());
         else if (pattern.patternName == "체크메이트")
             StartCoroutine(Special_Chess());
     }
@@ -635,11 +640,37 @@ public class D1_FinalBoss : BossModel
         Special5.prefab.StartCheckmate(this);
     }
 
+    public override void ResetBossState()
+    {
+        // 1. 자식 클래스만의 특수한 찌꺼기 제거
+        // 보스가 하늘로 올라갔다가(메시 끄기) 안 내려온 상태로 끝날 수 있으니 메시 다시 켜주기
+        foreach (SkinnedMeshRenderer mesh in bossMeshs)
+        {
+            if (mesh != null) mesh.enabled = true;
+        }
+
+        // 체스 컷씬이 도중에 멈췄다면 끄기
+        if (Special5.cutSceneObj != null)
+        {
+            Special5.cutSceneObj.SetActive(false);
+        }
+
+        // 체스 기믹(미니게임)이 진행 중이었다면 강제 종료 명령 내리기
+        if (Special5.prefab != null)
+        {
+            // D1_Chess 스크립트에 StopChess() 같은 강제 종료 함수가 있다면 호출
+            // Special5.prefab.StopChess(); 
+        }
+
+        // 2. 부모(BossModel)의 완벽 초기화 및 풀 반환 로직 실행
+        base.ResetBossState();
+    }
+
     #endregion
 
     #region 일반 패턴
 
-    
+
 
     #endregion
 }

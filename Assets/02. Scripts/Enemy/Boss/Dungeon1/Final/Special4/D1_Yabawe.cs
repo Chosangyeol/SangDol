@@ -8,8 +8,6 @@ public class D1_Yabawe : MonoBehaviour
     public List<D1_Hat> hats;
     public int shuffleCount = 10;
     public float swapDuration = 1.5f;
-    public GameObject redChip;
-    public GameObject purpleChip;
 
     private int realIndex = 0;
 

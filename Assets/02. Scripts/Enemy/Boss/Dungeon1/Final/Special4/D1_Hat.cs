@@ -75,7 +75,7 @@ public class D1_Hat : BossModel
 
     protected override void Die(GameObject source = null)
     {
-        base.Die(source);
+
 
         spawnChip.transform.parent = null;
 
@@ -90,6 +90,8 @@ public class D1_Hat : BossModel
             transform.position += Vector3.up * 40 * Time.deltaTime;
             yield return null;
         }
+
+        spawnChip.transform.parent = this.transform;
 
         if (isReal)
             parent.Success();

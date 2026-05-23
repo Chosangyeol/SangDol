@@ -31,7 +31,7 @@ public class D1_Knife : MonoBehaviour
         sBuff = new SBuff(
             this.gameObject,
             _model.gameObject,
-            new StatBuff(_model, slowDeBuffSO, this.slowDuration, C_Enums.CharacterStat.MoveSpeed, false, this.slowPercent)
+            new StatBuff(_model, slowDeBuffSO, this.slowDuration, C_Enums.CharacterStat.MoveSpeed, true, this.slowPercent)
             );
     }
 

@@ -23,8 +23,9 @@ public class FinalBossSector : MonoBehaviour, ISectorCondition
     public void OnConditionStart()
     {
         if (_isStarted) return;
-        _isStarted = true;
 
+        _isStarted = true;
+        Debug.Log("보스 섹터 시작");
         _spawnedEnemies.Clear();
 
         foreach (var data in spawnDataList)
@@ -83,12 +84,25 @@ public class FinalBossSector : MonoBehaviour, ISectorCondition
                 {
                     model.ResetBossState();
                     model.OnReturnToPool = null;
+                    Debug.Log("보스 상태 초기화 완료");
+                }
+
+                PoolableMono poolObj = enemy.GetComponent<PoolableMono>();
+                if (poolObj != null)
+                {
+                    PoolManager.Instance.Push(poolObj);
+                }
+                else
+                {
+                    Destroy(enemy.gameObject);
                 }
             }
         }
 
         _spawnedEnemies.Clear();
         _isStarted = false;
+
+        // (참고: ResetSector에서 UpdateDungeonUI를 하므로 여기서 뺄 수 있으면 빼도 됩니다)
         DungeonManager.instance.UpdateDungeonUI();
     }
 

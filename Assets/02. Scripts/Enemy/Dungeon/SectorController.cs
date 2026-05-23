@@ -63,6 +63,27 @@ public class SectorController : MonoBehaviour
         DungeonManager.instance.UpdateDungeonUI();
     }
 
+    public void ResetSector()
+    {
+        // 1. 돌아가고 있던 체크 코루틴 강제 정지
+        StopAllCoroutines();
+
+        // 2. 섹터 진행 상태 완벽 초기화
+        _isActivated = false;
+        _isCleared = false;
+        _currentConditionIndex = 0;
+
+        // 3. 내부 조건들(보스, 적 스폰 등) 리셋
+        foreach (var condition in _conditions)
+        {
+            if (condition is EnemySector es) es.ResetCondition();
+            else if (condition is MiddleBossSector mbs) mbs.ResetCondition();
+            else if (condition is FinalBossSector fbs) fbs.ResetCondition();
+        }
+
+        Debug.Log($"[{sectorName}] 섹터가 완벽하게 초기화되었습니다.");
+    }
+
     private IEnumerator SequentialCheckRoutine()
     {
         while (!_isCleared)
@@ -162,9 +183,4 @@ public class SectorController : MonoBehaviour
         if (nextSectorTrigger != null) nextSectorTrigger.SetActive(true);
         DungeonManager.instance.OnSectorCleared(this);
     }
-
-    #region Navmesh 재계산 -> CutScene 대응
-
-
-    #endregion
 }

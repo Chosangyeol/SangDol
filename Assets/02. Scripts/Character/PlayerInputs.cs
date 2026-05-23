@@ -46,7 +46,6 @@ public class PlayerInputs : MonoBehaviour
                 }
             }
 
-            // 🌟 수정된 이동 로직 (기존의 model.canAttack 조건에서 분리) 🌟
             if (isMoveHeld && !isPointerOverUI && model.canMove)
             {
                 model.PlayerInput.OnMoveClick(GetPointerScreenPos());

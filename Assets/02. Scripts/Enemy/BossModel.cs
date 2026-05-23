@@ -255,21 +255,30 @@ public class BossModel : EnemyBase, ICounterable
 
     public void ForceStopCurrentAction()
     {
+        // 1. 진행 중인 모든 코루틴 정지
         StopAllCoroutines();
 
+        // 2. 상태 초기화
         currentPattern = null;
         canCounter = false;
+        isDoingSpecial = false; // 특수 패턴 중 죽었을 때를 대비해 초기화
+        isKnockDown = false;
+        isStatic = false;
+        isImmunity = false;     // 무적 상태 강제 해제
 
+        // 3. 스폰된 패턴(장판, 투사체 등) 파괴
         foreach (GameObject obj in patternObjects)
         {
             if (obj != null) Destroy(obj);
         }
-
         patternObjects.Clear();
 
-        //Anim.Play("Idle");
-        //Anim.SetBool("Move", false);
-
+        // 4. 네비메시 에이전트 상태 강제 초기화
+        if (_agent != null && _agent.isOnNavMesh)
+        {
+            _agent.isStopped = true;
+            _agent.ResetPath();
+        }
     }
 
     public void SetImmunity(bool immunity)
@@ -279,13 +288,27 @@ public class BossModel : EnemyBase, ICounterable
         GameEvent.OnBossStateChange?.Invoke(this);
     }
 
-    public void ResetBossState()
+    public virtual void ResetBossState()
     {
-        ForceStopCurrentAction();
-
         Debug.Log("플레이어 사망. 대청소 시작");
 
-        StartCoroutine(Delay(3f));
+        // 1. 모든 행동과 찌꺼기 싹 정리
+        ForceStopCurrentAction();
+
+        // 2. 특수 패턴(기믹) 발동 여부 리셋
+        for (int i = 0; i < specialPatterns.Count; i++)
+        {
+            specialPatterns[i].hasDone = false;
+        }
+
+        // 3. 체력 초기화 (Stat 시스템에 맞게 호출, 보통은 최대 체력으로 복구)
+        _stat.curHp = _stat.maxHp;
+        _stat.curDown = _stat.maxDown;
+
+        GameEvent.OnBossStateChange?.Invoke(this);
+
+        // 보스는 더 이상 기다리지 않고 즉시 풀로 반환되도록 변경
+        PoolManager.Instance.Push(this);
     }
 
     private IEnumerator Delay(float delay)

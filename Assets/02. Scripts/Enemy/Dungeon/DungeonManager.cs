@@ -169,25 +169,37 @@ public class DungeonManager : MonoBehaviour
     private IEnumerator ReplaceSequence()
     {
         _model.SetControlable(false);
+        GameEvent.OnBossStateChange?.Invoke(null); // 보스 체력바 끄기
 
         yield return new WaitForSeconds(3f);
 
-        _model.transform.position = _playerRevivePos.position;
+        if (_playerRevivePos != null)
+        {
+            _model.transform.position = _playerRevivePos.position;
+        }
+        else
+        {
+            Debug.LogWarning("저장된 부활 위치가 없습니다. 제자리에서 부활합니다.");
+        }
 
         _model.Revive();
 
-        SectorController current = warpDatas[dungeonStepIndex].nextSector;
-
-        if (current != null)
+        if (allSectors != null && currentSector < allSectors.Count)
         {
-            foreach (var condition in current.conditions)
+            Debug.Log("기존 섹터 초기화 시작");
+            SectorController current = allSectors[currentSector];
+
+            current.ResetSector();
+
+            bool needsWarp = warpDatas.Exists(w => w.nextSector == current && w.isBossRoom);
+            if (!needsWarp)
             {
-                if (condition is EnemySector es) es.ResetCondition();
-                else if (condition is MiddleBossSector mbs) mbs.ResetCondition();
-                else if (condition is FinalBossSector fbs) fbs.ResetCondition();
+                current.ActivateSector();
             }
 
+            UpdateDungeonUI();
         }
+
         yield return new WaitForSeconds(3f);
     }
     #endregion
