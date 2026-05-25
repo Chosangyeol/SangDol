@@ -13,38 +13,41 @@ public class C_SkillSystem
     protected Dictionary<C_Enums.SkillSlot, SkillBase> activeSkills = 
         new Dictionary<C_Enums.SkillSlot, SkillBase>()
         {
-            { C_Enums.SkillSlot.Z, null },
             { C_Enums.SkillSlot.Q, null },
             { C_Enums.SkillSlot.W, null },
             { C_Enums.SkillSlot.E, null },
             { C_Enums.SkillSlot.R, null },
-            { C_Enums.SkillSlot.Space, null},
+            { C_Enums.SkillSlot.A, null },
+            { C_Enums.SkillSlot.S, null },
+            { C_Enums.SkillSlot.D, null },
+            { C_Enums.SkillSlot.F, null },
             { C_Enums.SkillSlot.V, null  }
         };
 
+    public SkillBase IdentitySkill { get; private set; }
+    public SkillBase DodgeSkill { get; private set; }
+
     public event Action OnSkillDataChanged;
+
+    private int useSkillPoint = 0;
 
     public C_SkillSystem(CharacterModel model)
     {
         _model = model;
 
-        SkillBase iden = _model.skill_ZSO.SkillInit(_model);
-        RegisterSkill(iden);
-        RegisterSkillToSlot(C_Enums.SkillSlot.Z, iden);
+        IdentitySkill = _model.skill_ZSO.SkillInit(_model);
+        DodgeSkill = _model.skill_SpaceSO.SkillInit(_model);
 
-        SkillBase space = _model.skill_SpaceSO.SkillInit(_model);
-        RegisterSkill(space);
-        RegisterSkillToSlot(C_Enums.SkillSlot.Space, space);
-
-        Debug.Log(activeSkills[C_Enums.SkillSlot.Z]);
-        Debug.Log(activeSkills[C_Enums.SkillSlot.Space]);
-
+        useSkillPoint = 0;
         return;
     }
 
     public virtual bool UpdateSkills(float deltaTime)
     {
         bool result = false;
+
+        IdentitySkill?.UpdateSkill(deltaTime);
+        DodgeSkill?.UpdateSkill(deltaTime);
 
         foreach (var skillPair in activeSkills)
         {
@@ -58,6 +61,9 @@ public class C_SkillSystem
 
     public SkillBase GetSkillToSlot(C_Enums.SkillSlot slot)
     {
+        if (slot == C_Enums.SkillSlot.Z) return IdentitySkill;
+        if (slot == C_Enums.SkillSlot.Space) return DodgeSkill;
+
         if (activeSkills.ContainsKey(slot))
         {
             return activeSkills[slot];
@@ -69,30 +75,40 @@ public class C_SkillSystem
     {
         if (!_model.canMove) return;
 
-        if (activeSkills[slot] != null)
+        SkillBase targetSkill = GetSkillToSlot(slot);
+
+        if (targetSkill != null)
         {
-            if (activeSkills[slot].UseSkill(targetPos))
+            if (targetSkill.UseSkill(targetPos))
+            {
                 if (slot == C_Enums.SkillSlot.Space)
                     _model.UseDodge();
+            }
         }
         else
         {
             Debug.Log("해당 슬롯에 스킬 없음");
         }
-
     }
 
     public void ReleaseSkill(C_Enums.SkillSlot slot, Vector3 targetPos)
     {
-        if (activeSkills[slot] != null)
+        SkillBase targetSkill = GetSkillToSlot(slot);
+
+        if (targetSkill != null)
         {
-            // 장착된 스킬의 ReleaseSkill 호출!
-            activeSkills[slot].ReleaseSkill(targetPos);
+            targetSkill.ReleaseSkill(targetPos);
         }
     }
 
     public void RegisterSkillToSlot(C_Enums.SkillSlot slot, SkillBase skill)
     {
+        if (slot == C_Enums.SkillSlot.Z || slot == C_Enums.SkillSlot.Space)
+        {
+            Debug.LogWarning("아이덴티티와 이동기 슬롯에는 다른 스킬을 장착할 수 없습니다.");
+            return;
+        }
+
         activeSkills[slot] = skill;
         Debug.Log(slot + " / " + activeSkills[slot]);
         OnSkillDataChanged?.Invoke();
@@ -100,6 +116,8 @@ public class C_SkillSystem
 
     public void ClearSkillSlot(C_Enums.SkillSlot slot)
     {
+        if (slot == C_Enums.SkillSlot.Z || slot == C_Enums.SkillSlot.Space) return;
+
         activeSkills[slot] = null;
         OnSkillDataChanged?.Invoke();
     }
@@ -107,6 +125,13 @@ public class C_SkillSystem
     public void Swap(C_Enums.SkillSlot from, C_Enums.SkillSlot to)
     {
         if (from == to) return;
+
+        if (from == C_Enums.SkillSlot.Z || from == C_Enums.SkillSlot.Space ||
+            to == C_Enums.SkillSlot.Z || to == C_Enums.SkillSlot.Space)
+        {
+            Debug.LogWarning("기본 내장 스킬은 스왑할 수 없습니다.");
+            return;
+        }
 
         SkillBase fromSkill = GetSkillToSlot(from);
         SkillBase toSkill = GetSkillToSlot(to);
@@ -132,6 +157,8 @@ public class C_SkillSystem
 
     public void LevelUpSkill(SkillBase skill)
     {
+        if (_model.Stat.Stat.skillPoint < 1) return;
+
         SkillBase targetSkill = hasSkillData.Find(x => x == skill);
 
         if (targetSkill == null)
@@ -140,6 +167,8 @@ public class C_SkillSystem
             targetSkill = hasSkillData.Find(x => x == skill);
         }
 
+        _model.Stat.Stat.RemoveSkillPoint();
+        useSkillPoint++;
         targetSkill.LevelUpSkill();
         OnSkillDataChanged?.Invoke();
     }
@@ -149,7 +178,9 @@ public class C_SkillSystem
         SkillBase targetSkill = hasSkillData.Find(x => x == skill);
 
         if (targetSkill == null) return;
-        
+        _model.Stat.Stat.AddSkillPoint();
+        useSkillPoint--;
+
         targetSkill.LevelDownSkill();
         
         if (targetSkill.SkillLevel <= 0)
@@ -168,5 +199,13 @@ public class C_SkillSystem
                 skill.ResetSkillCool();
             }
         }
+
+        IdentitySkill?.ResetSkillCool();
+        DodgeSkill?.ResetSkillCool();
+    }
+
+    public void ResetSkillLevel()
+    {
+
     }
 }

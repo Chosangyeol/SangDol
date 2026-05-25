@@ -85,6 +85,9 @@ MonoBehaviour:
   isDoingSpecial: 0
   isKnockDown: 0
   isCutsceneFinished: 0
+  counterEffectPrefab: {fileID: 1056961428222709483, guid: b7ed08f8029ea6a408d083725ec62364,
+    type: 3}
+  counterEffectSpawnPos: {fileID: 0}
   couterDuration: 5
   specialPatterns:
   - patternName: "\uC1FC\uD0C0\uC784"
@@ -392,7 +395,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: b168fde6b739d714884482e8b80bad50, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
-  m_ApplyRootMotion: 1
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_WarningMessage: 

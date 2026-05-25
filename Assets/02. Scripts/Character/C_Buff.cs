@@ -108,7 +108,7 @@ public class C_Buff
         for (int i = 0; i < _listBuff.Count; i++)
         {
             _listBuff[i].act.OnDisable();
-            
+            ActionAfterRemoveBuff?.Invoke(_listBuff[i]);
         }
         _listBuff.Clear();
     }

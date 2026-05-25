@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6cab585525aeb0f42a1889f4aba7b415, type: 3}
   m_Name: Yakoon
   m_EditorClassIdentifier: 
-  npcID: 30002
-  npcName: "\uB9C8\uB9AC\uC544"
+  npcID: 30006
+  npcName: "\uC57C\uD054"
   defaultDialogID: D_30001_001
   hasShop: 0
   shopID: 

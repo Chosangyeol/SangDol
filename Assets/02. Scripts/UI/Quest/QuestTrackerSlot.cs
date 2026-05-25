@@ -25,7 +25,7 @@ public class QuestTrackerSlot : MonoBehaviour
                 if (QuestManager.Instance.questKillProgressDict.ContainsKey(questID))
                     current = QuestManager.Instance.questKillProgressDict[questID];
 
-                questProgressText.text = $"- {questData.questTarget} 처치 ({current} / {questData.questCount})";
+                questProgressText.text = $"- {questData.questTargetName} 처치 ({current} / {questData.questCount})";
             }
             else if (questData.questType == "Item")
             {
@@ -33,11 +33,11 @@ public class QuestTrackerSlot : MonoBehaviour
                 if (QuestManager.Instance.questItemProgressDict.ContainsKey(questID))
                     current = QuestManager.Instance.questItemProgressDict[questID];
 
-                questProgressText.text = $"- {questData.questTarget} 수집 ({current} / {questData.questCount})";
+                questProgressText.text = $"- {questData.questTargetName} 수집 ({current} / {questData.questCount})";
             }
             else if (questData.questType == "Talk")
             {
-                questProgressText.text = $"- {questData.questTarget}와(과) 대화하기";
+                questProgressText.text = $"- {questData.questTargetName}와(과) 대화하기";
             }
         }
     }

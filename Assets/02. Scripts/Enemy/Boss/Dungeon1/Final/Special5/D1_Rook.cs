@@ -17,6 +17,11 @@ public class D1_Rook : MonoBehaviour, ICounterable
 
     public bool hasAttack = false;
 
+    [Header("카운터 시각 연출")]
+    public GameObject counterEffectPrefab;   // 카운터 타이밍에 띄울 파티클/이펙트 프리팹
+    public Transform counterEffectSpawnPos;  // 이펙트가 생성될 위치 (가슴팍이나 머리 위 등. 비워두면 보스 발밑 기본 transform)
+    private GameObject _currentCounterEffect;// 현재 생성되어 있는 이펙트 추적용
+
     public void Init(bool iscounterable, bool isLast = false)
     {
         isCounterable = iscounterable;
@@ -68,12 +73,26 @@ public class D1_Rook : MonoBehaviour, ICounterable
     public void EnableCounter()
     {
         canCounter = true;
+
+        if (counterEffectPrefab != null && _currentCounterEffect == null)
+        {
+            // 지정된 위치가 없으면 보스의 루트(기본 transform)를 사용
+            Transform spawnTarget = counterEffectSpawnPos != null ? counterEffectSpawnPos : transform;
+
+            // 보스를 부모로 삼아서 보스가 움직일 때 이펙트도 따라가게 만듦
+            _currentCounterEffect = Instantiate(counterEffectPrefab, spawnTarget.position, spawnTarget.rotation, spawnTarget);
+        }
     }
 
     public void DisableCounter()
     {
         canCounter = false;
-        this.GetComponentInChildren<Renderer>().material.color = Color.red;
+
+        if (_currentCounterEffect != null)
+        {
+            Destroy(_currentCounterEffect);
+            _currentCounterEffect = null;
+        }
     }
 
     public void OnCounterSuccess(SDamageInfo info)
@@ -89,6 +108,8 @@ public class D1_Rook : MonoBehaviour, ICounterable
         {
             return;
         }
+
+        DisableCounter();
 
         // --- 여기까지 무사히 넘어왔다면 진짜 카운터 성공 ---
         Debug.Log("카운터 성공");

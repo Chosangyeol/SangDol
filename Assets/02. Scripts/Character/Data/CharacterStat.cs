@@ -83,6 +83,8 @@ public class CharacterStat
     public StatValue criticalChance;
     public StatValue criticalDamage;
 
+    public int skillPoint;
+
     // 특수 스탯
     /// <summary>
     /// 아이덴티티 획득량 증가 %
@@ -133,6 +135,7 @@ public class CharacterStat
         this.damageTakeMultiplier = new StatValue(1.0f);
         this.dodgeCooldownReduction = 0f;
 
+        skillPoint = this.currentLevel;
         gold = 1000;
         statPoint = 0;
     }
@@ -212,6 +215,7 @@ public class CharacterStat
         currentExp -= maxExp;
         currentLevel++;
         statPoint++;
+        AddSkillPoint();
         Debug.Log($"레벨업, 레벨 : {currentLevel} / 경험치 : {currentExp} / 스탯포인트 : {statPoint}");
         // 캐릭터 기본 스텟 추가
 
@@ -226,6 +230,11 @@ public class CharacterStat
     #endregion
 
     #region Add Stat Methods
+    public void AddSkillPoint()
+    {
+        skillPoint++;
+    }
+
     public void AddMaxHp(bool isPercent, float value)
     {
         if (isPercent)
@@ -272,6 +281,11 @@ public class CharacterStat
     #endregion
 
     #region Remove Stat Methods
+    public void RemoveSkillPoint()
+    {
+        skillPoint--;
+    }
+
     public void RemoveMaxHp(bool isPercent, float value)
     {
         if (isPercent)

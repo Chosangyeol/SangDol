@@ -15,6 +15,7 @@ public class NpcDialogManager : MonoBehaviour
     public Transform buttonGroup;
     public GameObject buttonPrefab;
 
+    public CharacterModel Model => _model;
     private CharacterModel _model;
 
     private void Awake()
@@ -112,7 +113,7 @@ public class NpcDialogManager : MonoBehaviour
                 if (showButton)
                 {
                     string questName = QuestManager.Instance.GetQuestName(q.questID);
-                    CreateButton($"{prefix} {questName}", () =>
+                    CreateButton($"{prefix}\n{questName}", () =>
                     {
                         string dialogToPlay = DetermineQuestDialogueID(q, state);
                         DialogManager.Instance.StartDialogue(dialogToPlay);

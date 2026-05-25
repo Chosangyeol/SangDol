@@ -23,6 +23,8 @@ public class D1_King : BossModel
         parent.isDoing = false;
         parent.isClear = true;
         parent.ReturnBackStage();
+
+        GameEvent.OnBossStateChange(null);
     }
 }
 

@@ -32,6 +32,10 @@ public class QuestPreview : MonoBehaviour
 
     public void SetQuestPreview(string questID)
     {
+        questRewardItemSlots[0].gameObject.SetActive(false);
+        questRewardItemSlots[1].gameObject.SetActive(false);
+        questRewardItemSlots[2].gameObject.SetActive(false);
+
         tmpQuestItemReward1.gameObject.SetActive(false);
         tmpQuestItemReward2.gameObject.SetActive(false);
         tmpQuestItemReward3.gameObject.SetActive(false);
@@ -44,15 +48,15 @@ public class QuestPreview : MonoBehaviour
         {
             case "Kill":
                 tmpQuestTarget.text = $"목표를 처치하기\n" +
-                    $"{questData.questTarget} - {QuestManager.Instance.questKillProgressDict[questID]} / {questData.questCount}";
+                    $"{questData.questTargetName} - {QuestManager.Instance.questKillProgressDict[questID]} / {questData.questCount}";
                 break;
             case "Item":
                 tmpQuestTarget.text = $"목표 아이템을 획득하기\n" +
-                    $"{questData.questTarget} - {QuestManager.Instance.questItemProgressDict[questID]} / {questData.questCount}";
+                    $"{questData.questTargetName} - {QuestManager.Instance.questItemProgressDict[questID]} / {questData.questCount}";
                 break;
             case "Talk":
                 tmpQuestTarget.text = $"목표 NPC와 대화하기\n" +
-                    $"{questData.questTarget} - {(QuestManager.Instance.questTalkProgressDict[questID] ? "완료" : "미완료")}";
+                    $"{questData.questTargetName} - {(QuestManager.Instance.questTalkProgressDict[questID] ? "완료" : "미완료")}";
                 break;
         }
 
@@ -67,16 +71,19 @@ public class QuestPreview : MonoBehaviour
                 switch (i)
                 {
                     case 0:
+                        questRewardItemSlots[i].gameObject.SetActive(true);
                         questRewardItemSlots[i].InitSlot(rewardItem, tooltip);
                         tmpQuestItemReward1.gameObject.SetActive(true);
                         tmpQuestItemReward1.text = $"{questData.rewardItems[i].count}개";
                         break;
                     case 1:
+                        questRewardItemSlots[i].gameObject.SetActive(true);
                         questRewardItemSlots[i].InitSlot(rewardItem, tooltip);
                         tmpQuestItemReward2.gameObject.SetActive(true);
                         tmpQuestItemReward2.text = $"{questData.rewardItems[i].count}개";
                         break;
                     case 2:
+                        questRewardItemSlots[i].gameObject.SetActive(true);
                         questRewardItemSlots[i].InitSlot(rewardItem, tooltip);
                         tmpQuestItemReward3.gameObject.SetActive(true);
                         tmpQuestItemReward3.text = $"{questData.rewardItems[i].count}개";

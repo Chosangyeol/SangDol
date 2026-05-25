@@ -22,6 +22,7 @@ public class QuestData
     public string questDialog;
     public string questType;
     public string questTarget;
+    public string questTargetName;
     public int questCount;
 
     public string clearNpcID;
@@ -47,11 +48,19 @@ public class QuestManager : MonoBehaviour
     public event Action OnQuestProgressUpdated;
 
     private CharacterModel _model;
+    [SerializeField] ItemTooltip tooltip;
 
     [Header("퀘스트 미리보기")]
     public GameObject questPreview;
     public TMP_Text questNameText;
-    public TMP_Text questDialogText; 
+    public TMP_Text questDialogText;
+    public TMP_Text questGoldReward;
+    public TMP_Text questExpReward;
+    public RewardItemSlot[] questRewardItemSlots;
+    public TMP_Text questItemReward1;
+    public TMP_Text questItemReward2;
+    public TMP_Text questItemReward3;
+
 
     private void Awake()
     {
@@ -116,26 +125,27 @@ public class QuestManager : MonoBehaviour
             if (columns.Length > 4) data.questType = columns[4];
             if (columns.Length > 5) data.questTarget = columns[5];
             if (columns.Length > 6) int.TryParse(columns[6], out data.questCount);
-            if (columns.Length > 7) int.TryParse(columns[7], out data.rewardGold);
-            if (columns.Length > 8) int.TryParse(columns[8], out data.rewardExp);
+            if (columns.Length > 7) data.questTargetName = columns[7];
+            if (columns.Length > 8) int.TryParse(columns[8], out data.rewardGold);
+            if (columns.Length > 9) int.TryParse(columns[9], out data.rewardExp);
 
             // 보상 1 (Index 8, 9)
-            if (columns.Length > 10 && !string.IsNullOrWhiteSpace(columns[9]))
+            if (columns.Length > 11 && !string.IsNullOrWhiteSpace(columns[10]))
             {
-                int.TryParse(columns[10], out int count);
-                data.rewardItems.Add(new RewardItem { itemID = columns[9], count = count });
+                int.TryParse(columns[11], out int count);
+                data.rewardItems.Add(new RewardItem { itemID = columns[10], count = count });
             }
             // 보상 2 (Index 10, 11)
-            if (columns.Length > 12 && !string.IsNullOrWhiteSpace(columns[11]))
+            if (columns.Length > 13 && !string.IsNullOrWhiteSpace(columns[12]))
             {
-                int.TryParse(columns[12], out int count);
-                data.rewardItems.Add(new RewardItem { itemID = columns[11], count = count });
+                int.TryParse(columns[13], out int count);
+                data.rewardItems.Add(new RewardItem { itemID = columns[12], count = count });
             }
             // 보상 3 (Index 12, 13)
-            if (columns.Length > 14 && !string.IsNullOrWhiteSpace(columns[13]))
+            if (columns.Length > 15 && !string.IsNullOrWhiteSpace(columns[14]))
             {
-                int.TryParse(columns[14], out int count);
-                data.rewardItems.Add(new RewardItem { itemID = columns[13], count = count });
+                int.TryParse(columns[15], out int count);
+                data.rewardItems.Add(new RewardItem { itemID = columns[14], count = count });
             }
 
             
@@ -352,6 +362,45 @@ public class QuestManager : MonoBehaviour
         questPreview.SetActive(true);
         questNameText.text = GetQuestName(questID);
         questDialogText.text = questDict[questID].questDialog;
+        questGoldReward.text = $"{questDict[questID].rewardGold}G";
+        questExpReward.text = $"{questDict[questID].rewardExp}Exp";
+
+        questRewardItemSlots[0].gameObject.SetActive(false);
+        questRewardItemSlots[1].gameObject.SetActive(false);
+        questRewardItemSlots[2].gameObject.SetActive(false);
+        questItemReward1.gameObject.SetActive(false);
+        questItemReward2.gameObject.SetActive(false);
+        questItemReward3.gameObject.SetActive(false);
+
+        if (questDict[questID].rewardItems.Count != 0)
+        {
+            for (int i = 0; i < questDict[questID].rewardItems.Count; i++)
+            {
+                ItemBaseSO rewardItem = ItemManager.Instance.GetItemBaseSO(questDict[questID].rewardItems[i].itemID);
+                switch (i)
+                {
+                    case 0:
+                        questRewardItemSlots[i].gameObject.SetActive(true);
+                        questRewardItemSlots[i].InitSlot(rewardItem, tooltip);
+                        questItemReward1.gameObject.SetActive(true);
+                        questItemReward1.text = $"{questDict[questID].rewardItems[i].count}개";
+                        break;
+                    case 1:
+                        questRewardItemSlots[i].gameObject.SetActive(true);
+                        questRewardItemSlots[i].InitSlot(rewardItem, tooltip);
+                        questItemReward2.gameObject.SetActive(true);
+                        questItemReward2.text = $"{questDict[questID].rewardItems[i].count}개";
+                        break;
+                    case 2:
+                        questRewardItemSlots[i].gameObject.SetActive(true);
+                        questRewardItemSlots[i].InitSlot(rewardItem, tooltip);
+                        questItemReward3.gameObject.SetActive(true);
+                        questItemReward3.text = $"{questDict[questID].rewardItems[i].count}개";
+                        break;
+                }
+            }
+        }
+
     }
 
     public void SetQuestTracking(string questID, bool isTracked)

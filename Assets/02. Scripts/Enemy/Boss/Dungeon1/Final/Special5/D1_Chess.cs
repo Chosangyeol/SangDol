@@ -1,3 +1,4 @@
+using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -17,6 +18,7 @@ public class D1_Chess : MonoBehaviour
     [Header("오브젝트")]
     public GameObject rookPrefab;
     public GameObject kingBoss;
+    public CinemachineDollyCart chessDollyCart;
 
     public bool isDoing = false;
     public bool isClear = false;
@@ -277,5 +279,70 @@ public class D1_Chess : MonoBehaviour
         List<D1_ChessTile> targetTiles = allTiles.GetRange(0, 30);
 
         return targetTiles;
+    }
+
+    public void ResetChess()
+    {
+        // 1. 모든 코루틴 정지 (돌진 대기, 폰 소환 등)
+        StopAllCoroutines();
+
+        isDoing = false;
+        isClear = false;
+        isRaidActive = false;
+
+        // 2. 소환되었던 룩(Rook) 전부 삭제
+        for (int i = 0; i < rookList.Length; i++)
+        {
+            if (rookList[i] != null)
+            {
+                Destroy(rookList[i]);
+                rookList[i] = null;
+            }
+        }
+
+        // 3. 소환되었던 킹(King) 삭제 (kingSpawnPos 아래에 있는 모든 자식 삭제)
+        foreach (Transform child in kingSpawnPos)
+        {
+            Destroy(child.gameObject);
+        }
+
+        // 4. 모든 타일 초기화 (길 막기, 이펙트 끄기)
+        for (int x = 0; x < 8; x++)
+        {
+            for (int y = 0; y < 8; y++)
+            {
+                if (tiles[x, y] != null)
+                {
+                    tiles[x, y].ResetTile();
+
+                    // 첫 줄 빼고 다 막기 (Awake 때와 동일하게 세팅)
+                    if (y == 0)
+                        tiles[x, y].OpenPath(false);
+                    else
+                        tiles[x, y].OpenPath(true);
+                }
+            }
+        }
+
+        if (chessDollyCart != null)
+        {
+            chessDollyCart.m_Position = 0f;
+        }
+
+        // 5. 컷씬 애니메이션 초기화 로직
+        // D1_FinalBoss 스크립트에서 넘겨받은 컷씬 오브젝트가 있다면 시간을 0으로 돌립니다.
+        if (_boss != null && _boss.Special5.cutSceneObj != null)
+        {
+            UnityEngine.Playables.PlayableDirector director = _boss.Special5.cutSceneObj.GetComponent<UnityEngine.Playables.PlayableDirector>();
+            if (director != null)
+            {
+                director.Stop();
+                director.time = 0; // 타임라인 재생 시간을 처음으로 되돌림
+                director.Evaluate(); // 되돌린 시간을 즉시 씬에 적용하여 오브젝트들 위치를 원복시킴
+            }
+            _boss.Special5.cutSceneObj.SetActive(false);
+        }
+
+        Debug.Log("체스 미니게임 상태 초기화 완료");
     }
 }

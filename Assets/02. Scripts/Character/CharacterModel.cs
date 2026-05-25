@@ -672,6 +672,7 @@ public class CharacterModel : MonoBehaviour
         if (DungeonManager.instance != null)
             DungeonManager.instance.ReplacePlayer();
 
+        GameEvent.OnBossStateChange(null);
         GameEvent.OnPlayerDie?.Invoke();
         GameEvent.OnBossStateChange?.Invoke(null);
     }

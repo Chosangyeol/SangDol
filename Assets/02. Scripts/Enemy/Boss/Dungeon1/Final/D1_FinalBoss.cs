@@ -144,7 +144,6 @@ public class D1_FinalBoss : BossModel
         normalPatterns.Add(new D1_Final_Normal4(pattern4));
         normalPatterns.Add(new D1_Final_Normal5(pattern5));
 
-        
     }
 
     public override void Reset()
@@ -159,7 +158,7 @@ public class D1_FinalBoss : BossModel
         Debug.Log($"🚨 [기믹 발동] {pattern.patternName} 시작!");
 
         if (pattern.patternName == "쇼타임")
-            StartCoroutine(Special_Mix());
+            StartCoroutine(Special_ShowTime());
         else if (pattern.patternName == "운명의 점")
             StartCoroutine(Special_Aracna());
         else if (pattern.patternName == "칩막기")
@@ -655,11 +654,9 @@ public class D1_FinalBoss : BossModel
             Special5.cutSceneObj.SetActive(false);
         }
 
-        // 체스 기믹(미니게임)이 진행 중이었다면 강제 종료 명령 내리기
         if (Special5.prefab != null)
         {
-            // D1_Chess 스크립트에 StopChess() 같은 강제 종료 함수가 있다면 호출
-            // Special5.prefab.StopChess(); 
+            Special5.prefab.ResetChess();
         }
 
         // 2. 부모(BossModel)의 완벽 초기화 및 풀 반환 로직 실행

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Dail
   m_EditorClassIdentifier: 
   npcID: 30004
-  npcName: "\uB9C8\uB9AC\uC544"
+  npcName: "\uB2E4\uC77C"
   defaultDialogID: D_30004_001
   hasShop: 0
   shopID: 

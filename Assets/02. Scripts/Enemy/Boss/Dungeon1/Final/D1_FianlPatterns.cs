@@ -275,6 +275,8 @@ public class D1_Final_Normal3 : BossPatternBase
         landPos.y = 0f;
         boss.transform.position = landPos;
 
+        boss.Agent.enabled = true;
+
         int playerLayer = LayerMask.GetMask("Player");
 
         Collider[] hit = Physics.OverlapSphere(boss.transform.position, 6f, playerLayer);
@@ -308,9 +310,7 @@ public class D1_Final_Normal3 : BossPatternBase
             model.Damaged(damagePercent, true);
         }
 
-        yield return new WaitForSeconds(1f);
-
-        boss.Agent.enabled = true;
+        yield return new WaitForSeconds(1f); 
 
         boss.OnPatternEnd();
     }
@@ -350,8 +350,9 @@ public class D1_Final_Normal4 : BossPatternBase
 
         AudioManager.instance.PlaySFX(C_Enums.SFX_List.D1_Final_N4);
 
+        Vector3 spawnPos = new Vector3(boss.transform.position.x, 0, boss.transform.position.z);
 
-        GameObject gwarning1 = GameObject.Instantiate(warning1, boss.transform.position, boss.transform.rotation); ;
+        GameObject gwarning1 = GameObject.Instantiate(warning1, spawnPos, boss.transform.rotation); ;
         boss.patternObjects.Add(gwarning1);
 
         yield return new WaitForSeconds(1.5f);
@@ -383,7 +384,7 @@ public class D1_Final_Normal4 : BossPatternBase
 
         yield return new WaitForSeconds(0.5f);
 
-        GameObject gwarning2 = GameObject.Instantiate(warning2, boss.transform.position, boss.transform.rotation); ;
+        GameObject gwarning2 = GameObject.Instantiate(warning2, spawnPos, boss.transform.rotation); ;
         boss.patternObjects.Add(gwarning2);
 
         yield return new WaitForSeconds(1.5f);
@@ -422,7 +423,7 @@ public class D1_Final_Normal5 : BossPatternBase
     public D1_Final_Normal5(D1_Final_Normal5Data data)
     {
         patternName = "Normal5";
-        cooldown = 60f;
+        cooldown = 120f;
         weight = 30f;
         range = 50f;
 

@@ -86,7 +86,7 @@ public class D1_ChessTile : MonoBehaviour
     private IEnumerator BishopAttack()
     {
 
-        GameObject effect = Instantiate(bishopEffect, transform.position + Vector3.up * 2, Quaternion.identity);
+        GameObject effect = Instantiate(bishopEffect, transform.position + Vector3.up * 0.5f, Quaternion.identity);
 
         while (isBishopActive)
         {
@@ -95,5 +95,25 @@ public class D1_ChessTile : MonoBehaviour
 
         Destroy(effect);
 
+    }
+
+    public void ResetTile()
+    {
+        // 1. 코루틴 정지 (떨어지던 폰, 켜져 있던 비숍 이펙트 중지)
+        StopAllCoroutines();
+
+        // 2. 이 타일에서 생성된 모든 자식 이펙트 삭제 (비숍 이펙트, 폰 등)
+        foreach (Transform child in transform)
+        {
+            // 경고판(warning)은 원래 있던 거니까 지우면 안 됩니다.
+            if (child.gameObject != warning)
+            {
+                Destroy(child.gameObject);
+            }
+        }
+
+        // 3. 변수 초기화
+        isBishopActive = false;
+        SetHighlight(false);
     }
 }

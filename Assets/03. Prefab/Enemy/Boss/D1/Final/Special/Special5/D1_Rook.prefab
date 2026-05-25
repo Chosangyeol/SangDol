@@ -75,6 +75,9 @@ MonoBehaviour:
   isLast: 0
   isRushing: 0
   hasAttack: 0
+  counterEffectPrefab: {fileID: 1056961428222709483, guid: b7ed08f8029ea6a408d083725ec62364,
+    type: 3}
+  counterEffectSpawnPos: {fileID: 0}
 --- !u!1001 &1113466714004475552
 PrefabInstance:
   m_ObjectHideFlags: 0
