@@ -23,6 +23,7 @@ public class CharacterModel : MonoBehaviour
     public int inventorySlotSize = 30;
     public LayerMask interactableLayer;
     public float interactableDistance = 3f;
+    public PoolableMono levelUpEffect;
 
     [Header("스킬 설정")]
     public Skill_ZSO skill_ZSO;
@@ -55,6 +56,7 @@ public class CharacterModel : MonoBehaviour
     public bool isDie = false;
     public bool isIdenOn = false;
     public bool isWaitingForRelease = false;
+    public bool isInteracting = false;
 
     private Animator anim;
     public Animator Anim => anim;
@@ -109,6 +111,10 @@ public class CharacterModel : MonoBehaviour
         buff = new C_Buff(this);
         stigma = new C_Stigma(this, lv5ABuffSO, lv5BBuffSO,lv6ABuffSO,lv10ABuffSO, stunSO, clonePrefeb);
 
+        GameEvent.OnPlayerLevelUp += () =>
+        {
+            StartCoroutine(LevelUpEffect()); 
+        };
         GameEvent.OnStatChange += UpdateAttackSpeed;
     }
 
@@ -1000,6 +1006,19 @@ public class CharacterModel : MonoBehaviour
 
     #endregion
 
+    #region 기타
+    public IEnumerator LevelUpEffect()
+    {
+        PoolableMono effect = PoolManager.Instance.Pop(levelUpEffect.name);
+        effect.transform.parent = this.gameObject.transform;
+        effect.transform.position = transform.position;
+        effect.transform.rotation = Quaternion.identity;
+        yield return new WaitForSeconds(1f);
+        effect.transform.parent = null;
+        PoolManager.Instance.Push(effect);
+    }
+
+    #endregion
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {

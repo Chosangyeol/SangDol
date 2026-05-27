@@ -15,6 +15,7 @@ MonoBehaviour:
   npcID: 30003
   npcName: "\uC0C1\uC778"
   defaultDialogID: D_30003_001
+  npcIncounterSound: {fileID: 8300000, guid: c9d8eaf502f160f4c813e31e676821ca, type: 3}
   hasShop: 1
   shopID: Shop00001
   canUpgrade: 0

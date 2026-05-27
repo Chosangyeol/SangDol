@@ -205,6 +205,27 @@ public class DialogManager : MonoBehaviour
         }
     }
 
+    public bool IsDialogueActive()
+    {
+        return dialoguePanel != null && dialoguePanel.activeSelf;
+    }
+
+    // G키를 눌렀을 때 다음 대사로 넘어가는 함수
+    public void TryClickNextButton()
+    {
+        // 1. 대화창이 꺼져있으면 무시
+        if (!dialoguePanel.activeSelf) return;
+
+        // 2. 선택지가 켜져 있다면 G키 진행 무시 (마우스로 직접 선택해야 함)
+        if (choicePanel.activeSelf) return;
+
+        // 3. '다음' 버튼이 켜져 있다면 마우스 클릭을 코드로 강제 실행
+        if (nextButton != null && nextButton.gameObject.activeSelf)
+        {
+            nextButton.onClick.Invoke();
+        }
+    }
+
     // 4. 대화 종료 기능
     private void EndDialogue()
     {

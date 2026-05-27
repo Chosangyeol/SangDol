@@ -40,12 +40,10 @@ public class EnemySpawner : MonoBehaviour
     
         if (enemy != null)
         {
-            enemy.transform.position = data.spanwPos.position;
-            enemy.transform.rotation = data.spanwPos.rotation;
+            Debug.Log("재배치");
             enemy.SetSpawnPoint(data.spanwPos);
             enemy.Reset();
-
-            enemy.SetSpawnPoint(data.spanwPos);
+            enemy.Agent.Warp(data.spanwPos.position);
 
             spawnedEnemy.Add(enemy);
 

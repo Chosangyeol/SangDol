@@ -6,7 +6,7 @@ using UnityEngine.Rendering;
 
 public class D1_FianlPatterns : MonoBehaviour
 {
-   
+    
 }
 
 public class D1_Final_Normal1 : BossPatternBase
@@ -155,6 +155,8 @@ public class D1_Final_Normal3 : BossPatternBase
     public AnimationCurve jumpCurve;
     public GameObject normal3Warning1;
     public GameObject normal3Warning2;
+    public GameObject normal3Effect1;
+    public GameObject normal3Effect2;
 
     public D1_Final_Normal3(D1_Final_Normal3Data data)
     {
@@ -168,6 +170,8 @@ public class D1_Final_Normal3 : BossPatternBase
         this.damagePercent = data.damagePercent;
         this.normal3Warning1 = data.warning1;
         this.normal3Warning2 = data.warning2;
+        this.normal3Effect1 = data.effect1;
+        this.normal3Effect2 = data.effect2;
     }
 
     public override void Execute(BossModel boss)
@@ -264,6 +268,9 @@ public class D1_Final_Normal3 : BossPatternBase
         yield return new WaitForSeconds(2f);
 
         GameObject.Destroy(warning1);
+        GameObject effect1 = GameObject.Instantiate(normal3Effect1, warning1pos, Quaternion.identity);
+        boss.patternObjects.Add(effect1);
+        boss.StartCoroutine(SpawnEffect(effect1, 0.5f));
 
         while (boss.transform.position.y > 0)
         {
@@ -298,6 +305,9 @@ public class D1_Final_Normal3 : BossPatternBase
         AudioManager.instance.PlaySFX(C_Enums.SFX_List.D1_Final_N3_Down);
 
         GameObject.Destroy(warning2);
+        GameObject effect2 = GameObject.Instantiate(normal3Effect2, warning1pos, Quaternion.identity);
+        boss.patternObjects.Add(effect2);
+        boss.StartCoroutine(SpawnEffect(effect2, 0.5f));
 
         hit = Physics.OverlapSphere(boss.transform.position, 12f, playerLayer);
         Collider[] safe = Physics.OverlapSphere(boss.transform.position, 6f, playerLayer);
@@ -313,6 +323,13 @@ public class D1_Final_Normal3 : BossPatternBase
         yield return new WaitForSeconds(1f); 
 
         boss.OnPatternEnd();
+    }
+
+    public IEnumerator SpawnEffect(GameObject effect, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (effect != null)
+            GameObject.Destroy(effect);
     }
 
 }
@@ -350,7 +367,7 @@ public class D1_Final_Normal4 : BossPatternBase
 
         AudioManager.instance.PlaySFX(C_Enums.SFX_List.D1_Final_N4);
 
-        Vector3 spawnPos = new Vector3(boss.transform.position.x, 0, boss.transform.position.z);
+        Vector3 spawnPos = new Vector3(boss.transform.position.x, boss.transform.position.y + 0.5f, boss.transform.position.z);
 
         GameObject gwarning1 = GameObject.Instantiate(warning1, spawnPos, boss.transform.rotation); ;
         boss.patternObjects.Add(gwarning1);

@@ -32,6 +32,8 @@ public class D1_Final_Normal3Data
     public GameObject swingPrefab;
     public GameObject warning1;
     public GameObject warning2;
+    public GameObject effect1;
+    public GameObject effect2;
     public AnimationCurve jumpCurve;
     public float damagePercent = 0.2f;
 }
@@ -58,6 +60,8 @@ public class D1_Final_Special1Data
 {
     public GameObject warning1;
     public GameObject warning2;
+    public GameObject effect1;
+    public GameObject effect2;
     public float damagePercent;
 }
 
@@ -337,6 +341,13 @@ public class D1_FinalBoss : BossModel
 
     }
 
+    public IEnumerator DestroyEffect(GameObject effect, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (effect != null)
+            Destroy(effect);
+    }
+
     IEnumerator Special_ShowTime()
     {
         transform.LookAt(playerStartPos);
@@ -345,14 +356,21 @@ public class D1_FinalBoss : BossModel
 
         Anim.SetTrigger("Special1");
 
-        GameObject warning1 = Instantiate(Special1.warning1, center);
+        Vector3 spawnPos = new Vector3(transform.position.x, transform.position.y + 0.6f, transform.position.z);
+
+        GameObject warning1 = Instantiate(Special1.warning1, spawnPos, Quaternion.identity);
         patternObjects.Add(warning1);
 
         yield return new WaitForSeconds(2f);   
 
         Destroy(warning1);
+        
 
         yield return new WaitForSeconds(0.2f);
+
+        GameObject effect1 = Instantiate(Special1.effect1, spawnPos, Quaternion.identity);
+        patternObjects.Add(effect1);
+        StartCoroutine(DestroyEffect(effect1, 0.5f));
 
         Collider[] targets = Physics.OverlapSphere(center.transform.position, 20f, LayerMask.GetMask("Player"));
 
@@ -363,7 +381,7 @@ public class D1_FinalBoss : BossModel
 
         yield return new WaitForSeconds(0.2f);
 
-        GameObject warning2 = Instantiate(Special1.warning2, center);
+        GameObject warning2 = Instantiate(Special1.warning2, spawnPos, Quaternion.identity);
         patternObjects.Add(warning2);
 
         yield return new WaitForSeconds(2f);
@@ -371,6 +389,10 @@ public class D1_FinalBoss : BossModel
         Destroy(warning2);
 
         yield return new WaitForSeconds(0.2f);
+
+        GameObject effect2 = Instantiate(Special1.effect2, spawnPos, Quaternion.identity);
+        patternObjects.Add(effect2);
+        StartCoroutine(DestroyEffect(effect2, 0.5f));
 
         targets = Physics.OverlapSphere(center.transform.position, 40f, LayerMask.GetMask("Player"));
         Collider[] safe = Physics.OverlapSphere(center.transform.position, 20f, LayerMask.GetMask("Player"));

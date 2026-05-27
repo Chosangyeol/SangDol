@@ -31,9 +31,18 @@ public class NpcBase : InteractableObject
 
         if (npcSO == null) return false;
 
+        CharacterModel model = target.GetComponent<CharacterModel>();
+
+        if (model.isInteracting) return false;
+
+        AudioManager.instance.PlaySFX(npcSO.npcIncounterSound);
+
         GameEvent.OnTalkNpc?.Invoke(npcSO.npcID);
 
         NpcDialogManager.Instance.OpenNpcUI(npcSO);
+
+        target.GetComponent<CharacterModel>().isInteracting = true;
+
         return true;
     }
 }

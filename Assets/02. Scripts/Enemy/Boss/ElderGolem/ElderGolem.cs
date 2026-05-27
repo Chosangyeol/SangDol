@@ -27,6 +27,9 @@ public class ElderGolem_Normal
 
 public class ElderGolem : BossModel
 {
+    [Header("일반 패턴 공용 변수")]
+    public Transform center;
+
     [Header("각 패턴 변수")]
     public ElderGolem_Pattern1Data Pattern1Data;
     public ElderGolem_Pattern2Data Pattern2Data;
@@ -36,7 +39,8 @@ public class ElderGolem : BossModel
     {
         base.Start();
 
-
+        center = GameObject.FindGameObjectWithTag("BossSpawnPos").transform;
+        bossSpawnPoint = GameObject.FindGameObjectWithTag("BossSpawnPos").transform;
     }
 }
 

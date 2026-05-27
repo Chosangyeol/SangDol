@@ -110,6 +110,8 @@ public class D1_Yabawe : MonoBehaviour
             yield return null;
         }
         parent.EndSpecialPattern();
+
+        Destroy(this.gameObject);
     }
 
     public void Fail()
@@ -134,5 +136,7 @@ public class D1_Yabawe : MonoBehaviour
         parent.Target.Damaged(2.0f, true);
 
         parent.EndSpecialPattern();
+
+        Destroy(this.gameObject);
     }
 }

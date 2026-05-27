@@ -111,7 +111,7 @@ public class CharacterStat
     {
         // 고정값
         this.characterName = name;
-        this.currentLevel = 9;
+        this.currentLevel = 1;
         this.maxExp = 100;
         this.idenMax = 100;
         this.idenCurrent = 100;
@@ -212,12 +212,17 @@ public class CharacterStat
     {
         if (currentExp < maxExp) return;
 
+        GameEvent.OnPlayerLevelUp?.Invoke();
+
         currentExp -= maxExp;
         currentLevel++;
         statPoint++;
         AddSkillPoint();
         Debug.Log($"레벨업, 레벨 : {currentLevel} / 경험치 : {currentExp} / 스탯포인트 : {statPoint}");
         // 캐릭터 기본 스텟 추가
+
+        AddAttackDamage(false, 10f);
+        AddMaxHp(false, 30f);
 
         // 최대 경험치량 증가 -> csv 파일로 받아올 예정
 

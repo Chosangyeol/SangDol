@@ -127,7 +127,14 @@ public class C_Controller
     {
         if (_model.Buff.isStun) return;
 
-        _model.TryInteract();
+        if (DialogManager.Instance != null && DialogManager.Instance.IsDialogueActive())
+        {
+            DialogManager.Instance.TryClickNextButton();
+            return;
+        }
+
+        if (!_model.isInteracting)
+            _model.TryInteract();
     }
 
     public void RequestBasicAttack(bool isHeld, Vector3 dest)

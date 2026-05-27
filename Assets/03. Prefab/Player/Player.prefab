@@ -3825,6 +3825,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   interactableDistance: 1.5
+  levelUpEffect: {fileID: -8578794870748778749, guid: ff46960120f779c41b2d208109108a8c,
+    type: 3}
   skill_ZSO: {fileID: 11400000, guid: 5accf9595da007b4e95e8c604f3ae0c6, type: 2}
   skill_SpaceSO: {fileID: 11400000, guid: 653c1d810e92b0c40bb46c1cb5decc9c, type: 2}
   lv5ABuffSO: {fileID: 11400000, guid: 4c44d6272a1bf4d4fa4719b184936067, type: 2}
@@ -3851,6 +3853,7 @@ MonoBehaviour:
   isDie: 0
   isIdenOn: 0
   isWaitingForRelease: 0
+  isInteracting: 0
 --- !u!114 &402003624484510465
 MonoBehaviour:
   m_ObjectHideFlags: 0

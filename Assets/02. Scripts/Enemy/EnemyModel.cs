@@ -25,29 +25,26 @@ public class EnemyModel : EnemyBase
     private EState curState;
 
     public bool isAggressive = false;
-
     public bool canAttack;
 
     protected override void Awake()
     {
         base.Awake();
 
+        _agent = GetComponent<NavMeshAgent>();
         stateMachine = new StateMachine(this);
-
-        curState = EState.Idle;
-        stateMachine.ChangeState(new IdleState(this));
     }
 
     protected override void Start()
     {
         base.Start();
 
-        _agent = GetComponent<NavMeshAgent>();
         _agent.speed = _stat.moveSpeed;
     }
 
     private void Update()
     {
+
         if (_isDead)
         {
             stateMachine.UpdateState();

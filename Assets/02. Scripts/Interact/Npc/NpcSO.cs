@@ -9,6 +9,7 @@ public class NpcSO : ScriptableObject
     public string npcID;
     public string npcName;
     public string defaultDialogID;
+    public AudioClip npcIncounterSound;
 
     [Header("Npc 기능 정보")]
     public bool hasShop = false;

@@ -133,6 +133,10 @@ MonoBehaviour:
       type: 3}
     warning2: {fileID: 5214885690410384664, guid: 4b4d105131747184aad635def27ddd2e,
       type: 3}
+    effect1: {fileID: 6223610546310870010, guid: fb2cb74edcd5d3e4facdd54f9ab8a186,
+      type: 3}
+    effect2: {fileID: 6295084754135698471, guid: 80a8745bdfd23c247a321c93ef45de42,
+      type: 3}
     jumpCurve:
       serializedVersion: 2
       m_Curve:
@@ -175,6 +179,10 @@ MonoBehaviour:
     warning1: {fileID: 8344843203370223244, guid: 6dd0f62c06fcad249a10fd471bc38959,
       type: 3}
     warning2: {fileID: 813174872960664964, guid: a936eb4837448d646bc07b705c341469,
+      type: 3}
+    effect1: {fileID: 2190698358110193366, guid: 8061b45664a7d564cbb5ecd58c644531,
+      type: 3}
+    effect2: {fileID: 6485217680800052164, guid: af7d20113d319c84fac2c57d643613eb,
       type: 3}
     damagePercent: 0.3
   Special2:
@@ -278,7 +286,7 @@ Transform:
   m_GameObject: {fileID: 6095543473076491775}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 3.68, z: 1.04}
+  m_LocalPosition: {x: 0, y: 3.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

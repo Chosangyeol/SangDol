@@ -146,6 +146,7 @@ public class NpcDialogManager : MonoBehaviour
     {
         npcDialogPanel.SetActive(false);
         _model.ControlEnable();
+        _model.isInteracting = false;
         GameEvent.OnMainUIviable?.Invoke();
     }    
 }
