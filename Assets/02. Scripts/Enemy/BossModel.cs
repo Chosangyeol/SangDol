@@ -23,6 +23,9 @@ public class BossModel : EnemyBase, ICounterable
     public bool isDoingSpecial = false;
     public bool isKnockDown = false;
     public bool isCutsceneFinished = false;
+    public bool isInField = false;
+
+    public bool isCombatStarted = false;
 
     [Header("카운터 시각 연출")]
     public GameObject counterEffectPrefab;   // 카운터 타이밍에 띄울 파티클/이펙트 프리팹
@@ -50,11 +53,33 @@ public class BossModel : EnemyBase, ICounterable
         base.Start();
         _agent = GetComponent<NavMeshAgent>();
         GameEvent.OnPlayerDie += ResetBossState;
+
+        if (isInField && bossSpawnPoint == null)
+        {
+            GameObject spawnAnchor = new GameObject($"{gameObject.name}_SpawnPoint");
+            spawnAnchor.transform.position = transform.position;
+            spawnAnchor.transform.rotation = transform.rotation;
+            bossSpawnPoint = spawnAnchor.transform;
+        }
+
+        // 필드 보스가 아니라면(던전 보스) 만나자마자 바로 전투 시작
+        if (!isInField)
+        {
+            isCombatStarted = true;
+        }
     }
 
     private void Update()
     {
         if (isKnockDown) return;
+
+
+        if (Target == null)
+        {
+            _target = FindAnyObjectByType<CharacterModel>();
+        }
+
+        if (isInField && !isCombatStarted) return;
 
         HandleCheckSpecial();
 
@@ -79,6 +104,12 @@ public class BossModel : EnemyBase, ICounterable
         if (_isDead) return;
 
         if (isImmunity) return;
+
+        if (isInField && !isCombatStarted)
+        {
+            isCombatStarted = true;
+            Debug.Log("필드 보스가 공격을 받고 전투를 시작합니다!");
+        }
 
         base.Damaged(info);
 
@@ -337,7 +368,24 @@ public class BossModel : EnemyBase, ICounterable
         GameEvent.OnBossStateChange?.Invoke(this);
 
         // 보스는 더 이상 기다리지 않고 즉시 풀로 반환되도록 변경
-        PoolManager.Instance.Push(this);
+        if (isInField)
+        {
+            isCombatStarted = false;
+
+            // 스폰 위치로 즉시 복귀 (걸어가지 않고 워프)
+            if (bossSpawnPoint != null && _agent != null && _agent.isOnNavMesh)
+            {
+                _agent.Warp(bossSpawnPoint.position);
+                transform.rotation = bossSpawnPoint.rotation;
+            }
+
+            Debug.Log("필드 보스가 초기 위치로 돌아가 다시 대기합니다.");
+        }
+        else
+        {
+            PoolManager.Instance.Push(this);
+
+        }
     }
 
     private IEnumerator Delay(float delay)
