@@ -4,6 +4,7 @@ public class C_Enums
 {
     public enum SkillSlot
     {
+        Z,
         Q,
         W,
         E,
@@ -11,7 +12,9 @@ public class C_Enums
         A,
         S,
         D,
-        F
+        F,
+        Space,
+        V
     }
 
     public enum UseSlot
@@ -25,9 +28,15 @@ public class C_Enums
 
     public enum  UIList
     {
+        Option,
         Inventory,
         SkillTree,
-        Status
+        Status,
+        Quest,
+        Upgrade,
+        Shop,
+        Craft,
+        dungeonEnter
     }
 
     public enum CharacterStat
@@ -35,12 +44,15 @@ public class C_Enums
         None,
         MaxHp,
         AttackDamage,
-        Defense,
         MoveSpeed,
         AttackSpeed,
-        DownPower,
         CriticalChance,
-        CriticalDamage
+        CriticalDamage,
+        DownPower,
+        IdenBonus,
+        CooldownReduction,
+        DamageTakeMultiplier,
+        DodgeCooldownReduction
     }
 
     public enum SpecialStat
@@ -57,5 +69,51 @@ public class C_Enums
         Normal,
         Elite,
         Boss
+    }
+
+    public enum SFX_List
+    {
+        Player_Die,
+        Player_Attack1,
+        Player_Attack2,
+        Player_Attack3,
+        Player_Attack4,
+        Player_Iden,
+        Player_Space,
+        Player_Skill1,
+        Player_Skill2,
+        Player_Skill3_Charge,
+        Player_Skill4,
+        UI_Click,
+        D1_Final_Box,
+        D1_Final_Landing,
+        D1_Final_Shot,
+        D1_Final_N1,
+        D1_Final_N2,
+        D1_Final_N3,
+        D1_Final_N3_Down,
+        D1_Final_N4,
+        D1_Final_N5,
+        D1_Final_S1,
+        D1_Final_S2,
+        D1_Final_S3,
+        D1_Final_S4,
+        D1_Final_S5,
+        D1_Final_Enter,
+        Player_Skill3_Impact,
+        Player_Iden_Attack,
+        Player_Iden_LastAttack,
+        Elder_N1,
+        Elder_N2,
+        Elder_N3
+    }
+
+    public enum BGM_List
+    {
+        Title,
+        D1_Final_BGM1,
+        D1_Final_BGM2,
+        D1_Final_BGM3,
+        Forest
     }
 }

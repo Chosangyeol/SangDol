@@ -12,50 +12,64 @@ enum EState
     Die
 }
 
-public class EnemyModel : MonoBehaviour
+public class EnemyModel : EnemyBase
 {
-    [Header("적 기본 설정")]
-    public EnemyStatSO statSO;
-    [SerializeField] private LayerMask _playerLayer;
-
     [SerializeField] private Transform spawnPoint;
     public Transform SpawnPoint => spawnPoint;
-
-    private bool _isDead = false;
-
-    private CharacterModel _target;
-    public CharacterModel Target => _target;
 
     private NavMeshAgent _agent;
     public NavMeshAgent Agent => _agent;
 
-    private Animator _anim;
-    public Animator Anim => _anim;
-
-    private EnemyStat _stat;
-    public EnemyStat Stat => _stat;
-
     private StateMachine stateMachine;
+    public StateMachine StateMachine => stateMachine;
     private EState curState;
 
-    private void Awake()
-    {
-        _stat = new EnemyStat(statSO);
-        stateMachine = new StateMachine(this);
+    public bool isAggressive = false;
+    public bool canAttack;
 
-        curState = EState.Idle;
-        stateMachine.ChangeState(new IdleState(this));
-    }
-
-    private void Start()
+    protected override void Awake()
     {
-        _target = FindAnyObjectByType<CharacterModel>();
+        base.Awake();
 
         _agent = GetComponent<NavMeshAgent>();
+        stateMachine = new StateMachine(this);
+    }
+
+    private void OnEnable()
+    {
+        GameEvent.OnPlayerDie += ResetAggro;
+    }
+
+    private void OnDisable()
+    {
+        GameEvent.OnPlayerDie -= ResetAggro;
+    }
+
+    protected override void Start()
+    {
+        base.Start();
         _agent.speed = _stat.moveSpeed;
+    }
 
-        _anim = GetComponent<Animator>();
+    private void ResetAggro()
+    {
+        // 1. 이미 죽은 몬스터라면 초기화 연산을 건너뜁니다.
+        if (_isDead) return;
 
+        Debug.Log($"[{gameObject.name}] 플레이어 사망 인지: 어그로를 초기화하고 제자리로 복귀합니다.");
+
+        // 2. 기본 호전성 및 어그로 비활성화
+        isAggressive = false;
+
+        // 3. 현재 플레이어를 패고 있거나(Attack) 쫓아가는 중(Chase)이었다면 즉시 집으로 돌려보냅니다.
+        if (curState == EState.Chase || curState == EState.Attack)
+        {
+            curState = EState.Return;
+            if (stateMachine != null)
+            {
+                stateMachine.ChangeState(new ReturnState(this));
+            }
+        }
     }
 
     private void Update()
@@ -72,55 +86,54 @@ public class EnemyModel : MonoBehaviour
         bool canAttack = dist <= _stat.attackRange;
         bool canReturn = dist >= _stat.detactRange + 5f;
 
-        Debug.Log($"canChase: {canChase}, canAttack: {canAttack}, curState: {curState}");
-
         switch (curState)
         {
             case EState.Idle:
-                if (canAttack)
+                if (isAggressive)
                 {
-                    curState = EState.Attack;
-                    stateMachine.ChangeState(new AttackState(this));
-                    return;
-                }                
-                else if (canChase && !canAttack)
-                {
-                    curState = EState.Chase;
-                    stateMachine.ChangeState(new ChaseState(this));
-                    return;
-                }
-                else if (!canChase && !canAttack)
-                {
-                    if (stateMachine.CurState is IdleState idle && idle.canPatrol)
+                    if (canAttack)
                     {
-                        curState = EState.Patrol;
-                        stateMachine.ChangeState(new PatrolState(this));
+                        curState = EState.Attack;
+                        stateMachine.ChangeState(new AttackState(this));
                         return;
                     }
+                    else if (canChase)
+                    {
+                        curState = EState.Chase;
+                        stateMachine.ChangeState(new ChaseState(this));
+                        return;
+                    }
+                }
+                if (stateMachine.CurState is IdleState idle && idle.canPatrol)
+                {
+                    curState = EState.Patrol;
+                    stateMachine.ChangeState(new PatrolState(this));
+                    return;
                 }
                 break;
             case EState.Patrol:
-                if (canAttack && canChase)
+                if (isAggressive)
                 {
-                    curState = EState.Attack;
-                    stateMachine.ChangeState(new AttackState(this));
-                    return;
-                }
-                else if (canChase && !canAttack)
-                {
-                    curState = EState.Chase;
-                    stateMachine.ChangeState(new ChaseState(this));
-                    return;
-                }
-                else if (!canChase && !canAttack)
-                {
-                    if (stateMachine.CurState is PatrolState patrol && !patrol.isPatrolling)
+                    if (canAttack)
                     {
-                        curState = EState.Idle;
-                        stateMachine.ChangeState(new IdleState(this));
+                        curState = EState.Attack;
+                        stateMachine.ChangeState(new AttackState(this));
+                        return;
+                    }
+                    else if (canChase)
+                    {
+                        curState = EState.Chase;
+                        stateMachine.ChangeState(new ChaseState(this));
                         return;
                     }
                 }
+                if (stateMachine.CurState is PatrolState patrol && !patrol.isPatrolling)
+                {
+                    curState = EState.Idle;
+                    stateMachine.ChangeState(new IdleState(this));
+                    return;
+                }
+
                 break;
             case EState.Chase:
                 if (canAttack)
@@ -136,12 +149,17 @@ public class EnemyModel : MonoBehaviour
                 // 추적 상태에서의 행동
                 break;
             case EState.Attack:
-                if (stateMachine.CurState is AttackState attack && attack.CanAttack)
+                if (stateMachine.CurState is AttackState attack && attack.changeState)
                 {
                     if (canChase)
                     {
                         curState = EState.Chase;
                         stateMachine.ChangeState(new ChaseState(this));
+                    }
+                    else if (canAttack)
+                    {
+                        curState = EState.Attack;
+                        stateMachine.ChangeState(new AttackState(this));
                     }
                     else if (canReturn)
                     {
@@ -165,41 +183,77 @@ public class EnemyModel : MonoBehaviour
         stateMachine.UpdateState();
     }
 
-    public void Attack()
+    public override void Reset()
     {
-        // 자식 클래스에서 공격 구현
+        base.Reset();
+
+        isAggressive = statSO.isAggressive;
+        curState = EState.Idle;
+
+        if (stateMachine != null)
+        {
+            stateMachine.ChangeState(new IdleState(this));
+        }
+
+        if (_agent != null)
+        {
+            _agent.speed = Stat.moveSpeed;
+            _agent.enabled = true;
+            _agent.isStopped = false;
+            _agent.velocity = Vector3.zero;
+
+            if (_agent.isOnNavMesh) _agent.ResetPath();
+        }
+
+        
+    }
+
+    public override void Damaged(SDamageInfo info)
+    {
+        base.Damaged(info);
+
+        isAggressive = true;
+
+        if (curState == EState.Idle || curState == EState.Patrol)
+        {
+            curState = EState.Chase;
+            stateMachine.ChangeState(new ChaseState(this));
+        }
+    }
+
+    public void SetSpawnPoint(Transform pos)
+    {
+        spawnPoint = pos;
+    }
+
+    public virtual void Attack()
+    {
         Debug.Log("공격 실행");
     }
 
-
-    public void Damaged(float damage, GameObject source = null)
+    public virtual void AttackEnd()
     {
-        if (_isDead) return;
-
-        _stat.Damaged(damage);
-        if (_stat.down <= 0)
-        {
-            Debug.Log("무력화");
-        }
-
-        if (_stat.curHp <= 0)
-        {
-            Die(source);
-        }
+        canAttack = true;
+        Debug.Log("공격모션 끝");
     }
 
-    public void Heal(float healAmount)
+
+    public void Heal(int healAmount)
     {
         if (_isDead) return;
 
         _stat.Heal(healAmount);
     }
 
-    public void Die(GameObject source)
+    protected override void Die(GameObject source)
     {
         if (_isDead) return;
 
         _isDead = true;
+
+        Anim.SetTrigger("Die");
+
+        GameEvent.OnMonsterKill?.Invoke(statSO.enemyID);
 
         curState = EState.Die;
         stateMachine.ChangeState(new DieState(this));
@@ -208,12 +262,35 @@ public class EnemyModel : MonoBehaviour
         {
             character.Stat.GainExp(statSO.expAmount);
             character.Stat.GainGold(statSO.goldAmount);
-            // 아이템 드랍 처리
-        }
 
-        GameEvent.OnMonsterKill?.Invoke(statSO.enemyID);
-        // 적 사망 처리
-        Debug.Log($"{_stat.enemyName}이(가) 사망했습니다.");
+            if (statSO.dropTableSO == null) return;
+
+            foreach(DropItem dropItem in statSO.dropTableSO.dropItems)
+            {
+                int dropChance = Random.Range(0, 100);
+
+                if (dropChance <= dropItem.dropPercent)
+                {
+                    ItemBaseSO dropItemSO = ItemManager.Instance.GetItemBaseSO(dropItem.itemID);
+
+                    PoolableMono item = PoolManager.Instance.Pop("DropItem");
+                    
+                    if (item.GetComponent<DropItemModel>() != null)
+                    {
+                        DropItemModel dropItemModel = item.GetComponent<DropItemModel>();
+                        dropItemModel.InitItem(dropItemSO,dropItem.amount);
+                        dropItemModel.transform.position = transform.position + Vector3.up * 0.5f;
+                    }
+                }
+            }
+        }
+        
+    }
+
+    public void ReturnPool()
+    {
+        OnReturnToPool?.Invoke(this);
+        PoolManager.Instance.Push(this);
     }
 
     private void OnDrawGizmos()

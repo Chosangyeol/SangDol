@@ -2,39 +2,58 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
-using UnityEngine.Rendering.Universal;
 
 public class SkillSlot : MonoBehaviour,
     IPointerClickHandler,
     IBeginDragHandler,
     IDragHandler,
     IEndDragHandler,
-    IDropHandler
+    IDropHandler,
+    IPointerEnterHandler,
+    IPointerExitHandler
 {
     [Header("스킬 슬룻 설정")]
     public C_Enums.SkillSlot skillSlot;
 
+    // ⭐️ 추가: 이 슬롯을 쿨타임에만 보여줄 것인가? (스페이스바 슬롯만 true로 체크)
+    public bool showOnlyOnCooldown = false;
+
     [Header("UI 세팅")]
     [SerializeField] private Image iconImage;
+    [SerializeField] private Image coolOverlay;
     [SerializeField] private TMP_Text slotKey;
+    [SerializeField] private TMP_Text coolTimeText;
+    [SerializeField] private bool cantChange = false;
 
     private Canvas rootCanvas;
     private Image dragIcon;
     private RectTransform dragIconRect;
-
     private bool droppedOnSlot;
 
     private C_SkillSystem _skillSystem;
+    private CanvasGroup _canvasGroup; // ⭐️ 추가: 투명도 조절용 컴포넌트
+    private SkillToolTip _skillTooltip;
 
-    private SkillBase currentSkill =>
-        _skillSystem.GetSkillToSlot(skillSlot);
-
+    private SkillBase currentSkill => _skillSystem?.GetSkillToSlot(skillSlot);
     public SkillBase CurrentSkill => currentSkill;
 
-    public void Init(C_SkillSystem skillSystem)
+    private void Update()
+    {
+        UpdateSkillCool();
+    }
+
+    public void Init(C_SkillSystem skillSystem, SkillToolTip skillToolTip)
     {
         _skillSystem = skillSystem;
-        slotKey.text = skillSlot.ToString();
+        _skillTooltip = skillToolTip;
+
+        // ⭐️ 추가: CanvasGroup이 없다면 자동으로 붙여줍니다.
+        _canvasGroup = GetComponent<CanvasGroup>();
+        if (_canvasGroup == null)
+            _canvasGroup = gameObject.AddComponent<CanvasGroup>();
+
+        if (slotKey != null)
+            slotKey.text = skillSlot.ToString();
 
         rootCanvas = GetComponentInParent<Canvas>();
         Refresh();
@@ -43,21 +62,71 @@ public class SkillSlot : MonoBehaviour,
     public void Refresh()
     {
         SkillBase skill = CurrentSkill;
-        
-        iconImage.enabled = true;
 
         if (skill != null)
+        {
+            iconImage.enabled = true;
             iconImage.sprite = skill.skillData.skillIcon;
 
-        if (skill != null && skill.SkillLevel <= 0)
+            if (skill.SkillLevel <= 0)
+            {
+                _skillSystem.ClearSkillSlot(skillSlot);
+                iconImage.enabled = false;
+                iconImage.sprite = null;
+            }
+        }
+        else
         {
-            _skillSystem.ClearSkillSlot(skillSlot);
+            iconImage.enabled = false;
             iconImage.sprite = null;
         }
     }
 
+    public void UpdateSkillCool()
+    {
+        if (_skillSystem == null) return;
 
-    #region Ŭ��
+        SkillBase skill = CurrentSkill;
+
+        // 스킬이 아예 장착되지 않은 경우
+        if (skill == null)
+        {
+            if (showOnlyOnCooldown && _canvasGroup != null)
+                _canvasGroup.alpha = 0f; // 숨기기
+            return;
+        }
+
+        if (!skill.canUse)
+        {
+            // ⭐️ 쿨타임 중: 슬롯 전체를 보이게 만듦 (투명도 1)
+            if (showOnlyOnCooldown && _canvasGroup != null)
+            {
+                _canvasGroup.alpha = 1f;
+                iconImage.raycastTarget = true  ;
+            }
+
+            if (!coolTimeText.IsActive())
+                coolTimeText.gameObject.SetActive(true);
+
+            coolTimeText.text = Mathf.Ceil(skill.nowCoolTime).ToString() + "s";
+            float fillAmount = skill.nowCoolTime / skill.finalCoolTime;
+            coolOverlay.fillAmount = fillAmount;
+        }
+        else
+        {
+            // ⭐️ 사용 가능: 슬롯 전체를 숨김 (투명도 0)
+            if (showOnlyOnCooldown && _canvasGroup != null)
+            {
+                _canvasGroup.alpha = 0f;
+                iconImage.raycastTarget = false;
+            }
+
+            coolTimeText.gameObject.SetActive(false);
+            coolOverlay.fillAmount = 0f;
+        }
+    }
+
+    #region 클릭
     public void OnPointerClick(PointerEventData eventData)
     {
         SkillBase skill = CurrentSkill;
@@ -77,9 +146,11 @@ public class SkillSlot : MonoBehaviour,
     }
     #endregion
 
-    #region �巡��& ���
+    #region 드래그
     public void OnBeginDrag(PointerEventData eventData)
     {
+        if (cantChange) return;
+
         SkillBase skill = CurrentSkill;
 
         if (skill == null) return;
@@ -98,6 +169,8 @@ public class SkillSlot : MonoBehaviour,
 
     public void OnDrag(PointerEventData eventData)
     {
+        if (cantChange) return;
+
         if (dragIconRect == null) return;
 
         dragIconRect.position = eventData.position;
@@ -105,6 +178,8 @@ public class SkillSlot : MonoBehaviour,
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        if (cantChange) return;
+
         if (!droppedOnSlot)
             _skillSystem.ClearSkillSlot(skillSlot);
 
@@ -118,6 +193,8 @@ public class SkillSlot : MonoBehaviour,
 
     public void OnDrop(PointerEventData eventData)
     {
+        if (cantChange) return;
+
         SkillSlot fromSlot = eventData.pointerDrag?.GetComponent<SkillSlot>();
         if (fromSlot != null && fromSlot != this)
         {
@@ -127,7 +204,6 @@ public class SkillSlot : MonoBehaviour,
             return;
         }
 
-        // 2) ��ųƮ�� -> ���� ���(���)
         SkillTreeSlot fromTree = eventData.pointerDrag?.GetComponent<SkillTreeSlot>();
         if (fromTree != null)
         {
@@ -138,6 +214,24 @@ public class SkillSlot : MonoBehaviour,
             Refresh();
             return;
         }
+    }
+    #endregion
+
+    #region 스킬 툴팁 출력
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (currentSkill == null) return;
+        if (_skillTooltip == null) return;
+
+        _skillTooltip.ToggleSkillTooltip(true, GetComponent<RectTransform>(), currentSkill);
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        if (currentSkill == null) return;
+        if (_skillTooltip == null) return;
+
+        _skillTooltip.ToggleSkillTooltip(false);
     }
     #endregion
 }

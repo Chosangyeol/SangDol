@@ -8,9 +8,8 @@ public class ItemEnums
     public enum ItemType
     {
         Equip,
-        Quest,
-        Use,
-        Etc
+        Normal,
+        Use
     }
 
     /// <summary>
@@ -40,9 +39,9 @@ public class ItemEnums
 
     public enum UseItemType
     {
-        Potion,
-        Scroll,
-        Food,
-        Boom
+        Heal,
+        AntiPoison,
+        AntiFear,
+        Active
     }
 }

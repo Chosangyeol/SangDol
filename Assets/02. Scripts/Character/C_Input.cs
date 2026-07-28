@@ -15,18 +15,26 @@ public class C_Input
 
     public void OnMoveClick(Vector2 screenPos)
     {
+        _model.CancelInteraction();
+
         if (!GetMouseInput(screenPos, out var point))
             return;
 
         _controller.RequestMove(point);
     }
 
-    public void OnAttackClick(Vector2 screenPos)
+    public void OnAttackClick(bool isHeld, Vector2 screenPos)
     {
-        if (!GetMouseInput(screenPos, out var point))
-            return;
-    
-        _controller.RequestBasicAttack(point);
+        if (isHeld) _model.CancelInteraction();
+
+        Vector3 point = Vector3.zero;
+
+        if (isHeld)
+        {
+            if (!GetMouseInput(screenPos, out point)) return;
+        }
+
+        _controller.RequestBasicAttack(isHeld,point);
     }
 
     public void OnInteract()
@@ -35,12 +43,29 @@ public class C_Input
     }
 
 
-    public void OnSkillInput(C_Enums.SkillSlot skillSlot, Vector2 screenPos)
+    public void OnSkillKeyDown(C_Enums.SkillSlot skillSlot, Vector2 screenPos)
     {
+        if (skillSlot == C_Enums.SkillSlot.A || skillSlot == C_Enums.SkillSlot.S || skillSlot == C_Enums.SkillSlot.D || skillSlot == C_Enums.SkillSlot.F)
+            return;
+
+        _model.CancelInteraction();
+
         if (!GetMouseInput(screenPos, out var point))
             return;
 
-        _controller.RequsetSkill(skillSlot, point);
+        // 컨트롤러에게 스킬 누름을 요청 (이름 변경됨)
+        _controller.RequestSkillKeyDown(skillSlot, point);
+    }
+
+    // 2. 스킬 버튼에서 손을 뗐을 때 (차징 발사를 위해 추가됨)
+    public void OnSkillKeyUp(C_Enums.SkillSlot skillSlot, Vector2 screenPos)
+    {
+        // 손을 뗄 때 마우스 위치가 허공일 수도 있으니 동일하게 포인트 계산
+        if (!GetMouseInput(screenPos, out var point))
+            return;
+
+        // 컨트롤러에게 스킬 뗌을 요청
+        _controller.RequestSkillKeyUp(skillSlot, point);
     }
 
     public void OnUseItemInput(C_Enums.UseSlot useSlot)
@@ -61,11 +86,26 @@ public class C_Input
 
         Ray ray = _model.mainCam.ScreenPointToRay(screenPos);
 
+        // 1. 먼저 실제 땅(groundLayer)이나 적중할 만한 오브젝트에 맞는지 검사 (기존 방식 유지)
         if (Physics.Raycast(ray, out RaycastHit hit, 200f, _model.groundLayer))
         {
             point = hit.point;
             return true;
         }
-        return false;
+
+        // 2. 만약 허공을 클릭했다면? 가상의 평면(Plane)을 만들어 교차점을 찾음
+        // 캐릭터의 Y축 높이를 지나는 무한한 평면 생성 (보통 높이 0 또는 캐릭터 발밑)
+        float characterY = _model.transform.position.y;
+        Plane virtualGroundPlane = new Plane(Vector3.up, new Vector3(0, characterY, 0));
+
+        // 광선이 이 가상 평면과 만나는 거리를 계산
+        if (virtualGroundPlane.Raycast(ray, out float enterDistance))
+        {
+            // 거리를 바탕으로 교차점(포인트) 획득
+            point = ray.GetPoint(enterDistance);
+            return true;
+        }
+
+        return false; // 카메라가 하늘을 보고 있어서 바닥을 아예 안 쏠 때만 false
     }
 }

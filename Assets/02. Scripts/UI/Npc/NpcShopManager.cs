@@ -1,0 +1,108 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Rendering;
+
+public class NpcShopManager : MonoBehaviour
+{
+    public static NpcShopManager instance;
+
+    [Header("UI 연결")]
+    public GameObject shopPanel;
+    public Transform gridLayoutGroup;
+    public GameObject shopSlotPrefab;
+    public ItemTooltip tooltip;
+
+    [Header("아이템 데이터베이스")]
+    public ItemDataBaseSO globalItemData;
+
+    private CharacterModel _model;
+    public CharacterModel model => _model;
+
+    private void Awake()
+    {
+        if (instance == null)
+            instance = this;
+
+        _model = FindAnyObjectByType<CharacterModel>();
+    }
+
+    public void OpenShop(string shopID)
+    {
+        shopPanel.SetActive(true);
+
+        if (!UIManager.Instance.inventoryUI.gameObject.activeSelf)
+            UIManager.Instance.ToggleUI(C_Enums.UIList.Inventory);
+
+        LoadShopDataFromCSV(shopID);
+    }
+
+    public void CloseShop()
+    {
+        shopPanel.SetActive(false);
+    }
+
+    private void LoadShopDataFromCSV(string shopID)
+    {
+        foreach (Transform child in gridLayoutGroup)
+        {
+            Destroy(child.gameObject);
+        }
+
+        TextAsset csvData = Resources.Load<TextAsset>($"ShopData/{shopID}");
+        if (csvData == null) return;
+
+        string[] lines = csvData.text.Split('\n');
+        for (int i = 1; i < lines.Length; i++)
+        {
+            if (string.IsNullOrWhiteSpace(lines[i])) continue;
+
+            string[] row = lines[i].Split(',');
+
+            // 🌟 수정된 부분: Trim()을 사용해 양옆의 공백 및 눈에 보이지 않는 \r 찌꺼기를 완벽히 제거합니다.
+            string itemID = row[0].Trim();
+            ItemBaseSO itemSO = globalItemData.GetItemByID(itemID);
+
+            int.TryParse(row[1].Trim(), out int itemPrice);
+
+            if (itemSO != null)
+            {
+                GameObject slotObj = Instantiate(shopSlotPrefab, gridLayoutGroup);
+                ShopSlotUI slotUI = slotObj.GetComponent<ShopSlotUI>();
+                slotUI.InitSlot(itemSO, itemPrice, tooltip);
+            }
+        }
+    }
+
+    public void BuyItem(ItemBaseSO itemSO,int price, int amount)
+    {
+        int totalCost = price * amount;
+
+        if (_model.Stat.Stat.gold < totalCost)
+        {
+            Debug.Log("골드 부족");
+            return;
+        }
+
+        if (!model.Inventory.HasEnoughSpace(amount, itemSO.maxStack))
+        {
+            Debug.Log("공간 부족");
+            return;
+        }
+
+        model.UseGold(totalCost);
+
+        int remainingAmount = amount;
+
+        while (remainingAmount > 0)
+        {
+            int stackToAdd = Mathf.Min(remainingAmount, itemSO.maxStack);
+            ItemBase newItem = itemSO.CreateItem(stackToAdd);
+
+            model.Inventory.AddItem(newItem);
+
+            remainingAmount -= stackToAdd;
+        }
+        
+    }
+}

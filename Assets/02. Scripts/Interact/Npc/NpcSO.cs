@@ -9,12 +9,16 @@ public class NpcSO : ScriptableObject
     public string npcID;
     public string npcName;
     public string defaultDialogID;
+    public AudioClip npcIncounterSound;
 
     [Header("Npc 기능 정보")]
     public bool hasShop = false;
     public string shopID;
     public bool canUpgrade = false;
+    public bool canCraft = false;
+    public CraftTableSO craftTableSO;
     public bool canTeleport = false;
+    public Transform[] teleportTargets;
 
     [Header("대화하기 대사 설정")]
     public string talkDialogID;

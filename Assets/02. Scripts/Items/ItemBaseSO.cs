@@ -15,6 +15,8 @@ public abstract class ItemBaseSO : ScriptableObject
     public ItemEnums.ItemRarity itemRarity;
     [Header("아이템 설명")]
     public string itemDesc;
+    [Header("아이템 가격")]
+    public float itemPrice = 0;
     [Header("아이템 중첩 가능 여부")]
     public bool stackable = true;
     [Header("아이템 최대 중첩 수")]

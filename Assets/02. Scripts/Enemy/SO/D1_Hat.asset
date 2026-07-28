@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b34247faa7bd69d44bd1c88d1e822fdc, type: 3}
+  m_Name: D1_Hat
+  m_EditorClassIdentifier: 
+  enemyID: D1_Hat
+  enemyName: "\uC81C\uC2A4\uD130\uC758 \uC57C\uBC14\uC704\uBAA8"
+  isAggressive: 0
+  canDown: 0
+  maxHp: 100
+  level: 0
+  attackDamage: 0
+  moveSpeed: 1
+  attackSpeed: 1
+  down: 100
+  detactRange: 5
+  attackRange: 2
+  expAmount: 0
+  goldAmount: 0

@@ -9,22 +9,71 @@ public class PoolManager : MonoBehaviour
 
     private Dictionary<string, Pool<PoolableMono>> _pools = new Dictionary<string, Pool<PoolableMono>>();
 
-    private Transform _trmParent;
+    [Header("글로벌 풀")]
+    public PoolingListSO globalPoolList;
+
+    [Header("로컬 풀")]
+    public PoolingListSO currentStageList;
+    
+    private Transform _globalParent;
+    private Transform _localParent;
+    
 
     private void Awake()
     {
-        Instance = this;
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
 
-        GameObject parentObj = new GameObject("PoolRoot");
-        _trmParent = parentObj.transform;
-        _trmParent.SetParent(transform);
+            _globalParent = new GameObject("GlobalPool").transform;
+            _globalParent.SetParent(transform);
 
-        DontDestroyOnLoad(gameObject);
+            _localParent = new GameObject("LocalPool").transform;
+            _localParent.SetParent(transform);
+
+            InitGlobalPool();
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
+
     }
 
-    public void CreatePool(PoolableMono prefab, int count = 10)
+    private void InitGlobalPool()
     {
-        Pool<PoolableMono> pool = new Pool<PoolableMono>(prefab, _trmParent, count);
+        if (globalPoolList != null)
+        {
+            foreach (var item in globalPoolList.PoolList)
+            {
+                CreatePool(item.Prefab, item.Count,true);
+            }
+        }
+    }
+
+    public void LoadStagePools(PoolingListSO newStagePool)
+    {
+        ClearStagePools();
+
+        currentStageList = newStagePool;
+
+        if (currentStageList != null)
+        {
+            foreach (var item in currentStageList.PoolList)
+            {
+                CreatePool(item.Prefab, item.Count, false);
+            }
+        }
+    }
+
+    public void CreatePool(PoolableMono prefab, int count, bool isGlobal)
+    {
+        Transform parentTrm = isGlobal ? _globalParent : _localParent ;
+
+        // 기존 작성하신 Pool 클래스 생성자 구조에 맞춰 parentTrm 전달
+        Pool<PoolableMono> pool = new Pool<PoolableMono>(prefab, parentTrm, count);
         _pools.Add(prefab.gameObject.name, pool);
     }
 
@@ -47,7 +96,23 @@ public class PoolManager : MonoBehaviour
         _pools[obj.name].Push(obj);
     }
 
-    public void ClearPoolingObject()
+    public void ClearStagePools()
+    {
+        if (currentStageList == null) return;
+
+        foreach (var item in currentStageList.PoolList)
+        {
+            string prefabName = item.Prefab.gameObject.name;
+            if (_pools.ContainsKey(prefabName))
+            {
+                _pools[prefabName].Clear();
+                _pools.Remove(prefabName);
+            }
+        }
+    }
+
+    // 씬 내에 활성화된 모든 풀링 객체를 집어넣는 기존 기능
+    public void PushAllActiveObjects()
     {
         var activeObjects = FindObjectsOfType<PoolableMono>();
         foreach(var obj in activeObjects)

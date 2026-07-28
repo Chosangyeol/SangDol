@@ -121,9 +121,11 @@ public class DialogManager : MonoBehaviour
 
         if (dialogueDict.TryGetValue(id, out DialogueData data))
         {
+            string replacedText = data.textKR.Replace("{PlayerName}", NpcDialogManager.Instance.Model.Stat.Stat.characterName);
+
             // 텍스트 갱신
             npcNameText.text = data.npcName;
-            dialogueText.text = data.textKR;
+            dialogueText.text = replacedText;
 
             // 💡 액션(Action) 처리: 데이터에 액션이 있으면 즉시 실행
             if (!string.IsNullOrWhiteSpace(data.actionType))
@@ -142,15 +144,19 @@ public class DialogManager : MonoBehaviour
                 nextButton.gameObject.SetActive(false); // 화면 전체 클릭 버튼 끄기
                 choicePanel.SetActive(true);            // 선택지 패널 켜기
 
+                string choice1 = data.choice1Text.Replace("{PlayerName}", NpcDialogManager.Instance.Model.Stat.Stat.characterName);
+
                 // 1번 선택지 세팅
-                choice1TextUI.text = data.choice1Text;
+                choice1TextUI.text = choice1;
                 choice1Button.onClick.AddListener(() => PlayDialogue(data.choice1Next));
 
                 // 2번 선택지 세팅 (데이터가 있을 때만 켜기)
                 if (!string.IsNullOrWhiteSpace(data.choice2Text))
                 {
+                    string choice2 = data.choice2Text.Replace("{PlayerName}", NpcDialogManager.Instance.Model.Stat.Stat.characterName);
+
                     choice2Button.gameObject.SetActive(true);
-                    choice2TextUI.text = data.choice2Text;
+                    choice2TextUI.text = choice2;
                     choice2Button.onClick.AddListener(() => PlayDialogue(data.choice2Next));
                 }
                 else
@@ -199,11 +205,33 @@ public class DialogManager : MonoBehaviour
         }
     }
 
+    public bool IsDialogueActive()
+    {
+        return dialoguePanel != null && dialoguePanel.activeSelf;
+    }
+
+    // G키를 눌렀을 때 다음 대사로 넘어가는 함수
+    public void TryClickNextButton()
+    {
+        // 1. 대화창이 꺼져있으면 무시
+        if (!dialoguePanel.activeSelf) return;
+
+        // 2. 선택지가 켜져 있다면 G키 진행 무시 (마우스로 직접 선택해야 함)
+        if (choicePanel.activeSelf) return;
+
+        // 3. '다음' 버튼이 켜져 있다면 마우스 클릭을 코드로 강제 실행
+        if (nextButton != null && nextButton.gameObject.activeSelf)
+        {
+            nextButton.onClick.Invoke();
+        }
+    }
+
     // 4. 대화 종료 기능
     private void EndDialogue()
     {
-        dialoguePanel.SetActive(false);
         choicePanel.SetActive(false);
+
+        NpcDialogManager.Instance.CloseUI();
         Debug.Log("대화가 종료되었습니다.");
 
         // 시네머신 카메라 우선순위 원상복구 로직 호출 위치

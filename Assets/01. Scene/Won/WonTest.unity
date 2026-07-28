@@ -2934,10 +2934,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyModel
   statSO: {fileID: 11400000, guid: 855df06f557a4c642b0b166c786d86b2, type: 2}
+  textSpawnPos: {fileID: 0}
   _playerLayer:
     serializedVersion: 2
     m_Bits: 128
+  _groundLayer:
+    serializedVersion: 2
+    m_Bits: 0
   spawnPoint: {fileID: 76313224}
+  isAggressive: 0
+  canAttack: 0
 --- !u!135 &409263474
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -3915,7 +3921,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fbc5d8b1cf823745bc2ca99673843b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MainUI
-  slotParent: {fileID: 0}
   skillSlots:
   - {fileID: 561113972}
   - {fileID: 1674205604}
@@ -3925,12 +3930,35 @@ MonoBehaviour:
   - {fileID: 1729649956}
   - {fileID: 223035606}
   - {fileID: 1952360433}
+  spaceSlot: {fileID: 0}
+  skillToolTip: {fileID: 0}
   useItemSlots:
   - {fileID: 2077563388}
   - {fileID: 2036451721}
   - {fileID: 1794813015}
   - {fileID: 1721301941}
   tooltip: {fileID: 1867176035}
+  slPlayerHp: {fileID: 0}
+  tmpPlayerHp: {fileID: 0}
+  tmpPlayerLevel: {fileID: 0}
+  slPlayerExp: {fileID: 0}
+  idenImage: {fileID: 0}
+  panicUI: {fileID: 0}
+  isBossFight: 0
+  bossUI: {fileID: 0}
+  bossNameText: {fileID: 0}
+  bossHpSlider: {fileID: 0}
+  bossHpBack: {fileID: 0}
+  bossHpText: {fileID: 0}
+  bossHpGradeText: {fileID: 0}
+  bossKnockDownSlider: {fileID: 0}
+  bossKnockDownBack: {fileID: 0}
+  bossRoomEnterCount: {fileID: 0}
+  gaugeObject: {fileID: 0}
+  gaugeFill: {fileID: 0}
+  gaugeTitle: {fileID: 0}
+  perfectZoneRect: {fileID: 0}
+  perfectZoneImage: {fileID: 0}
 --- !u!1 &560127578
 GameObject:
   m_ObjectHideFlags: 0
@@ -4213,20 +4241,37 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
+  camContainer: {fileID: 0}
+  cams: []
+  textPos: {fileID: 0}
   characterStatSO: {fileID: 11400000, guid: 58501aac312a9664abd1a5c3516577cd, type: 2}
   inventorySlotSize: 66
   interactableLayer:
     serializedVersion: 2
     m_Bits: 256
   interactableDistance: 1.5
-  testItems:
-  - {fileID: 9543308}
-  - {fileID: 1444084204}
-  - {fileID: 1963129401}
-  - {fileID: 2082241116}
-  - {fileID: 1153940732}
-  - {fileID: 1945556007}
-  - {fileID: 2142730851}
+  skill_ZSO: {fileID: 0}
+  skill_SpaceSO: {fileID: 0}
+  lv5ABuffSO: {fileID: 0}
+  lv5BBuffSO: {fileID: 0}
+  lv6ABuffSO: {fileID: 0}
+  lv10ABuffSO: {fileID: 0}
+  stunSO: {fileID: 0}
+  clonePrefeb: {fileID: 0}
+  attackTick: 0.2
+  damageMultiplier: 0.5
+  idenActiveEffect: {fileID: 0}
+  idenEnableEffect: {fileID: 0}
+  idenAttack1Effect: {fileID: 0}
+  idenFinishChargeEffect: {fileID: 0}
+  idenAttack2Effect: {fileID: 0}
+  canMove: 1
+  canUse: 1
+  canAttack: 1
+  canSkill: 1
+  isDie: 0
+  isIdenOn: 0
+  isWaitingForRelease: 0
 --- !u!136 &592544200
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -4473,25 +4518,13 @@ MonoBehaviour:
   tooltip: {fileID: 1867176035}
   hpText: {fileID: 2093515992}
   levelText: {fileID: 344687422}
-  expText: {fileID: 1639338765}
   attackText: {fileID: 1728323424}
-  defenseText: {fileID: 856589577}
+  nameText: {fileID: 0}
   criticalChanceText: {fileID: 296524934}
   criticalDamageText: {fileID: 357723332}
-  specialStat: {fileID: 1564292991}
-  totalPointText: {fileID: 1147330530}
-  remainPointText: {fileID: 1537672637}
-  usedPointText: {fileID: 2111938570}
-  _s1Button: {fileID: 1798321247}
-  _s2Button: {fileID: 282772395}
-  _s3Button: {fileID: 17551805}
-  _s4Button: {fileID: 1874071747}
-  _s5Button: {fileID: 1000208778}
-  _statS1Text: {fileID: 1177291367}
-  _statS2Text: {fileID: 1904970242}
-  _statS3Text: {fileID: 2085376252}
-  _statS4Text: {fileID: 768546965}
-  _statS5Text: {fileID: 560127580}
+  equip: {fileID: 0}
+  stigma: {fileID: 0}
+  special: {fileID: 0}
 --- !u!1 &751761262
 GameObject:
   m_ObjectHideFlags: 0
@@ -5996,11 +6029,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   InteractName: "G - \uC0C1\uD638\uC791\uC6A9"
   CanInteract: 0
+  IsLocked: 1
+  _interactType: 0
   interactUIPoint: {fileID: 1437063293}
   interactUI: {fileID: 1712072062}
-  interactObject: {fileID: 761122350}
   interactText: {fileID: 517319099}
   offset: {x: 0, y: -2, z: 0}
+  IsHoldInteraction: 0
+  IsAutoProgress: 0
+  RequiredHoldTime: 2
+  interactObject: {fileID: 761122350}
   npcSO: {fileID: 11400000, guid: 7fc69d077eeea7643b56756e02c6261f, type: 2}
 --- !u!135 &1006505105
 SphereCollider:
@@ -8293,11 +8331,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InteractableObject
   InteractName: "G - \uC0C1\uD638\uC791\uC6A9"
   CanInteract: 0
+  IsLocked: 1
+  _interactType: 0
   interactUIPoint: {fileID: 467995985}
   interactUI: {fileID: 835982206}
-  interactObject: {fileID: 376474004}
   interactText: {fileID: 2001329942}
   offset: {x: 0, y: -2, z: 0}
+  IsHoldInteraction: 0
+  IsAutoProgress: 0
+  RequiredHoldTime: 2
+  interactObject: {fileID: 376474004}
 --- !u!1 &1482802087
 GameObject:
   m_ObjectHideFlags: 0
@@ -9597,10 +9640,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d997341ccfb4cc48b38afc48c4ad28e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIManager
+  isInGame: 0
+  hasInit: 0
+  inGameUIs: {fileID: 0}
   mainUI: {fileID: 541128315}
   inventoryUI: {fileID: 1858067297}
   skillTreeUI: {fileID: 1851383511}
   statusUI: {fileID: 613897884}
+  questUI: {fileID: 0}
+  buffUI: {fileID: 0}
+  optionUI: {fileID: 0}
 --- !u!114 &1709181882
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10115,6 +10164,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a41b19a3414e1774786ece436e06d56b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PoolManager
+  globalPoolList: {fileID: 0}
+  currentStageList: {fileID: 0}
 --- !u!4 &1739766521
 Transform:
   m_ObjectHideFlags: 0
@@ -10993,8 +11044,12 @@ MonoBehaviour:
   offset: {x: 45, y: -60}
   _itemName: {fileID: 1482802089}
   _icon: {fileID: 385780410}
-  _itemDesc: {fileID: 407312689}
   _itemRarity: {fileID: 447372573}
+  _itemPrice: {fileID: 0}
+  _itemDesc: {fileID: 407312689}
+  _equipPanel: {fileID: 0}
+  _equipDefaultStat: {fileID: 0}
+  _equipUpgradeStat: {fileID: 0}
 --- !u!1 &1874071745
 GameObject:
   m_ObjectHideFlags: 0

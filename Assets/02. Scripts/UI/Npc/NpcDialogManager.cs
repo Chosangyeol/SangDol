@@ -15,13 +15,25 @@ public class NpcDialogManager : MonoBehaviour
     public Transform buttonGroup;
     public GameObject buttonPrefab;
 
+    public CharacterModel Model => _model;
+    private CharacterModel _model;
+
     private void Awake()
     {
         if (Instance == null) Instance = this;
     }
 
+    private void Start()
+    {
+        _model = FindObjectOfType<CharacterModel>();
+    }
+
     public void OpenNpcUI(NpcSO npc)
     {
+        GameEvent.OnUIInvisable?.Invoke();
+
+        _model.ControlDisable();
+
         npcDialogPanel.SetActive(true);
         buttonGroup.gameObject.SetActive(true);
         DialogManager.Instance.StartDialogue(npc.defaultDialogID);
@@ -35,7 +47,25 @@ public class NpcDialogManager : MonoBehaviour
         {
             CreateButton("상점 이용", () =>
             {
-                Debug.Log($"상점 열기 : {npc.shopID}");
+                NpcShopManager.instance.OpenShop(npc.shopID);
+                CloseUI();
+            });
+        }
+
+        if (npc.canUpgrade)
+        {
+            CreateButton("장비 강화", () =>
+            {
+                NpcUpgradeManager.instance.OpenUI();
+                CloseUI();
+            });
+        }
+
+        if (npc.canCraft)
+        {
+            CreateButton("아이템 제작", () =>
+            {
+                NpcCraftManager.instance.OpenUI(npc.craftTableSO);
                 CloseUI();
             });
         }
@@ -45,6 +75,16 @@ public class NpcDialogManager : MonoBehaviour
             Debug.Log("대화 하기 실행 ");
         });
         
+        if (npc.canTeleport)
+        {
+            CreateButton("빠른 이동", () =>
+            {
+                _model.Navmesh.enabled = false;
+                _model.transform.position = npc.teleportTargets[0].position;
+                _model.Navmesh.enabled = true;
+            });
+        }
+
         if (npc.npcQuests != null)
         {
             foreach (var q in npc.npcQuests)
@@ -57,17 +97,28 @@ public class NpcDialogManager : MonoBehaviour
 
                 QuestState state = QuestManager.Instance.GetQuestState(q.questID);
 
-                if (state != QuestState.Completed)
+                bool showButton = false;
+                string prefix = "[시작 가능]";
+
+                if (state == QuestState.NotStart)
+                {
+                    showButton = true;
+                }
+                else if (state == QuestState.CanClear && QuestManager.Instance.GetQuestData(q.questID).clearNpcID == npc.npcID)
+                {
+                    showButton = true;
+                    prefix = "[완료 가능]";
+                }
+                
+                if (showButton)
                 {
                     string questName = QuestManager.Instance.GetQuestName(q.questID);
-                    CreateButton($"[퀘스트] {questName}", () =>
+                    CreateButton($"{prefix}\n{questName}", () =>
                     {
-                        // 상태에 맞는 대사 ID를 찾아 대화 매니저에게 넘김
-                        string dialogueToPlay = DetermineQuestDialogueID(q, state);
-                        Debug.Log(dialogueToPlay);
-                        DialogManager.Instance.StartDialogue(dialogueToPlay);
+                        string dialogToPlay = DetermineQuestDialogueID(q, state);
+                        DialogManager.Instance.StartDialogue(dialogToPlay);
                         buttonGroup.gameObject.SetActive(false);
-                    });
+                    });    
                 }
             }
         }
@@ -94,5 +145,8 @@ public class NpcDialogManager : MonoBehaviour
     public void CloseUI()
     {
         npcDialogPanel.SetActive(false);
+        _model.ControlEnable();
+        _model.isInteracting = false;
+        GameEvent.OnMainUIviable?.Invoke();
     }    
 }

@@ -13,12 +13,42 @@ MonoBehaviour:
   m_Name: Skill_3
   m_EditorClassIdentifier: Assembly-CSharp::Skill_3SO
   skillID: 10003
-  skillName: "\uC77C\uC12C\uAD00\uCCA0"
-  skillDesc: "\uC804\uBC29\uC744 \uBCA0\uC5B4 \uBD89\uC740 \uAC80\uAE30\uB97C \uC77C\uC73C\uD0A4\uACE0
-    \uD55C\uBC88 \uB354 \uCD94\uAC00\uC801\uC73C\uB85C \uAC80\uACA9\uC774 \uC77C\uC5B4\uB09C\uB2E4. "
-  skillIcon: {fileID: 21300000, guid: c8303e833b0ef184e99c1bc8940fff84, type: 3}
+  skillName: "\uD654\uB8E1\uC2E0\uAD8C"
+  skillDesc: "\uAE30\uB97C \uBAA8\uC544 \uC804\uBC29\uC744 \uD5A5\uD574 \uC6A9\uC758
+    \uD615\uC0C1\uC744 \uD55C \uAE30\uACF5\uD3EC\uB97C \uBC29\uCD9C\uD569\uB2C8\uB2E4."
+  skillIcon: {fileID: 21300000, guid: fee191586c9e8ad47865254a01a089c7, type: 3}
   requireLevel: 0
   maxLevel: 10
-  skillCool: 12
+  skillCool: 1
+  hasDamage: 1
+  damageMultipliers:
+  - 4
+  - 4.5
+  - 5
+  canMoveSkill: 0
+  isChargeSkill: 1
+  isHoldingSkill: 0
+  maxChargeTime: 2
+  chargeDamageMultipliers:
+  - 1
+  - 1.5
+  - 2
+  chargeStageTimes:
+  - 0
+  - 1
+  - 2
+  chargeScaleMultipliers:
+  - 0.7
+  - 1
+  - 1.5
+  hasPerfectZone: 0
+  perfectZoneStart: 1
+  perfectZoneEnd: 1.2
+  attackShape: 1
+  forwardOffset: 4.5
+  knockDownPower: 15
+  idenGain: 10
+  attackRadius: 2
+  boxSize: {x: 3, y: 4, z: 7}
   skillEffects:
-  - {fileID: 4712354271535204246, guid: 9d254fe686ee7114b83fa4eda457625f, type: 3}
+  - {fileID: 5512015464349050997, guid: 18fb553361521364c8e04db89f49c644, type: 3}

@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: Character_1_StatSO
   m_EditorClassIdentifier: Assembly-CSharp::CharacterStatSO
   maxHp: 500
-  attackDamage: 100
-  defense: 5
-  moveSpeed: 1
+  attackDamage: 50
+  moveSpeed: 7
   attackSpeed: 1
+  idenBonus: 1
   downPower: 1
-  cirticalChance: 0.3
-  cirticalDamage: 1.5
+  criticalChance: 0.25
+  criticalDamage: 1.5

@@ -3,7 +3,18 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Boss
+  - PlayerStart
+  - D1_Final_N5
+  - D1_Final_S5
+  - D1_Final_Cut2
+  - BossSpawnPos
+  - PlayerRevivePos
+  - DungeonPortal
+  - CamContainer
+  - OverlayCam
+  - Enemy
   layers:
   - Default
   - TransparentFX
@@ -14,6 +25,8 @@ TagManager:
   - Ground
   - Enemy
   - Interactable
+  - ChaseTile
+  - NOTGROUND
   - 
   - 
   - 
@@ -34,10 +47,11 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
-  - 
+  - PostProcessing
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Overlay
+    uniqueID: 1783654549
     locked: 0

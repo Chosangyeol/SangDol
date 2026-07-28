@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class C_Inventory
 {
-    private CharacterModel owner;
-    public CharacterModel Owner => owner;
+    private CharacterModel _model;
+    public CharacterModel Model => _model;
 
     private List<ItemBase> items;
     public List<ItemBase> Items => items;
@@ -38,7 +38,7 @@ public class C_Inventory
 
     public C_Inventory(CharacterModel model, int slotSize)
     {
-        owner = model;
+        _model = model;
         this.slotSize = slotSize;
         items = new List<ItemBase>(slotSize);
         for (int i = 0; i < slotSize; i++)
@@ -114,6 +114,39 @@ public class C_Inventory
         return -1;
     }
 
+    public int GetEmptySlotCount()
+    {
+        int emptyCount = 0;
+        for (int i = 0; i < items.Count; i++)
+        {
+            if (items[i] == null)
+            {
+                emptyCount++; // 빈 칸을 발견할 때마다 개수 증가
+            }
+        }
+        return emptyCount;
+    }
+
+    public bool HasEnoughSpace(int buyAmount, int itemMaxStack)
+    {
+        // 구매하려는 수량을 바탕으로 총 몇 칸의 슬롯이 필요한지 계산
+        int requiredSlots = Mathf.CeilToInt((float)buyAmount / itemMaxStack);
+
+        // GetEmptySlotCount()를 호출하여 현재 빈 칸이 몇 개인지 확인
+        int emptySlots = GetEmptySlotCount();
+
+        // 빈 칸이 필요한 칸 수보다 많거나 같으면 구매 가능(true)
+        if (emptySlots >= requiredSlots)
+        {
+            return true;
+        }
+        else
+        {
+            Debug.Log($"<color=red>인벤토리 공간 부족! (필요한 빈 칸: {requiredSlots}, 현재 빈 칸: {emptySlots})</color>");
+            return false;
+        }
+    }
+
     /// <summary>
     /// 인벤토리에 있는 아이템의 지속효과를 작동시키는 함수
     /// 대부분의 상황에서 delta는 Time.deltaTime이 들어감
@@ -170,6 +203,8 @@ public class C_Inventory
 
     public void UseItem(C_Enums.UseSlot slot)
     {
+        if (!_model.canUse) return;
+
         if (slot == C_Enums.UseSlot.None) return;
 
         int index = useSlots[slot];
@@ -180,7 +215,7 @@ public class C_Inventory
 
         if (useItem == null) return;
 
-        if (useItem.UseItem(owner))
+        if (useItem.UseItem(_model))
         {
             Items[index].currentStack--;
             Debug.Log(Items[index].currentStack);
@@ -204,5 +239,33 @@ public class C_Inventory
         }
 
         return totalCount;
+    }
+
+    public void RemoveTargetItem(string targetItemID, int amount)
+    {
+        int currentTotal = GetTotalItemCount(targetItemID);
+        if (currentTotal < amount)
+            return;
+
+        int remainToRemove = amount;
+
+        for (int i = 0; i < items.Count; i++)
+        {
+            if (items[i].currentStack > remainToRemove)
+            {
+                items[i].currentStack -= remainToRemove;
+                remainToRemove = 0;
+                break;
+            }
+            else
+            {
+                remainToRemove -= items[i].currentStack;
+                RemoveItem(items[i]);
+
+                if (remainToRemove <= 0)
+                    break;
+            }
+            
+        }
     }
 }

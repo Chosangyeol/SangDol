@@ -10,7 +10,7 @@ public class EnemyStatSO : ScriptableObject
     public bool canDown = false;
 
     [Header("적 스탯")]
-    public float maxHp;
+    public int maxHp;
     public float level;
     public float attackDamage;
     public float moveSpeed = 1f;
@@ -24,6 +24,6 @@ public class EnemyStatSO : ScriptableObject
     [Header("적 드랍 테이블")]
     public float expAmount = 0f;
     public int goldAmount = 0;
-    // 아이템 드랍;
+    public ItemDropTableSO dropTableSO;
 
 }

@@ -68,50 +68,101 @@ public class CharacterStat
     public float maxExp;
     public float currentExp;
 
+    public float idenMax;
+    public float idenCurrent;
+
+    // 일반 스탯
     public StatValue maxHp;
     public float curHp;
 
-    public StatValue attackDamage;
-    public StatValue defense;
+    public StatValue attackDamage; 
 
     public StatValue moveSpeed;
     public StatValue attackSpeed;
-    public StatValue downPower;
 
     public StatValue criticalChance;
     public StatValue criticalDamage;
 
+    public int remainSkillPoint;
+    public int totalSkillPoint;
+
+    // 특수 스탯
+    /// <summary>
+    /// 아이덴티티 획득량 증가 %
+    /// </summary>
+    public StatValue idenBonus;
+    /// <summary>
+    /// 무력화 피해 증가 %
+    /// </summary>
+    public StatValue downPower;
+    /// <summary>
+    /// 쿨타임 감소 %
+    /// </summary>
+    public StatValue cooldownReduction;
+    /// <summary>
+    /// 받는 피해 배율 %
+    /// </summary>
+    public StatValue damageTakeMultiplier;
+    public float dodgeCooldownReduction;
+
     public int gold;
     public int statPoint;
 
-    public CharacterStat(CharacterStatSO statSO, string name = "테스트")
+    public CharacterStat(CharacterStatSO statSO, string name = "용사")
     {
+        // 고정값
         this.characterName = name;
         this.currentLevel = 1;
         this.maxExp = 100;
+        this.idenMax = 100;
+        this.idenCurrent = 100;
 
+        // 일반 스탯
         this.maxHp = new StatValue(statSO.maxHp);
         this.curHp = maxHp.FinalValue;
 
         this.attackDamage = new StatValue(statSO.attackDamage);
-        this.defense = new StatValue(statSO.defense);
 
         this.moveSpeed = new StatValue(statSO.moveSpeed);
         this.attackSpeed = new StatValue(statSO.attackSpeed);
-        this.downPower = new StatValue(statSO.downPower);
 
         this.criticalChance = new StatValue(statSO.criticalChance);
         this.criticalDamage = new StatValue(statSO.criticalDamage);
 
+        // 특수 스탯
+        this.idenBonus = new StatValue(statSO.idenBonus);
+        this.downPower = new StatValue(statSO.downPower);
+        this.cooldownReduction = new StatValue(1.0f);
+        this.damageTakeMultiplier = new StatValue(1.0f);
+        this.dodgeCooldownReduction = 0f;
+
+        totalSkillPoint = this.currentLevel;
+        remainSkillPoint = this.currentLevel;
+
+        gold = 1000;
         statPoint = 0;
     }
 
-    public void Damaged(float damage)
+    public void Damaged(float damage, bool isPercent)
     {
-        curHp -= damage;
+        int finalDamage = 0;
+
+        if (!isPercent)
+        {
+            finalDamage = Mathf.RoundToInt(damage);
+        }
+        else
+        {
+            finalDamage = Mathf.RoundToInt(maxHp.FinalValue * damage);
+        }
+
+        // 받는 피해 비율 체크
+        finalDamage = Mathf.RoundToInt(finalDamage * damageTakeMultiplier.FinalValue);
+
+        curHp -= finalDamage;
+
         if (curHp <= 0)
             curHp = 0;
-
     }
 
     public void Heal(float amount)
@@ -119,6 +170,18 @@ public class CharacterStat
         curHp += amount;
         if (curHp > maxHp.FinalValue)
             curHp = maxHp.FinalValue;
+    }
+
+    public void GainIden(float amount)
+    {
+        idenCurrent += amount * idenBonus.FinalValue;
+        if (idenCurrent >= idenMax)
+            idenCurrent = idenMax;
+    }
+
+    public void ResetIden()
+    {
+        idenCurrent = 0;
     }
 
     public void GainGold(int amount)
@@ -130,15 +193,16 @@ public class CharacterStat
     public void UseGold(int amount)
     {
         gold -= amount;
+        Debug.Log($"{gold}원 보유");
     }
 
-    public float GetCritical(float baseDamage)
+    public bool GetCritical()
     {
         int random = UnityEngine.Random.Range(1, 101);
         if (random <= criticalChance.FinalValue * 100)
-            return baseDamage * criticalDamage.FinalValue;
+            return true;
         else
-            return baseDamage;
+            return false;
     }
 
     #region Level & Exp
@@ -151,11 +215,18 @@ public class CharacterStat
     {
         if (currentExp < maxExp) return;
 
+        GameEvent.OnPlayerLevelUp?.Invoke();
+
         currentExp -= maxExp;
         currentLevel++;
         statPoint++;
+        totalSkillPoint++;
+        AddSkillPoint();
         Debug.Log($"레벨업, 레벨 : {currentLevel} / 경험치 : {currentExp} / 스탯포인트 : {statPoint}");
         // 캐릭터 기본 스텟 추가
+
+        AddAttackDamage(false, 10f);
+        AddMaxHp(false, 30f);
 
         // 최대 경험치량 증가 -> csv 파일로 받아올 예정
 
@@ -168,43 +239,43 @@ public class CharacterStat
     #endregion
 
     #region Add Stat Methods
-    public void AddMaxHp(bool isFlat, float value)
+    public void AddSkillPoint()
     {
-        if (isFlat)
-            maxHp.AddFlat(value);
-        else
+        remainSkillPoint++;
+        if (remainSkillPoint > totalSkillPoint)
+            { remainSkillPoint = totalSkillPoint; }
+    }
+
+    public void AddMaxHp(bool isPercent, float value)
+    {
+        if (isPercent)
             maxHp.AddPercent(value);
+        else
+            maxHp.AddFlat(value);
     }
 
-    public void AddAttackDamage(bool isFlat, float value)
+    public void AddAttackDamage(bool isPercent, float value)
     {
-        if (isFlat)
-            attackDamage.AddFlat(value);
-        else
+        if (isPercent)
             attackDamage.AddPercent(value);
-    }
-
-    public void AddDefense(bool isFlat, float value)
-    {
-        if (isFlat)
-            defense.AddFlat(value);
         else
-            defense.AddPercent(value);
+            attackDamage.AddFlat(value);
     }
 
-    public void AddMoveSpeed(float value)
+    public void AddMoveSpeed(bool isPercent, float value)
     {
-        moveSpeed.AddFlat(value);
+        if (isPercent)
+            moveSpeed.AddPercent(value);
+        else
+            moveSpeed.AddFlat(value);
     }
 
-    public void AddAttackSpeed(float value)
+    public void AddAttackSpeed(bool isPercent, float value)
     {
-        attackSpeed.AddFlat(value);
-    }
-
-    public void AddDownPower(float value)
-    {
-        downPower.AddFlat(value);
+        if (isPercent)
+            attackSpeed.AddPercent(value);
+        else
+            attackSpeed.AddFlat(value);
     }
 
     public void AddCirticalChance(float value)
@@ -216,46 +287,49 @@ public class CharacterStat
     {
         criticalDamage.AddFlat(value);
     }
+
+    
     #endregion
 
     #region Remove Stat Methods
-    public void RemoveMaxHp(bool isFlat, float value)
+    public void RemoveSkillPoint()
     {
-        if (isFlat)
-            maxHp.RemoveFlat(value);
-        else
+        remainSkillPoint--;
+        if (remainSkillPoint < 0) remainSkillPoint = 0;
+    }
+
+    public void RemoveMaxHp(bool isPercent, float value)
+    {
+        if (isPercent)
             maxHp.RemovePercent(value);
+        else
+            maxHp.RemoveFlat(value);
+
     }
 
-    public void RemoveAttackDamage(bool isFlat, float value)
+    public void RemoveAttackDamage(bool isPercent, float value)
     {
-        if (isFlat)
-            attackDamage.RemoveFlat(value);
-        else
+        if (isPercent)
             attackDamage.RemovePercent(value);
-    }
-
-    public void RemoveDefense(bool isFlat, float value)
-    {
-        if (isFlat)
-            defense.RemoveFlat(value);
         else
-            defense.RemovePercent(value);
+            attackDamage.RemoveFlat(value);
+
     }
 
-    public void RemoveMoveSpeed(float value)
+    public void RemoveMoveSpeed(bool isPercent, float value)
     {
-        moveSpeed.RemoveFlat(value);
+        if (isPercent)
+            moveSpeed.RemovePercent(value);
+        else
+            moveSpeed.RemoveFlat(value);
     }
 
-    public void RemoveAttackSpeed(float value)
+    public void RemoveAttackSpeed(bool isPercent, float value)
     {
-        attackSpeed.RemoveFlat(value);
-    }
-
-    public void RemoveDownPower(float value)
-    {
-        downPower.RemoveFlat(value);
+        if (isPercent)
+            attackSpeed.RemovePercent(value);
+        else
+            attackSpeed.RemoveFlat(value);
     }
 
     public void RemoveCirticalChance(float value)
@@ -271,19 +345,70 @@ public class CharacterStat
     #endregion
 
     #region Special Stat Methods
+    // 특수 스탯
+    public void AddDownPower(float value)
+    {
+        downPower.AddFlat(value);
+    }
 
+    public void AddIdenBonus(float value)
+    {
+        idenBonus.AddFlat(value);
+    }
+
+    public void AddCooldownReduction(float value)
+    {
+        cooldownReduction.AddFlat(value);
+    }
+
+    public void AddTakeMultiplier(float value)
+    {
+        damageTakeMultiplier.AddFlat(value);
+    }
+
+    public void AddDodgeCooldownReduction(float value)
+    {
+        dodgeCooldownReduction += value;
+    }
+
+    public void RemoveDownPower(float value)
+    {
+        downPower.RemoveFlat(value);
+    }
+
+    public void RemoveIdenBonus(float value)
+    {
+        idenBonus.RemoveFlat(value);
+    }
+
+    public void RemoveCooldownReduction(float value)
+    {
+        cooldownReduction.RemoveFlat(value);
+    }
+
+    public void RemoveTakeMultiplier(float value)
+    {
+        damageTakeMultiplier.RemoveFlat(value);
+    }
+
+    public void RemoveDodgeCooldownReduction(float value)
+    {
+        dodgeCooldownReduction -= value;
+    }
     #endregion
 
     public void RecalculateAll()
     {
         maxHp.Recalculate();
         attackDamage.Recalculate();
-        defense.Recalculate();
         moveSpeed.Recalculate();
         attackSpeed.Recalculate();
-        downPower.Recalculate();
         criticalChance.Recalculate();
         criticalDamage.Recalculate();
+        downPower.Recalculate();
+        idenBonus.Recalculate();
+        cooldownReduction.Recalculate();
+        damageTakeMultiplier.Recalculate();
     }
 
 

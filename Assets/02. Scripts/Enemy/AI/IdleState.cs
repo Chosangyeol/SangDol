@@ -14,12 +14,14 @@ public class IdleState : State
     public override void EnterState()
     {
         Debug.Log("대기 상태로 진입");
+        patrolDelay = 3f;
+        canPatrol = false;
+        _owner.Anim.SetBool("Patrol", false);
+        _owner.Anim.SetBool("InBattle", false);
     }
 
     public override void UpdateState()
     {
-        //Debug.Log(patrolDelay);
-
         patrolDelay -= Time.deltaTime;
         if (patrolDelay < 0)
             canPatrol = true;

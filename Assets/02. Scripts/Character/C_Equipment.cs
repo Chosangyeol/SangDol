@@ -51,7 +51,7 @@ public class C_Equipment
         // 3. 아이템 장착 로직
         equipItems[item.itemBaseSO.equipItemType] = item;
         owner.Inventory.RemoveItem(item);
-        owner.AddStat(item.itemBaseSO.statToIncrease, item.itemBaseSO.isFlat, item.itemBaseSO.value);
+        owner.AddStat(item.itemBaseSO.statToIncrease, item.itemBaseSO.isPercent, item.GetFinalStat());
     
         UIManager.Instance.RefreshAll();
     }
@@ -75,11 +75,9 @@ public class C_Equipment
         else
             owner.Inventory.SetItemAt(inventoryIndex, equipItems[equipItemType]);
 
-        owner.RemoveStat(equipItems[equipItemType].itemBaseSO.statToIncrease, equipItems[equipItemType].itemBaseSO.isFlat, equipItems[equipItemType].itemBaseSO.value);
+        owner.RemoveStat(equipItems[equipItemType].itemBaseSO.statToIncrease, equipItems[equipItemType].itemBaseSO.isPercent, equipItems[equipItemType].GetFinalStat());
         equipItems[equipItemType] = null;
 
         UIManager.Instance.RefreshAll();
-
-
     }
 }

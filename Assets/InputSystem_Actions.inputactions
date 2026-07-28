@@ -95,6 +95,17 @@
                 },
                 {
                     "name": "",
+                    "id": "b2658c90-9c85-4e96-bb55-f71f46cfeebd",
+                    "path": "<Keyboard>/z",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SkillSlot",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "f9048f6c-9b1e-415b-a1fc-a93ea1d05668",
                     "path": "<Keyboard>/q",
                     "interactions": "",
@@ -139,6 +150,28 @@
                 },
                 {
                     "name": "",
+                    "id": "d086688f-bdf0-431e-b78a-fa37bdfe19aa",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SkillSlot",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4d8f00d6-d7b3-43ed-9849-a4e73e0f76b1",
+                    "path": "<Keyboard>/v",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SkillSlot",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "b8477c34-b4e9-4779-aad1-f1c5aabe9603",
                     "path": "<Keyboard>/escape",
                     "interactions": "",
@@ -174,6 +207,17 @@
                     "name": "",
                     "id": "1f97813b-83df-4a26-a04e-c82189df6727",
                     "path": "<Keyboard>/l",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "UI",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "50c8b0c4-0b54-4a36-bf89-69c91e71b7ef",
+                    "path": "<Keyboard>/p",
                     "interactions": "",
                     "processors": "",
                     "groups": "",

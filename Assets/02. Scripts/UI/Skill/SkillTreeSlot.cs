@@ -6,7 +6,9 @@ using TMPro;
 public class SkillTreeSlot : MonoBehaviour,
     IBeginDragHandler,
     IDragHandler,
-    IEndDragHandler
+    IEndDragHandler,
+    IPointerEnterHandler,
+    IPointerExitHandler
 {
     [Header("UI ���� ���")]
     [SerializeField] private Image skillIcon;
@@ -20,6 +22,8 @@ public class SkillTreeSlot : MonoBehaviour,
     private Image dragIcon;
     private RectTransform dragIconRect;
 
+    private SkillToolTip _skillTooltip;
+
     private bool droppedOnSlot;
 
     private C_SkillSystem _skillSystem;
@@ -27,10 +31,11 @@ public class SkillTreeSlot : MonoBehaviour,
     private SkillBase currentSkill;
     public SkillBase CurrentSkill => currentSkill;
 
-    public void Init(C_SkillSystem skillSystem, SkillBase skill)
+    public void Init(C_SkillSystem skillSystem, SkillBase skill, SkillToolTip skillToolTip)
     {
         _skillSystem = skillSystem;
         currentSkill = skill;
+        _skillTooltip = skillToolTip;
 
         rootCanvas = GetComponentInParent<Canvas>();
         
@@ -81,6 +86,24 @@ public class SkillTreeSlot : MonoBehaviour,
         dragIcon = null;
         dragIconRect = null;
         Refresh();
+    }
+    #endregion
+
+    #region 스킬 툴팁 출력
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (currentSkill == null) return;
+        if (_skillTooltip == null) return;
+
+        _skillTooltip.ToggleSkillTooltip(true, skillIcon.GetComponent<RectTransform>(), currentSkill);
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        if (currentSkill == null) return;
+        if (_skillTooltip == null) return;
+
+        _skillTooltip.ToggleSkillTooltip(false);
     }
     #endregion
 }

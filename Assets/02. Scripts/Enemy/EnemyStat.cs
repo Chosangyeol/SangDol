@@ -2,21 +2,24 @@ using UnityEngine;
 
 public class EnemyStat
 {
+    public EnemyBase owner;
+
     public string enemyName;
     public int currentLevel;
-    public float maxHp;
-    public float curHp;
+    public int maxHp;
+    public int curHp;
     public float attackDamage;
     public float moveSpeed;
     public float attackSpeed;
     public bool canDown;
-    public float down;
+    public float maxDown;
+    public float curDown;
 
     public float detactRange;
     public float attackRange;
-    
 
-    public EnemyStat(EnemyStatSO statSO)
+
+    public EnemyStat(EnemyStatSO statSO, EnemyBase owner)
     {
         enemyName = statSO.enemyName;
         currentLevel = (int)statSO.level;
@@ -26,28 +29,51 @@ public class EnemyStat
         moveSpeed = statSO.moveSpeed;
         attackSpeed = statSO.attackSpeed;
         canDown = statSO.canDown;
-        down = statSO.down;
+
+        if (statSO.canDown)
+        {
+            maxDown = statSO.down;
+            curDown = maxDown;
+        }
+        else
+        {
+            maxDown = 1;
+            curDown = 1;
+        }
+
 
         detactRange = statSO.detactRange;
         attackRange = statSO.attackRange;
+        this.owner = owner;
     }
 
-    public void Damaged(float damage, float downPower = 0f)
+    public void Damaged(SDamageInfo info)
     {
-        curHp -= damage;
+        float finalDamage = info.damage;
+
+        if (info.isHeadattack || info.isBackattack)
+            finalDamage *= 1.1f;
+
+        int intFinalDamage = Mathf.RoundToInt(finalDamage);
+
+        curHp -= intFinalDamage;
+
         if (canDown)
         {
-            down -= downPower;
-            if (down <= 0)
-                down = 0;
+            curDown -= info.knockDownPower;
+            if (curDown <= 0 && owner.TryGetComponent<ICounterable>(out ICounterable counterable))
+            {
+                curDown = 0;
+                owner.StartCoroutine(counterable.KnockDown(8, true));
+            }
         }
         if (curHp <= 0)
             curHp = 0;
 
-        Debug.Log($"받은 피해량 : {damage} /  몬스터 남은 채력 : {curHp}");
+        Debug.Log($"받은 피해량 : {finalDamage} /  몬스터 남은 채력 : {curHp}");
     }
 
-    public void Heal(float healAmount)
+    public void Heal(int healAmount)
     {
         curHp += healAmount;
         if (curHp > maxHp)

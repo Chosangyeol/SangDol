@@ -9,7 +9,7 @@ public class PoolSpawner : MonoBehaviour
     {
         skillEffects.PoolList.ForEach(p =>
         {
-            PoolManager.Instance.CreatePool(p.Prefab,p.Count);
+            //PoolManager.Instance.CreatePool(p.Prefab,p.Count);
         });
         Debug.Log("풀 생성");
     }

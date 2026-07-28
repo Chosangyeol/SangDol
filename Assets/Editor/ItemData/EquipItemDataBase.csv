@@ -1,0 +1,19 @@
+﻿ID,Name,NameKr,Icon,Rarity,Desc,Price,EquipType,IncreStat,IsPercent,Value,CanUpgrade,MaxUpgrade,BonusValue
+10001,TestHead,테스트용 장비 머리,10001,Common,테스트용 장비 머리,100,Head,MaxHp,FALSE,10,TRUE,99,1
+10002,TestBody,테스트용 장비 상의,10002,Common,테스트용 장비 상의,110,Body,AttackDamage,TRUE,0.5,TRUE,99,0.01
+10003,TestGloves,테스트용 장비 장갑,10003,Common,테스트용 장비 장갑,120,Gloves,MaxHp,FALSE,10,TRUE,99,1
+10004,TestPants,테스트용 장비 하의,10004,Common,테스트용 장비 하의,130,Pants,MoveSpeed,TRUE,0.2,TRUE,99,0.01
+10005,TestShoes,테스트용 장비 신발,10005,Common,테스트용 장비 신발,140,Shoes,AttackSpeed,TRUE,0.3,TRUE,99,0.01
+10006,TestWeapon,테스트용 장비 무기,10006,Common,테스트용 장비 무기,150,Weapon,CriticalChance,FALSE,0.5,TRUE,99,0.01
+10007,Old_Head,낡은 후드,10007,Uncommon,이미 다 해진 후드다. 얼마 못가 찢어질 것 같다.,0,Head,MaxHp,FALSE,30,FALSE,,
+10008,Old_Body,낡은 철제 갑주,10008,Uncommon,이미 다 낡은 철제 갑주다. 여기저기 균열이 나있다.,0,Body,MaxHp,FALSE,40,FALSE,,
+10009,Old_Gloves,낡은 철제 장갑,10009,Uncommon,이미 다 낡은 철제 장갑이다. 손가락이 잘 안움직이는 느낌이다.,0,Gloves,CriticalChance,FALSE,0.03,FALSE,,
+10010,Old_Pants,낡은 철제 레깅스,10010,Uncommon,이미 다 낡은 철제 레깅스다. 다리가 잘 안움직이는 느낌이다.,0,Pants,MaxHp,FALSE,30,FALSE,,
+10011,Old_Shoes,낡은 철제 신발,10011,Uncommon,이다 다 낡은 철제 신발이다. 발가락에 구멍이 뚫려있다.,0,Shoes,MoveSpeed,FALSE,0.05,FALSE,,
+10012,Old_Weapon,낡은 가죽 건틀릿,10012,Uncommon,이미 다 해진 가죽 건틀릿이다. 바느질한 흔적이 남아있다.,0,Weapon,AttackDamage,FALSE,20,FALSE,,
+10013,Wolf_Head,늑대왕의 투구,10007,Unique,늑대의 가죽을 사용하여 제작한 투구이다. 왜인지 늑대들이 더욱 잘 따르는 기분이든다.,0,Head,MaxHp,FALSE,50,TRUE,5,10
+10014,Wolf_Body,늑대왕의 갑옷,10008,Unique,늑대의 가죽을 사용하여 제작한 갑옷이다. 왜인지 늑대들이 정말 잘 따르는 기분이든다.,0,Body,MaxHp,FALSE,50,TRUE,5,10
+10015,Wolf_Gloves,늑대왕의 장갑,10009,Unique,늑대의 가죽을 사용하여 제작한 장갑이다. 늑대들을 쓰다듬을 수 있을 것만 같은 장갑이다.,0,Gloves,CriticalChance,FALSE,0.05,TRUE,5,0.01
+10016,Wolf_Pants,늑대왕의 레깅스,10010,Unique,늑대의 가죽을 사용하여 제작한 레깅스이다. 왜인지 늑대들이 잘 따르는 기분이든다.,0,Pants,MaxHp,FALSE,50,TRUE,5,10
+10017,Wolf_Shoes,늑대왕의 신발,10011,Unique,늑대의 가죽을 사용하여 제작한 신발이다. 왜인지 늑대들이 잘 따르는 기분이든다.,0,Shoes,MoveSpeed,FALSE,0.1,TRUE,5,0.01
+10018,Wolf_Weapon,늑대왕의 건틀렛,10012,Unique,늑대의 가죽을 사용하여 제작한 건틀릿이다. 왜인지 늑대들이 잘 따르는 기분이든다.,0,Weapon,AttackDamage,FALSE,50,TRUE,5,10
