@@ -120,10 +120,7 @@ public class MainUI : MonoBehaviour
             return;
         }
 
-        if (!isBossFight)
-        {
-            bossUI.SetActive(true);
-        }
+        bossUI.SetActive(true);
 
         bossNameText.text = boss.statSO.enemyName;
         bossHpSlider.value = (float)boss.Stat.curHp / boss.Stat.maxHp;

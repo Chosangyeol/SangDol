@@ -339,6 +339,8 @@ public class D1_Final_Normal4 : BossPatternBase
     public float damagePercent;
     public GameObject warning1;
     public GameObject warning2;
+    public GameObject effect1;
+    public GameObject effect2;
 
     public D1_Final_Normal4(D1_Final_Normal4Data data)
     {
@@ -350,6 +352,8 @@ public class D1_Final_Normal4 : BossPatternBase
         this.damagePercent = data.damagePercent;
         this.warning1 = data.warning1;
         this.warning2 = data.warning2;
+        this.effect1 = data.effect1;
+        this.effect2 = data.effect2;
     }
 
     public override void Execute(BossModel boss)
@@ -373,6 +377,10 @@ public class D1_Final_Normal4 : BossPatternBase
         boss.patternObjects.Add(gwarning1);
 
         yield return new WaitForSeconds(1.5f);
+
+        GameObject effect1 = GameObject.Instantiate(this.effect1, spawnPos, Quaternion.identity);
+        boss.patternObjects.Add(effect1);
+        boss.StartCoroutine(DestroyEffect(effect1, 1.5f));
 
         Vector3 center = boss.transform.position;
         Quaternion rot = boss.transform.rotation;
@@ -406,6 +414,10 @@ public class D1_Final_Normal4 : BossPatternBase
 
         yield return new WaitForSeconds(1.5f);
 
+        GameObject effect2 = GameObject.Instantiate(this.effect2, spawnPos, Quaternion.identity);
+        boss.patternObjects.Add(effect2);
+        boss.StartCoroutine(DestroyEffect(effect2, 1.5f));
+
         rot = boss.transform.rotation * Quaternion.Euler(0f, 45f, 0f);
 
         forward = Physics.OverlapBox(center, forwardBox, rot, playerLayer);
@@ -426,6 +438,12 @@ public class D1_Final_Normal4 : BossPatternBase
         GameObject.Destroy(gwarning2);
 
         boss.OnPatternEnd();
+    }
+
+    IEnumerator DestroyEffect(GameObject effect, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        GameObject.Destroy(effect);
     }
 }
 

@@ -23,7 +23,7 @@ MonoBehaviour:
   craftTableSO: {fileID: 11400000, guid: a4c3c003d08c9af4bba782ab19f28e84, type: 2}
   canTeleport: 0
   teleportTargets: []
-  talkDialogID: 
+  talkDialogID: D_30001_008
   npcQuests:
   - questID: Q_30001_001
     requiredQuestID: 

@@ -54,12 +54,18 @@ public class BossModel : EnemyBase, ICounterable
         _agent = GetComponent<NavMeshAgent>();
         GameEvent.OnPlayerDie += ResetBossState;
 
+        bossSpawnPoint = GameObject.FindGameObjectWithTag("BossSpawnPos")?.transform;
+
         if (isInField && bossSpawnPoint == null)
         {
             GameObject spawnAnchor = new GameObject($"{gameObject.name}_SpawnPoint");
             spawnAnchor.transform.position = transform.position;
             spawnAnchor.transform.rotation = transform.rotation;
             bossSpawnPoint = spawnAnchor.transform;
+        }
+        else
+        {
+            Agent.Warp(bossSpawnPoint.position);
         }
 
         // 필드 보스가 아니라면(던전 보스) 만나자마자 바로 전투 시작
@@ -71,6 +77,8 @@ public class BossModel : EnemyBase, ICounterable
 
     private void Update()
     {
+        if (_isDead) return;
+
         if (isKnockDown) return;
 
 
@@ -113,7 +121,11 @@ public class BossModel : EnemyBase, ICounterable
 
         base.Damaged(info);
 
-        GameEvent.OnBossStateChange?.Invoke(this);
+        if (_isDead)
+            GameEvent.OnBossStateChange?.Invoke(null);
+        else
+            GameEvent.OnBossStateChange?.Invoke(this);
+
     }
 
     public int CheckAttackDir()
@@ -135,12 +147,31 @@ public class BossModel : EnemyBase, ICounterable
         return 0;
     }
 
+    public override void ToggleOutline(bool enable)
+    {
+        if (_outlineComponent == null || _isDead) return;
+
+        // 외곽선 컴포넌트 활성화/비활성화
+        _outlineComponent.enabled = enable;
+
+        // 🌟 로스트아크 디테일: 외곽선 색상을 빨간색으로 고정
+        _outlineComponent.OutlineColor = Color.red;
+        _outlineComponent.OutlineWidth = 4f; // 두께 조절
+
+        if (enable)
+        {
+            Debug.Log($"<color=yellow>[하이라이트] {gameObject.name}에게 마우스 호버됨!</color>");
+        }
+    }
+
     protected override void Die(GameObject source = null)
     {
         if (_isDead) return;
         _isDead = true;
+        ToggleOutline(false);
+        Anim.SetTrigger("Die");
 
-        GameEvent.OnBossStateChange(null);
+        GameEvent.OnBossStateChange?.Invoke(null);
         GameEvent.OnMonsterKill?.Invoke(statSO.enemyID);
 
         PoolManager.Instance.Push(this);
@@ -355,6 +386,11 @@ public class BossModel : EnemyBase, ICounterable
         // 1. 모든 행동과 찌꺼기 싹 정리
         ForceStopCurrentAction();
 
+        if (Anim != null)
+        {
+            Anim.Rebind();
+        }
+
         // 2. 특수 패턴(기믹) 발동 여부 리셋
         for (int i = 0; i < specialPatterns.Count; i++)
         {
@@ -373,12 +409,18 @@ public class BossModel : EnemyBase, ICounterable
             isCombatStarted = false;
 
             // 스폰 위치로 즉시 복귀 (걸어가지 않고 워프)
-            if (bossSpawnPoint != null && _agent != null && _agent.isOnNavMesh)
+            if (bossSpawnPoint != null)
             {
-                _agent.Warp(bossSpawnPoint.position);
-                transform.rotation = bossSpawnPoint.rotation;
-            }
+                if (_agent != null)
+                    _agent.enabled = false;
 
+                transform.position = bossSpawnPoint.position;
+                transform.rotation = bossSpawnPoint.rotation;
+                transform.Rotate(0, 180f, 0); // 보스가 플레이어를 바라보도록 회전
+
+                if (_agent != null)
+                    _agent.enabled = true;
+            }
             Debug.Log("필드 보스가 초기 위치로 돌아가 다시 대기합니다.");
         }
         else

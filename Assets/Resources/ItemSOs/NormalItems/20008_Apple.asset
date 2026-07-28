@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: 20008_Apple
   m_EditorClassIdentifier: 
   itemID: 20008
-  itemName: "\uBE5B\uB098\uB294 \uC81C\uCCA0 \uC0AC\uACFC"
-  itemIcon: {fileID: 0}
+  itemName: "\uC798 \uC775\uC740 \uC0AC\uACFC"
+  itemIcon: {fileID: 21300000, guid: 41cb0103288cd984fbdfd947be14aac3, type: 3}
   itemType: 1
   itemRarity: 1
   itemDesc: "\uAFC0\uC744 \uBA38\uAE08\uC740 \uB4EF\uC774 \uC724\uAE30\uB098\uB294

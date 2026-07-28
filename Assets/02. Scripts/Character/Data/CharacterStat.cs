@@ -83,7 +83,8 @@ public class CharacterStat
     public StatValue criticalChance;
     public StatValue criticalDamage;
 
-    public int skillPoint;
+    public int remainSkillPoint;
+    public int totalSkillPoint;
 
     // 특수 스탯
     /// <summary>
@@ -107,7 +108,7 @@ public class CharacterStat
     public int gold;
     public int statPoint;
 
-    public CharacterStat(CharacterStatSO statSO, string name = "테스트")
+    public CharacterStat(CharacterStatSO statSO, string name = "용사")
     {
         // 고정값
         this.characterName = name;
@@ -135,7 +136,9 @@ public class CharacterStat
         this.damageTakeMultiplier = new StatValue(1.0f);
         this.dodgeCooldownReduction = 0f;
 
-        skillPoint = this.currentLevel;
+        totalSkillPoint = this.currentLevel;
+        remainSkillPoint = this.currentLevel;
+
         gold = 1000;
         statPoint = 0;
     }
@@ -217,6 +220,7 @@ public class CharacterStat
         currentExp -= maxExp;
         currentLevel++;
         statPoint++;
+        totalSkillPoint++;
         AddSkillPoint();
         Debug.Log($"레벨업, 레벨 : {currentLevel} / 경험치 : {currentExp} / 스탯포인트 : {statPoint}");
         // 캐릭터 기본 스텟 추가
@@ -237,7 +241,9 @@ public class CharacterStat
     #region Add Stat Methods
     public void AddSkillPoint()
     {
-        skillPoint++;
+        remainSkillPoint++;
+        if (remainSkillPoint > totalSkillPoint)
+            { remainSkillPoint = totalSkillPoint; }
     }
 
     public void AddMaxHp(bool isPercent, float value)
@@ -288,23 +294,26 @@ public class CharacterStat
     #region Remove Stat Methods
     public void RemoveSkillPoint()
     {
-        skillPoint--;
+        remainSkillPoint--;
+        if (remainSkillPoint < 0) remainSkillPoint = 0;
     }
 
     public void RemoveMaxHp(bool isPercent, float value)
     {
         if (isPercent)
-            maxHp.RemoveFlat(value);
-        else
             maxHp.RemovePercent(value);
+        else
+            maxHp.RemoveFlat(value);
+
     }
 
     public void RemoveAttackDamage(bool isPercent, float value)
     {
         if (isPercent)
-            attackDamage.RemoveFlat(value);
-        else
             attackDamage.RemovePercent(value);
+        else
+            attackDamage.RemoveFlat(value);
+
     }
 
     public void RemoveMoveSpeed(bool isPercent, float value)

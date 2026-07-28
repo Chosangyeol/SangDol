@@ -15,9 +15,6 @@ public class ItemDataBaseSO : ScriptableObject
     public List<ItemBaseSO> itemDataBase = new List<ItemBaseSO>();
     public List<EquipItemSO> equipItemDataBase = new List<EquipItemSO>();
 
-    [ContextMenu("CSV에서 아이템 SO 파일 자동 생성/갱신하기")]
-    
-
     public ItemBaseSO GetItemByID(string itemID)
     {
         if (int.TryParse(itemID, out int idNumber))
@@ -46,7 +43,9 @@ public class ItemDataBaseSO : ScriptableObject
     }
 
 
-#if UNITY_EDITOR
+    #if UNITY_EDITOR
+    [ContextMenu("CSV에서 아이템 SO 파일 자동 생성/갱신하기")]
+
     public void GenerateItemSOFromCSV()
     {
         GenerateEquipItemSO();

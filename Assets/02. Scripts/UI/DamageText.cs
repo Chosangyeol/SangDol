@@ -19,21 +19,23 @@ public class DamageText : MonoBehaviour
         if (textMesh == null) textMesh = GetComponent<TextMeshPro>();
     }
 
-    public void Setup(int damage, bool isCritical, bool isPlayer =false)
+    public void Setup(int damage, bool isCritical, bool isPlayer = false)
     {
+        // 🌟 핵심 수정 1: 풀(Pool)에서 다시 꺼내질 때, '현재' 활성화된 따끈따끈한 메인 카메라를 다시 찾아옵니다.
+        mainCamera = Camera.main;
+
         textMesh.text = damage.ToString();
 
         // 크리티컬 여부에 따라 색상과 크기 변경
         if (isCritical)
         {
             textMesh.color = Color.yellow;
-            textMesh.fontSize = 12f; // 크리티컬 폰트 크게
-            // 여기에 '반짝!' 하는 DOTween 펀치 스케일을 넣으면 더 좋습니다.
+            textMesh.fontSize = 12f;
         }
         else
         {
             textMesh.color = Color.white;
-            textMesh.fontSize = 8f; // 일반 폰트
+            textMesh.fontSize = 8f;
         }
 
         if (isPlayer)
@@ -47,7 +49,16 @@ public class DamageText : MonoBehaviour
 
     private void Update()
     {
-        // ⭐️ 빌보드 효과: 텍스트가 항상 카메라를 정면으로 바라보게 만듭니다. (안 하면 글씨가 뒤집히거나 안 보임)
+        // 🌟 핵심 수정 2: 기억하던 카메라가 부활/리셋 등으로 인해 파괴되어 null이 되었다면 다시 찾아옵니다.
+        if (mainCamera == null)
+        {
+            mainCamera = Camera.main;
+        }
+
+        // 🌟 안전장치: 만약 씬 전환 중이거나 카메라가 아예 없는 순간이라면 Update 연산을 건너뜁니다 (에러 원천 차단)
+        if (mainCamera == null) return;
+
+        // 빌보드 효과: 텍스트가 항상 카메라를 정면으로 바라보게 만듭니다.
         transform.rotation = mainCamera.transform.rotation;
     }
 
@@ -63,7 +74,7 @@ public class DamageText : MonoBehaviour
             // 1. 위로 떠오르기
             transform.position += Vector3.up * floatSpeed * Time.deltaTime;
 
-            // 2. 투명하게 페이드아웃 (마지막 절반 시간 동안만 투명해지도록)
+            // 2. 투명하게 페이드아웃 
             if (timer > duration / 2f)
             {
                 float fadeProgress = (timer - (duration / 2f)) / (duration / 2f);

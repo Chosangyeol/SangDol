@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class SkillTreeUI : MonoBehaviour
@@ -7,6 +8,10 @@ public class SkillTreeUI : MonoBehaviour
 
     [SerializeField] SkillTreeSlot slotPrefab;
     [SerializeField] Transform slotParent;
+
+    [Header("텍스트")]
+    public TMP_Text remainSkillPoint;
+    public TMP_Text totalSkillPoint;
 
     private CharacterModel _model;
     private C_SkillSystem _skillSystem;
@@ -40,6 +45,9 @@ public class SkillTreeUI : MonoBehaviour
     {
         foreach (var slot in slots)
             slot.Refresh();
+
+        remainSkillPoint.text = $"남은 포인트 : {_model.Stat.Stat.remainSkillPoint}";
+        totalSkillPoint.text = $"전체 포인트 : {_model.Stat.Stat.totalSkillPoint}";
     }
 
     public void Toggle(bool onlyFalse = false)

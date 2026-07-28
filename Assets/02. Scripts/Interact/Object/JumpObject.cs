@@ -40,6 +40,8 @@ public class JumpObject : InteractableObject
 
     IEnumerator JumpSequence(CharacterModel model)
     {
+        bool isEnd = false;
+
         Vector3 p0 = model.transform.position; // 시작점 (P0)
         Vector3 p1 = apexPos.position;         // 제어점/최고점 (P1)
         Vector3 p2 = targetPos.position;       // 도착점 (P2)
@@ -59,6 +61,12 @@ public class JumpObject : InteractableObject
                                Mathf.Pow(curveT, 2) * p2;
 
             model.transform.position = position;
+
+            if (time < jumpDuration * 0.7f && !isEnd)
+            {
+                model.Anim.SetTrigger("JumpEnd");
+                isEnd = true;
+            }
 
             yield return null;
         }

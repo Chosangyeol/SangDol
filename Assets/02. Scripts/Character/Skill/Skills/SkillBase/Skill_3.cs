@@ -21,6 +21,8 @@ public class Skill_3 : ChargeSkillBase
 
             Debug.Log("스킬 3 차지 시작");
             _model.Anim.SetTrigger("Skill3_Charge");
+            AudioManager.instance.PlaySFX(C_Enums.SFX_List.Player_Skill3_Charge);
+
             return true;
         }
         return false;
@@ -32,6 +34,8 @@ public class Skill_3 : ChargeSkillBase
 
         float finalScaleMultiplier = GetCurrentScaleMultiplier();
 
+        AudioManager.instance.PlaySFX(C_Enums.SFX_List.Player_Skill3_Impact);
+
         if (isCharging)
         {
             GameEvent.OnGaugeUpdate?.Invoke(false, "", 0f,-1,-1);
@@ -42,8 +46,6 @@ public class Skill_3 : ChargeSkillBase
         nowCoolTime = finalCoolTime;
 
         Debug.Log("스킬 3 차지 해제, 타격 발동!");
-
-        _model.PlayerController.FaceTo(targetPos);
 
         _model.Anim.SetTrigger("Skill3_ChargeEnd");
         _model.StartCoroutine(Effect(skillData.skillEffects[0],_model.transform.position, finalScaleMultiplier));

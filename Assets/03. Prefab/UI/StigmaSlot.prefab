@@ -244,6 +244,7 @@ MonoBehaviour:
   stigmaLevel: 5
   isTypeA: 1
   stigamType: 0
+  stigmaDataSO: {fileID: 0}
   nodeBImage: {fileID: 2808578334898629089}
   nodeIconImage: {fileID: 7138058696984448593}
   nodeLockedImage: {fileID: 4491671214087634755}
@@ -251,6 +252,7 @@ MonoBehaviour:
   connectedLine: {fileID: 0}
   normalColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   activeColor: {r: 0, g: 1, b: 1, a: 1}
+  unselectedIconColor: {r: 0.18867922, g: 0.18867922, b: 0.18867922, a: 1}
   isActived: 0
 --- !u!1 &7892865187314031094
 GameObject:

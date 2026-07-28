@@ -82,7 +82,7 @@ public class C_Enums
         Player_Space,
         Player_Skill1,
         Player_Skill2,
-        Player_Skill3,
+        Player_Skill3_Charge,
         Player_Skill4,
         UI_Click,
         D1_Final_Box,
@@ -99,7 +99,13 @@ public class C_Enums
         D1_Final_S3,
         D1_Final_S4,
         D1_Final_S5,
-        D1_Final_Enter
+        D1_Final_Enter,
+        Player_Skill3_Impact,
+        Player_Iden_Attack,
+        Player_Iden_LastAttack,
+        Elder_N1,
+        Elder_N2,
+        Elder_N3
     }
 
     public enum BGM_List

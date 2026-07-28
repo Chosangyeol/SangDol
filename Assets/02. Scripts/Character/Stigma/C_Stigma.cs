@@ -51,6 +51,7 @@ public class C_Stigma
     public void UpdateStigma(float delta)
     {
         if (lv5ACooldown > 0) lv5ACooldown -= delta;
+        if (lv8ACooldown > 0) lv8ACooldown -= delta;
     }
 
     public void EquipStigma(int level, EStigmaType stigmaType)
@@ -154,6 +155,11 @@ public class C_Stigma
             _model.RemoveStat(C_Enums.CharacterStat.DodgeCooldownReduction, false, -3);
         }
 
+        if (type == EStigmaType.Lv10_B)
+        {
+            _model.RemoveStat(C_Enums.CharacterStat.DodgeCooldownReduction, false, 2);
+        }
+
         Debug.Log($"성흔 해제 완료 : {type}");
 
     }
@@ -228,7 +234,8 @@ public class C_Stigma
     {
         if (HasStigma(EStigmaType.Lv6_B))
         {
-            _model.Damaged(0.05f, true);
+            if (_model.Stat.Stat.curHp > _model.Stat.Stat.maxHp.FinalValue * 0.05f)
+                _model.Damaged(0.05f, true);
         }
     }
 
@@ -257,7 +264,20 @@ public class C_Stigma
     /// <returns>스티그마 활성화 여부를 true / false로 반환</returns>
     public bool HasStigma(EStigmaType type) => selectedStigmas.ContainsValue(type);
 
+    #region lv8_A 단단한 기세
+    public bool TryIgnoreCC()
+    {
+        // 성흔을 가지고 있고, 쿨타임이 0 이하(준비 완료)일 때
+        if (HasStigma(EStigmaType.Lv8_A) && lv8ACooldown <= 0)
+        {
+            lv8ACooldown = 15f; // 🌟 효과 적용 후 쿨타임 15초 재생 시작!
+            Debug.Log("<color=cyan>[단단한 기세] 상태이상을 1회 무시했습니다. (15초 쿨타임 가동)</color>");
+            return true; // 무시 성공
+        }
+        return false; // 무시 불가 (성흔이 없거나 쿨타임 중)
+    }
 
+    #endregion
 
     #region Lv7_B 환영 타격
     private IEnumerator SpawnCloneAttack(CharacterModel model, EnemyBase target, float cloneDamage)

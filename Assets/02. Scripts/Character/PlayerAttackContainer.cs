@@ -57,9 +57,21 @@ public class PlayerAttackContainer : MonoBehaviour
                 float skillMultiplier = currentSkill.GetCurrentDamageMultiplier();
                 float chargeMultiplier = currentSkill.GetChargeMultiplier();
 
+                float damageBase = _model.Stat.Stat.attackDamage.FinalValue * skillMultiplier * chargeMultiplier;
+
+                if (_model.Stigma != null && _model.Stigma.HasStigma(EStigmaType.Lv8_B))
+                {
+                    // 현재 체력 비율 계산 (0 ~ 1 사이)
+                    float hpPercent = (float)_model.Stat.Stat.curHp / _model.Stat.Stat.maxHp.FinalValue;
+                    if (hpPercent <= 0.3f)
+                    {
+                        damageBase *= 1.3f; // 주는 피해 30% 증가
+                    }
+                }
+
                 SDamageInfo damageInfo = new SDamageInfo
                 {
-                    damage = _model.Stat.Stat.attackDamage.FinalValue * skillMultiplier * chargeMultiplier,
+                    damage = damageBase,
                     source = _model.gameObject,
                     knockDownPower = data.knockDownPower,
                     isCounterable = false,

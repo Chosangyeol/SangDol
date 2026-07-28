@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.UIElements;
 
 public class ElderGolem_Pattern : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class ElderGolem_Pattern1 : BossPatternBase
     public GameObject stoneSpear;
     public GameObject warning1;
     public GameObject warning2;
+    public GameObject effect;
 
     public float handOffsetX = 8f;     // 보스 중앙 기준 양손의 좌우 거리
     public float handOffsetZ = 5.0f;     // 보스 기준 손이 떨어지는 앞쪽 거리
@@ -25,16 +27,17 @@ public class ElderGolem_Pattern1 : BossPatternBase
     public float spearRadius = 10f;     // 송곳 1개당 피격 반경 (넓게 덮어서 중앙만 살게 유도)
     public float spearExplodeTime = 3f;
 
-    public ElderGolem_Pattern1(GameObject warning1, GameObject warning2, GameObject stoneSpear)
+    public ElderGolem_Pattern1(GameObject warning1, GameObject warning2, GameObject stoneSpear, GameObject effect)
     {
         patternName = "Normal1";
-        cooldown = 30f;
+        cooldown = 10f;
         weight = 30f;
         range = 5f;
 
         this.warning1 = warning1;
         this.warning2 = warning2;
         this.stoneSpear = stoneSpear;
+        this.effect = effect;
     }
 
     public override void Execute(BossModel boss)
@@ -46,6 +49,8 @@ public class ElderGolem_Pattern1 : BossPatternBase
     private IEnumerator PatternRoutine(BossModel boss)
     {
         boss.Anim.SetTrigger("Pattern1");
+
+        AudioManager.instance.PlaySFX(C_Enums.SFX_List.Elder_N1);
 
         boss.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
 
@@ -81,6 +86,13 @@ public class ElderGolem_Pattern1 : BossPatternBase
 
         yield return new WaitForSeconds(0.2f);
 
+        GameObject effect1 = GameObject.Instantiate(effect, leftWarningPos, Quaternion.identity);
+        boss.patternObjects.Add(effect1);
+        boss.StartCoroutine(DestroyEffect(effect1,1f));
+        GameObject effect2 = GameObject.Instantiate(effect, rightWarningPos,Quaternion.identity);
+        boss.patternObjects.Add(effect2);
+        boss.StartCoroutine(DestroyEffect(effect2, 1f));
+
         Vector3 playerPos = boss.Target.transform.position;
         
         if (Vector3.Distance(leftHandPos, playerPos) <= smashRadius &&
@@ -113,6 +125,8 @@ public class ElderGolem_Pattern1 : BossPatternBase
         }
 
         yield return new WaitForSeconds(spearExplodeTime);
+
+
 
         CheckSpearDamage(boss, spearPositions, center);
 
@@ -207,6 +221,12 @@ public class ElderGolem_Pattern1 : BossPatternBase
         projector.size = targetSize;
     }
 
+    private IEnumerator DestroyEffect(GameObject effect, float remainTime)
+    {
+        yield return new WaitForSeconds(remainTime);
+        GameObject.Destroy(effect);
+    }
+
     private void CheckSpearDamage(BossModel boss, List<Vector3> spearPositions, Vector3 pushCenter)
     {
         if (boss.Target == null || boss.Target.isDie) return;
@@ -223,6 +243,13 @@ public class ElderGolem_Pattern1 : BossPatternBase
             }
         }
 
+        foreach(Vector3 pos in spearPositions)
+        {
+            GameObject expEffect = GameObject.Instantiate(effect, pos, Quaternion.identity);
+            boss.patternObjects.Add(expEffect);
+            boss.StartCoroutine(DestroyEffect(expEffect, 1f));
+        }
+
         if (hitBySpear)
         {
             boss.Target.Damaged(0.3f, true); // 30% 피해
@@ -233,14 +260,148 @@ public class ElderGolem_Pattern1 : BossPatternBase
 
 public class ElderGolem_Pattern2 : BossPatternBase
 {
-    public ElderGolem_Pattern2()
-    {
+    [Header("패턴 프리팹 세팅")]
+    public GameObject rockPrefab;          // 생성될 바위 프리팹
+    public GameObject rockExplodeEffect;   // 바위가 바닥에 부딪히거나 플레이어에 맞았을 때 터질 이펙트
 
+    [Header("원형 배치 세팅")]
+    public float circleRadius = 30f;       // 바위가 생성될 원형 테두리 반지름
+    public float rockScale = 5f;           // 바위 크기
+
+    [Header("발사 속도 및 타이밍 세팅")]
+    public float spawnInterval = 0.2f;     // 바위가 하나씩 스폰되는 간격 (동시 생성이면 0)
+    public float readyTime = 1.5f;         // 8개 배치 완료 후 발사 전까지 대기 시간
+    public float launchInterval = 1f;    // 바위가 한 발씩 날아가는 시간 간격 (엇박 연출용)
+    public float rockSpeed = 30f;          // 바위가 날아가는 속도
+    public float rockDamagePercent = 0.4f; // 바위 피격 시 체력 40% 피해
+    public float rockLifetime = 3.0f;
+
+    public ElderGolem_Pattern2(GameObject rockPrefab)
+    {
+        patternName = "Normal2";
+        cooldown = 40f;
+        weight = 25f;
+        range = 35f;
+
+        this.rockPrefab = rockPrefab;
     }
 
     public override void Execute(BossModel boss)
     {
-        base.Execute(boss);
+        lastUsedTime = Time.time;
+        boss.StartCoroutine(PatternRoutine(boss));
+    }
+
+    private IEnumerator PatternRoutine(BossModel boss)
+    {
+
+        boss.Agent.enabled = false;
+        boss.Anim.SetBool("Pattern2", true);
+
+        AudioManager.instance.PlaySFX(C_Enums.SFX_List.Elder_N2);
+
+        Vector3 centerPos = boss.bossSpawnPoint.position; // 맵 중앙 좌표
+        centerPos.y = boss.transform.position.y;
+        boss.transform.position = centerPos;
+
+        List<GameObject> rocks = new List<GameObject>();
+        
+        for (int i = 0; i<8;i++)
+        {
+            float angle = i * 45f;
+            float rad = angle * Mathf.Deg2Rad;
+
+            Vector3 offset = new Vector3(Mathf.Sin(rad), 0f, Mathf.Cos(rad)) * circleRadius;
+            Vector3 spawnPos = centerPos + offset;
+            spawnPos.y = centerPos.y + 0.5f;
+
+            GameObject rock = GameObject.Instantiate(rockPrefab, spawnPos, Quaternion.identity);
+            rock.transform.localScale = Vector3.zero;
+
+            boss.patternObjects.Add(rock);
+            rocks.Add(rock);
+
+            boss.StartCoroutine(ScaleUpRock(rock, rockScale, 0.5f));
+            
+            if (spawnInterval > 0f) yield return new WaitForSeconds(spawnInterval);
+        }
+
+        yield return new WaitForSeconds(readyTime);
+
+        List<int> launchOrder = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7 };
+
+        for (int i = launchOrder.Count -1; i > 0; i--)
+        {
+            int rnd = Random.Range(0, i + 1);
+            int temp = launchOrder[i];
+            launchOrder[i] = launchOrder[rnd];
+            launchOrder[rnd] = temp;
+        }
+
+        foreach (int index in launchOrder)
+        {
+            GameObject rock = rocks[index];
+            
+            if (rock == null || boss.Target == null || boss.Target.isDie) continue;
+
+            boss.StartCoroutine(FlyRockRoutine(boss, rock, boss.Target));
+
+            yield return new WaitForSeconds(launchInterval);
+        }
+
+        boss.Anim.SetBool("Pattern2", false);
+
+
+        yield return new WaitForSeconds(4.0f);
+
+        boss.Agent.enabled = true;
+        boss.OnPatternEnd();
+    }
+
+    private IEnumerator ScaleUpRock(GameObject rock, float targetScale, float duration)
+    {
+        float t = 0f;
+        while (t < duration)
+        {
+            if (rock == null) yield break;
+            t += Time.deltaTime;
+            rock.transform.localScale = Vector3.Lerp(Vector3.zero, Vector3.one * targetScale, t / duration);
+            yield return null;
+        }
+        if (rock != null) rock.transform.localScale = Vector3.one * targetScale;
+    }
+
+    private IEnumerator FlyRockRoutine(BossModel boss, GameObject rock, CharacterModel target)
+    {
+        if (rock == null || target == null) yield break;
+
+        Vector3 startPos = rock.transform.position;
+        Vector3 targetPos = target.transform.position;
+        targetPos.y = startPos.y; // 수평으로만 날아가도록 Y 고정
+
+        Vector3 flyDirection = (targetPos - startPos).normalized;
+
+        // 바위가 날아갈 정면을 바라보게 회전
+        rock.transform.LookAt(rock.transform.position + flyDirection);
+
+        float t = 0f;
+
+        while (t < rockLifetime)
+        {
+            if (rock == null || target == null || target.isDie) yield break;
+
+            t += Time.deltaTime;
+
+            rock.transform.position += flyDirection * rockSpeed * Time.deltaTime;
+
+            yield return null;
+        }
+
+        if (rock != null)
+        {
+            boss.patternObjects.Remove(rock);
+            GameObject.Destroy(rock);
+        }
     }
 
     private IEnumerator FillWarning(Transform innerDecal, float fillTime)
@@ -271,6 +432,7 @@ public class ElderGolem_Pattern3 : BossPatternBase
     public GameObject centerAoePrefab; // 가운데 70씩 닳는 장판
     public GameObject lightOrbPrefab;  // 광명의 구 프리팹
     public GameObject warning;
+    public GameObject effect;
 
     [Header("이동 및 궤도 세팅")]
     public float outerRadius = 18f;    // 바깥쪽 구 궤도 반지름
@@ -286,16 +448,17 @@ public class ElderGolem_Pattern3 : BossPatternBase
     public float bigOrbScale = 8f;
     public float bigOrbSpinSpeed = 720.0f;
 
-    public ElderGolem_Pattern3(GameObject centerAoe, GameObject lightOrb, GameObject warning)
+    public ElderGolem_Pattern3(GameObject centerAoe, GameObject lightOrb, GameObject warning, GameObject effect)
     {
         patternName = "Normal3";
-        cooldown = 45f;
+        cooldown = 60f;
         weight = 20f;
         range = 30f;
 
         this.centerAoePrefab = centerAoe;
         this.lightOrbPrefab = lightOrb;
         this.warning = warning;
+        this.effect = effect;
     }
 
     public override void Execute(BossModel boss)
@@ -306,9 +469,11 @@ public class ElderGolem_Pattern3 : BossPatternBase
 
     private IEnumerator PatternRoutine(BossModel boss)
     {
-        boss.SetImmunity(true);
         boss.Agent.enabled = false;
         boss.Anim.SetBool("Pattern3", true);
+
+        AudioManager.instance.PlaySFX(C_Enums.SFX_List.Elder_N3);
+
 
         Vector3 centerPos = boss.bossSpawnPoint.position; // 맵 중앙 좌표
         centerPos.y = boss.transform.position.y;
@@ -534,6 +699,10 @@ public class ElderGolem_Pattern3 : BossPatternBase
             
         }
 
+        GameObject effect = GameObject.Instantiate(this.effect, finalExplosionPos, Quaternion.identity);
+        boss.patternObjects.Add(effect);
+        boss.StartCoroutine(DestroyEffect(effect,2f));
+
         // =========================================================================
         // 🌟 종료 연출
         // =========================================================================
@@ -566,7 +735,6 @@ public class ElderGolem_Pattern3 : BossPatternBase
 
         yield return new WaitForSeconds(3f);
 
-        boss.SetImmunity(false);
         boss.Agent.enabled = true;
         boss.OnPatternEnd();
     }
@@ -590,6 +758,12 @@ public class ElderGolem_Pattern3 : BossPatternBase
         }
 
         projector.size = targetSize;
+    }
+
+    private IEnumerator DestroyEffect(GameObject effect, float remainTime)
+    {
+        yield return new WaitForSeconds(remainTime);
+        GameObject.Destroy(effect);
     }
 }
 

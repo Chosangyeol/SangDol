@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b34247faa7bd69d44bd1c88d1e822fdc, type: 3}
   m_Name: TestBoss
   m_EditorClassIdentifier: 
-  enemyID: TestBoss
-  enemyName: "\uD14C\uC2A4\uD2B8\uC6A9 \uBCF4\uC2A4"
+  enemyID: Jester
+  enemyName: "\uC81C\uC2A4\uD130"
   isAggressive: 1
   canDown: 1
   maxHp: 10000
@@ -26,3 +26,4 @@ MonoBehaviour:
   attackRange: 2
   expAmount: 0
   goldAmount: 0
+  dropTableSO: {fileID: 0}

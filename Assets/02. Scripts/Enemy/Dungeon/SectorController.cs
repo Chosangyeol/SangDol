@@ -15,6 +15,9 @@ public class SectorController : MonoBehaviour
     [Header("섹터 보상 ( 다음 섹터 )")]
     public GameObject gateObject;
     public GameObject nextSectorTrigger;
+    public GameObject portalObject;
+    // 🌟 추가: 이 섹터가 끝나면 즉시 바톤을 이어받아 실행될 다음 섹터 컨트롤러
+    public SectorController nextSector;
 
     [Header("컷씬 연출")]
     public PlayableDirector cutsceneDirector; // 재생할 타임라인
@@ -37,6 +40,8 @@ public class SectorController : MonoBehaviour
             if (obj.TryGetComponent<ISectorCondition>(out var condition))
                 _conditions.Add(condition);
         }
+
+        if (portalObject != null) portalObject.SetActive(false);
     }
 
     public void ActivateSector()
@@ -44,18 +49,21 @@ public class SectorController : MonoBehaviour
         if (_isActivated || _isCleared) return;
         _isActivated = true;
 
+        if (DungeonManager.instance != null)
+        {
+            DungeonManager.instance.RegisterActiveSector(this);
+        }
+
         if (isSequential)
         {
-            // 순차 모드: 첫 번째 조건(전투)만 먼저 시작
-            Debug.Log("순차 모드 : 시작");
+            Debug.Log($"[{sectorName}] 순차 모드 : 시작");
             _currentConditionIndex = 0;
             _conditions[_currentConditionIndex].OnConditionStart();
             StartCoroutine(SequentialCheckRoutine());
         }
         else
         {
-            // 동시 모드: 기존 로직
-            Debug.Log("동시 모드 : 시작");
+            Debug.Log($"[{sectorName}] 동시 모드 : 시작");
             foreach (var c in _conditions) c.OnConditionStart();
             StartCoroutine(AllCheckRoutine());
         }
@@ -65,20 +73,21 @@ public class SectorController : MonoBehaviour
 
     public void ResetSector()
     {
-        // 1. 돌아가고 있던 체크 코루틴 강제 정지
         StopAllCoroutines();
 
-        // 2. 섹터 진행 상태 완벽 초기화
         _isActivated = false;
         _isCleared = false;
         _currentConditionIndex = 0;
 
-        // 3. 내부 조건들(보스, 적 스폰 등) 리셋
+        if (portalObject != null) portalObject.SetActive(false);
+
         foreach (var condition in _conditions)
         {
             if (condition is EnemySector es) es.ResetCondition();
             else if (condition is MiddleBossSector mbs) mbs.ResetCondition();
             else if (condition is FinalBossSector fbs) fbs.ResetCondition();
+            // 🌟 추가: 던전 실패/부활 리셋 시 이동 섹터 상태도 안전하게 리셋
+            else if (condition is MoveSector ms) ms.ResetCondition();
         }
 
         Debug.Log($"[{sectorName}] 섹터가 완벽하게 초기화되었습니다.");
@@ -88,12 +97,10 @@ public class SectorController : MonoBehaviour
     {
         while (!_isCleared)
         {
-            // 현재 단계의 조건이 만족되었는지 체크
             if (_conditions[_currentConditionIndex].IsSatisfied)
             {
                 _currentConditionIndex++;
 
-                // 모든 단계를 다 끝냈다면 클리어
                 if (_currentConditionIndex >= _conditions.Count)
                 {
                     OnSectorCleared();
@@ -101,7 +108,6 @@ public class SectorController : MonoBehaviour
                 }
                 else
                 {
-                    // 다음 단계(상호작용) 활성화
                     Debug.Log($"[Sector] 다음 단계 진입: {_currentConditionIndex}");
                     _conditions[_currentConditionIndex].OnConditionStart();
                     DungeonManager.instance.UpdateDungeonUI();
@@ -117,24 +123,21 @@ public class SectorController : MonoBehaviour
         {
             bool allSatisfied = true;
 
-            // 리스트에 있는 모든 조건(ISectorCondition)을 순회하며 체크
             foreach (var condition in _conditions)
             {
                 if (!condition.IsSatisfied)
                 {
                     allSatisfied = false;
-                    break; // 하나라도 만족 못 했다면 더 검사할 필요 없음
+                    break;
                 }
             }
 
-            // 모든 조건이 True라면 클리어 처리
             if (allSatisfied && _conditions.Count > 0)
             {
                 OnSectorCleared();
                 yield break;
             }
 
-            // 최적화를 위해 0.5초마다 체크
             yield return new WaitForSeconds(0.5f);
         }
     }
@@ -149,7 +152,6 @@ public class SectorController : MonoBehaviour
         }
         else
         {
-            // 컷씬이 없으면 기존처럼 바로 게이트 제거
             if (gateObject != null)
                 gateObject.SetActive(false);
 
@@ -159,17 +161,12 @@ public class SectorController : MonoBehaviour
 
     private IEnumerator PlayCutsceneSequence()
     {
-        // 1. 플레이어 입력 제한 (이미 만들어둔 model.canMove 등 활용)
-        // 2. 타임라인 재생
         cutsceneDirector.Play();
 
-        // 3. 타임라인이 끝날 때까지 대기
         yield return new WaitUntil(() => cutsceneDirector.state != PlayState.Playing);
 
-        // 4. 지형 변경 확정 (예: 애니메이션이 끝난 위치에서 콜라이더만 끔)
         if (navMeshSurface != null)
         {
-            // 업데이트된 지형을 기반으로 파란색 영역을 다시 계산합니다.
             navMeshSurface.UpdateNavMesh(navMeshSurface.navMeshData);
             if (gateObject != null) gateObject.SetActive(false);
             Debug.Log("NavMesh 실시간 업데이트 완료 - 다리 연결됨");
@@ -181,6 +178,20 @@ public class SectorController : MonoBehaviour
     private void FinishSector()
     {
         if (nextSectorTrigger != null) nextSectorTrigger.SetActive(true);
+
+        if (portalObject != null)
+        {
+            portalObject.SetActive(true);
+            Debug.Log($"[{sectorName}] 섹터 클리어 보상: 포탈 활성화!");
+        }
+
+        // 🌟 핵심 수정: 다음 섹터가 인스펙터에 연결되어 있다면 즉시 자동 가동시킵니다.
+        if (nextSector != null)
+        {
+            nextSector.ActivateSector();
+            Debug.Log($"[{sectorName}] 클리어 -> 다음 섹터 [{nextSector.sectorName}] 자동 활성화 완료!");
+        }
+
         DungeonManager.instance.OnSectorCleared(this);
     }
 }

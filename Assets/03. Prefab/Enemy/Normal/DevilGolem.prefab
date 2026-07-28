@@ -556,6 +556,7 @@ GameObject:
   - component: {fileID: 2406654977429417663}
   - component: {fileID: 585033301517224882}
   - component: {fileID: 6479206867031218077}
+  - component: {fileID: 9220727313846832874}
   m_Layer: 7
   m_Name: DevilGolem
   m_TagString: Untagged
@@ -644,6 +645,7 @@ MonoBehaviour:
   _groundLayer:
     serializedVersion: 2
     m_Bits: 64
+  _outlineComponent: {fileID: 0}
   spawnPoint: {fileID: 0}
   isAggressive: 0
   canAttack: 0
@@ -670,6 +672,24 @@ CapsuleCollider:
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 0.5, z: 0}
+--- !u!114 &9220727313846832874
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5858953201300902105}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMode: 0
+  outlineColor: {r: 1, g: 1, b: 1, a: 1}
+  outlineWidth: 2
+  precomputeOutline: 0
+  bakeKeys: []
+  bakeValues: []
 --- !u!1 &7512687143668896408
 GameObject:
   m_ObjectHideFlags: 0

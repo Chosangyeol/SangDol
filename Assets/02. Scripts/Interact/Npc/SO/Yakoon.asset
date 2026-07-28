@@ -15,6 +15,7 @@ MonoBehaviour:
   npcID: 30006
   npcName: "\uC57C\uD054"
   defaultDialogID: D_30001_001
+  npcIncounterSound: {fileID: 0}
   hasShop: 0
   shopID: 
   canUpgrade: 0
@@ -23,19 +24,4 @@ MonoBehaviour:
   canTeleport: 0
   teleportTargets: []
   talkDialogID: D_30001_002
-  npcQuests:
-  - questID: Q_30001_001
-    requiredQuestID: 
-    startDialogID: D_30001_003
-    inProgressDialogueID: D_30001_009
-    clearDialogueID: D_30001_010
-  - questID: Q_30001_002
-    requiredQuestID: 
-    startDialogID: D_30001_012
-    inProgressDialogueID: D_30001_015
-    clearDialogueID: D_30001_016
-  - questID: Q_30001_003
-    requiredQuestID: 
-    startDialogID: D_30001_018
-    inProgressDialogueID: D_30001_021
-    clearDialogueID: D_30001_022
+  npcQuests: []

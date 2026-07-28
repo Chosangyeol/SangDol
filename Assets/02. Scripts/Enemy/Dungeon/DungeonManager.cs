@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
@@ -6,6 +5,7 @@ using TMPro;
 using Unity.AI.Navigation;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Playables;
 using UnityEngine.Video;
 
 [System.Serializable]
@@ -20,6 +20,7 @@ public class WarpData
 
     [Header("보스전 전용")]
     public bool isBossRoom = false;
+
 
     [Header("연출 설정")]
     public bool hasVideo;
@@ -37,7 +38,7 @@ public class DungeonManager : MonoBehaviour
     [SerializeField] private int dungeonStepIndex = 0;
     [SerializeField] private List<WarpData> warpDatas = new List<WarpData>();
     private CharacterModel _model;
-    private Transform _playerRevivePos;
+    [SerializeField] private Transform _playerRevivePos;
 
     [Header("던전 구성")]
     public string dungeonName;
@@ -45,6 +46,9 @@ public class DungeonManager : MonoBehaviour
     public int currentSector = 0;
     public bool isEnterStart = true;
     [SerializeField] PoolingListSO fieldEnemyListSO;
+    public AudioClip dungeonBGM;
+    public string outSpawnPointName;
+    public Sprite dungeonOutLoadingImage;
 
     [Header("던전 UI")]
     public GameObject dungeonUI;
@@ -54,7 +58,7 @@ public class DungeonManager : MonoBehaviour
     private void Awake()
     {
         if (instance == null) instance = this;
-        else Destroy(gameObject);  
+        else Destroy(gameObject);
     }
 
     private void Start()
@@ -74,17 +78,36 @@ public class DungeonManager : MonoBehaviour
             StartCoroutine(StartDungeon());
     }
 
+    // 🌟 신규 추가: 어떤 경로로든 섹터가 '활성화'되면 매니저의 인덱스를 강제로 동기화합니다.
+    // 이 함수 덕분에 SectorController나 WarpData가 제멋대로 다음 섹터를 켜도 인덱스가 절대 꼬이지 않습니다.
+    public void RegisterActiveSector(SectorController activeSector)
+    {
+        int index = allSectors.IndexOf(activeSector);
+        if (index != -1)
+        {
+            currentSector = index;
+            Debug.Log($"<color=green>[DungeonManager] 현재 활성 섹터 동기화 완료: Index [{currentSector}] - {activeSector.sectorName}</color>");
+        }
+    }
+
     public void OnSectorCleared(SectorController sector)
     {
         int clearedIndex = allSectors.IndexOf(sector);
 
-        if (clearedIndex >= allSectors.Count-1)
+        // 던전의 마지막 섹터를 클리어했는지 검사
+        if (clearedIndex >= allSectors.Count - 1)
         {
             OnDungeonComplete();
         }
         else
         {
-            currentSector = clearedIndex + 1;
+            // 💡 팁: 이제 개별 섹터가 체인 형식으로 다음 섹터를 직접 켜주므로, 
+            // 여기서는 안전하게 인덱스 백업 및 UI 최신화만 보조합니다.
+            if (currentSector == clearedIndex)
+            {
+                currentSector = clearedIndex + 1;
+            }
+            UpdateDungeonUI();
         }
     }
 
@@ -92,13 +115,29 @@ public class DungeonManager : MonoBehaviour
     {
         yield return new WaitForSeconds(2f);
 
-
-        allSectors[0].ActivateSector();
+        if (allSectors.Count > 0 && allSectors[0] != null)
+        {
+            allSectors[0].ActivateSector();
+            if (dungeonBGM != null)
+            {
+                AudioManager.instance.PlayBGM(dungeonBGM);
+            }
+        }
     }
+
     private void OnDungeonComplete()
     {
         Debug.Log("★ 던전의 모든 위협을 제거했습니다! ★");
-        // 결과창 UI 출력, 포탈 생성 등
+        // 결과창 UI 출력, 클리어 포탈 생성 등 기획 추가 구간
+
+
+        StartCoroutine(DungeonOut());
+    }
+
+    IEnumerator DungeonOut()
+    {
+        yield return new WaitForSeconds(5f);
+        SceneChanger.instance.LoadScene("Map1-Forest", outSpawnPointName, dungeonOutLoadingImage);
     }
 
     #region 워프
@@ -113,18 +152,14 @@ public class DungeonManager : MonoBehaviour
         dungeonStepIndex = index;
 
         _model.PlayerController.StopMove();
-
         _model.SetControlable(false);
 
         if (warpDatas[index].playerRespawn != null)
             _playerRevivePos = warpDatas[index].playerRespawn;
 
         GameEvent.OnBossRoomEnterCount?.Invoke(true, 0f);
-
         yield return new WaitForSeconds(2f);
-
         GameEvent.OnBossRoomEnterCount?.Invoke(false, 0f);
-
         yield return new WaitForSeconds(1f);
 
         if (warpDatas[index].hasAudio)
@@ -133,32 +168,19 @@ public class DungeonManager : MonoBehaviour
         if (warpDatas[index].hasVideo && !warpDatas[index].hasPlayed)
         {
             VideoPlayManager.instance.PlayVideo(warpDatas[index].clip);
-
-
             yield return new WaitUntil(() => !VideoPlayManager.instance.isPlaying);
-
-            // 3. 다음번에 워프할 때는 다시 재생되지 않도록 true로 바꿔줍니다.
             warpDatas[index].hasPlayed = true;
         }
 
         _model.transform.position = warpDatas[index].targetPos.position;
         _model.cams[0].PreviousStateIsValid = false;
-
-        // 2. 조작 해제
         _model.SetControlable(true);
 
         if (data.nextSector != null)
         {
+            // 🌟 여기서 섹터가 켜지면서 RegisterActiveSector를 타고 currentSector가 안전하게 매핑됩니다.
             data.nextSector.ActivateSector();
         }
-    }
-
-    private IEnumerator MonitorBossClear(EnemySector bossSector)
-    {
-        yield return new WaitUntil(() => bossSector.IsSatisfied);
-
-        Debug.Log("★ 보스 처치 완료! 던전 최종 클리어 ★");
-        // 여기에 결과창 UI나 보상 연출 추가
     }
 
     public void ReplacePlayer()
@@ -173,6 +195,8 @@ public class DungeonManager : MonoBehaviour
 
         yield return new WaitForSeconds(3f);
 
+        AudioManager.instance.PlayBGM(dungeonBGM);
+
         if (_playerRevivePos != null)
         {
             _model.transform.position = _playerRevivePos.position;
@@ -186,7 +210,7 @@ public class DungeonManager : MonoBehaviour
 
         if (allSectors != null && currentSector < allSectors.Count)
         {
-            Debug.Log("기존 섹터 초기화 시작");
+            Debug.Log($"기존 섹터 [{allSectors[currentSector].sectorName}] 초기화 시작");
             SectorController current = allSectors[currentSector];
 
             current.ResetSector();
@@ -205,20 +229,23 @@ public class DungeonManager : MonoBehaviour
     #endregion
 
     #region 던전 UI
-
     public void UpdateDungeonUI()
     {
+        if (allSectors == null || allSectors.Count <= currentSector || allSectors[currentSector] == null) return;
+
         dungeonUI.SetActive(true);
 
         SectorController nowSector = allSectors[currentSector];
-        ISectorCondition currentCondition = nowSector.conditions[nowSector.currentConditionIndex];
 
-        sectorName.text = nowSector.sectorName;
+        // 🌟 예외 방어막: 섹터가 클리어되어 조건 인덱스가 넘쳤을 때의 OutOfBounds 에러를 방지합니다.
+        int conditionIdx = Mathf.Clamp(nowSector.currentConditionIndex, 0, nowSector.conditions.Count - 1);
 
-        sectorGoal.text = currentCondition.GetProgressString();
+        if (nowSector.conditions.Count > 0 && nowSector.conditions[conditionIdx] != null)
+        {
+            ISectorCondition currentCondition = nowSector.conditions[conditionIdx];
+            sectorName.text = nowSector.sectorName;
+            sectorGoal.text = currentCondition.GetProgressString();
+        }
     }
-
     #endregion
-
-
 }

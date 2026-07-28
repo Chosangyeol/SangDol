@@ -45,6 +45,9 @@ public class C_Input
 
     public void OnSkillKeyDown(C_Enums.SkillSlot skillSlot, Vector2 screenPos)
     {
+        if (skillSlot == C_Enums.SkillSlot.A || skillSlot == C_Enums.SkillSlot.S || skillSlot == C_Enums.SkillSlot.D || skillSlot == C_Enums.SkillSlot.F)
+            return;
+
         _model.CancelInteraction();
 
         if (!GetMouseInput(screenPos, out var point))

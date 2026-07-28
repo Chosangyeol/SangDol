@@ -11,6 +11,9 @@ public class EnemyBase : PoolableMono
     [SerializeField] protected LayerMask _playerLayer;
     [SerializeField] protected LayerMask _groundLayer;
 
+    [Header("외곽선 컴포넌트 참조")]
+    [SerializeField] public Outline _outlineComponent;
+
     protected bool _isDead = false;
     public bool IsDead => _isDead;
 
@@ -31,6 +34,8 @@ public class EnemyBase : PoolableMono
         _stat = new EnemyStat(statSO,this);
         _target = FindAnyObjectByType<CharacterModel>();
         _anim = GetComponentInChildren<Animator>();
+        if (_outlineComponent == null) _outlineComponent = GetComponentInChildren<Outline>();
+        if (_outlineComponent != null) _outlineComponent.enabled = false;
     }
 
     protected virtual void Start()
@@ -55,6 +60,23 @@ public class EnemyBase : PoolableMono
         }
     }
 
+    public virtual void ToggleOutline(bool enable)
+    {
+        if (_outlineComponent == null || _isDead) return;
+
+        // 외곽선 컴포넌트 활성화/비활성화
+        _outlineComponent.enabled = enable;
+
+        // 🌟 로스트아크 디테일: 외곽선 색상을 빨간색으로 고정
+        _outlineComponent.OutlineColor = Color.red;
+        _outlineComponent.OutlineWidth = 4f; // 두께 조절
+
+        if (enable)
+        {
+            Debug.Log($"<color=yellow>[하이라이트] {gameObject.name}에게 마우스 호버됨!</color>");
+        }
+    }
+
     public virtual void Damaged(SDamageInfo info)
     {
         if (_isDead) return;
@@ -68,6 +90,7 @@ public class EnemyBase : PoolableMono
 
         if (_stat.curHp <= 0)
         {
+            ToggleOutline(false);
             Die(info.source);
         }
     }

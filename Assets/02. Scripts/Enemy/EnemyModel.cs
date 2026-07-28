@@ -35,16 +35,45 @@ public class EnemyModel : EnemyBase
         stateMachine = new StateMachine(this);
     }
 
+    private void OnEnable()
+    {
+        GameEvent.OnPlayerDie += ResetAggro;
+    }
+
+    private void OnDisable()
+    {
+        GameEvent.OnPlayerDie -= ResetAggro;
+    }
+
     protected override void Start()
     {
         base.Start();
-
         _agent.speed = _stat.moveSpeed;
+    }
+
+    private void ResetAggro()
+    {
+        // 1. 이미 죽은 몬스터라면 초기화 연산을 건너뜁니다.
+        if (_isDead) return;
+
+        Debug.Log($"[{gameObject.name}] 플레이어 사망 인지: 어그로를 초기화하고 제자리로 복귀합니다.");
+
+        // 2. 기본 호전성 및 어그로 비활성화
+        isAggressive = false;
+
+        // 3. 현재 플레이어를 패고 있거나(Attack) 쫓아가는 중(Chase)이었다면 즉시 집으로 돌려보냅니다.
+        if (curState == EState.Chase || curState == EState.Attack)
+        {
+            curState = EState.Return;
+            if (stateMachine != null)
+            {
+                stateMachine.ChangeState(new ReturnState(this));
+            }
+        }
     }
 
     private void Update()
     {
-
         if (_isDead)
         {
             stateMachine.UpdateState();

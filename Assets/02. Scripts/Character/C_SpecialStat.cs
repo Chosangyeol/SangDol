@@ -63,8 +63,8 @@ public class C_SpecialStat
                 break;
             // 이동 / 공격속도 증가
             case C_Enums.SpecialStat.S2:
-                _model.AddStat(C_Enums.CharacterStat.MoveSpeed, true, 0.1f);
-                _model.AddStat(C_Enums.CharacterStat.AttackSpeed, true, 0.05f);
+                _model.AddStat(C_Enums.CharacterStat.MoveSpeed, true, 0.02f);
+                _model.AddStat(C_Enums.CharacterStat.AttackSpeed, true, 0.04f);
                 break;
             // 무력화 피해량 증가
             case C_Enums.SpecialStat.S3:
@@ -76,8 +76,8 @@ public class C_SpecialStat
                 _model.AddStat(C_Enums.CharacterStat.CriticalDamage, false, 0.05f);
                 break;
             case C_Enums.SpecialStat.S5:
-                _model.AddStat(C_Enums.CharacterStat.MaxHp, false, 0.05f);
-                _model.AddStat(C_Enums.CharacterStat.DamageTakeMultiplier, false, 0.03f);
+                _model.AddStat(C_Enums.CharacterStat.MaxHp, true, 0.05f);
+                _model.AddStat(C_Enums.CharacterStat.DamageTakeMultiplier, false, 0.01f);
                 break;
         }
     }
@@ -88,9 +88,23 @@ public class C_SpecialStat
 
         _usedPoint = 0;
 
-        _model.RemoveStat(C_Enums.CharacterStat.AttackDamage, false, 0.03f * _currentStatState[C_Enums.SpecialStat.S1]);
+        _model.RemoveStat(C_Enums.CharacterStat.AttackDamage, true, 0.03f * _currentStatState[C_Enums.SpecialStat.S1]);
 
-        _model.RemoveStat(C_Enums.CharacterStat.MoveSpeed, true, 0.1f * _currentStatState[C_Enums.SpecialStat.S2]);
-        _model.RemoveStat(C_Enums.CharacterStat.AttackSpeed, true, 0.05f * _currentStatState[C_Enums.SpecialStat.S2]);
+        _model.RemoveStat(C_Enums.CharacterStat.MoveSpeed, true, 0.02f * _currentStatState[C_Enums.SpecialStat.S2]);
+        _model.RemoveStat(C_Enums.CharacterStat.AttackSpeed, true, 0.04f * _currentStatState[C_Enums.SpecialStat.S2]);
+
+        _model.RemoveStat(C_Enums.CharacterStat.DownPower, true, 0.05f * _currentStatState[C_Enums.SpecialStat.S3]);
+
+        _model.RemoveStat(C_Enums.CharacterStat.CriticalChance, false, 0.02f * _currentStatState[C_Enums.SpecialStat.S4]);
+        _model.RemoveStat(C_Enums.CharacterStat.CriticalDamage, false, 0.05f * _currentStatState[C_Enums.SpecialStat.S4]);
+
+        _model.RemoveStat(C_Enums.CharacterStat.MaxHp, true, 0.05f * _currentStatState[C_Enums.SpecialStat.S5]);
+        _model.RemoveStat(C_Enums.CharacterStat.DamageTakeMultiplier, false, 0.01f * _currentStatState[C_Enums.SpecialStat.S4]);
+
+        _currentStatState[C_Enums.SpecialStat.S1] = 0;
+        _currentStatState[C_Enums.SpecialStat.S2] = 0;
+        _currentStatState[C_Enums.SpecialStat.S3] = 0;
+        _currentStatState[C_Enums.SpecialStat.S4] = 0;
+        _currentStatState[C_Enums.SpecialStat.S5] = 0;
     }
 }

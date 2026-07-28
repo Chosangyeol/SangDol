@@ -58,17 +58,22 @@ public class Skill_4 : ChargeSkillBase
             EnemyBase enemy = target.GetComponentInParent<EnemyBase>();
             if (enemy != null)
             {
-                // 1. 끌어당기기 (플레이어 방향으로 살짝 이동)
-                Vector3 pullDir = (_model.transform.position - enemy.transform.position).normalized;
-                pullDir.y = 0; // Y축(높이)은 건드리지 않음
+                float damageBase = _model.Stat.Stat.attackDamage.FinalValue * 2.0f;
 
-                // (주의: 적이 NavMeshAgent나 Rigidbody를 쓴다면 그에 맞춰서 이동 코드를 변경해야 합니다)
-                enemy.transform.position = Vector3.MoveTowards(enemy.transform.position, _model.transform.position, 1.5f);
+                if (_model.Stigma != null && _model.Stigma.HasStigma(EStigmaType.Lv8_B))
+                {
+                    // 현재 체력 비율 계산 (0 ~ 1 사이)
+                    float hpPercent = (float)_model.Stat.Stat.curHp / _model.Stat.Stat.maxHp.FinalValue;
+                    if (hpPercent <= 0.3f)
+                    {
+                        damageBase *= 1.3f; // 주는 피해 30% 증가
+                    }
+                }
 
                 // 2. 다단히트 데미지 (공격력의 200% = 2.0f)
                 SDamageInfo damageInfo = new SDamageInfo
                 {
-                    damage = _model.Stat.Stat.attackDamage.FinalValue * 2.0f, // 200% 고정
+                    damage = damageBase,
                     source = _model.gameObject,
                     knockDownPower = 0, // 홀딩 중에는 넘어뜨리지 않음
                     isCounterable = false,
@@ -104,6 +109,7 @@ public class Skill_4 : ChargeSkillBase
             _model.canMove = false;
             _model.PlayerController.StopMove();
             _model.Anim.SetTrigger("Skill4_Perfect");
+            AudioManager.instance.PlaySFX(C_Enums.SFX_List.Player_Skill4);
             _model.StartCoroutine(Effect2(skillData.skillEffects[1], _model.transform.position));
             if (spinEffect != null)
             {
@@ -111,9 +117,7 @@ public class Skill_4 : ChargeSkillBase
                 PoolManager.Instance.Push(spinEffect);
                 spinEffect = null;
             }
-            // 공중으로 도약 후 하이힐로 찍는 애니메이션 실행
-            // 이 애니메이션 안에 AnimEvent_ExecuteSkillAttack() 이벤트가 심어져 있어야 합니다.
-            //_model.Anim.SetTrigger("SkillR_PerfectShot");
+            
         }
         else
         {

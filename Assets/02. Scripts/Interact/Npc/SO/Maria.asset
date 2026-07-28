@@ -25,8 +25,8 @@ MonoBehaviour:
   teleportTargets: []
   talkDialogID: D_30001_002
   npcQuests:
-  - questID: Q_30001_001
+  - questID: Q_30001_002
     requiredQuestID: 
-    startDialogID: D_30001_001
+    startDialogID: D_30002_002
     inProgressDialogueID: 
-    clearDialogueID: D_30002_002
+    clearDialogueID: D_30002_008

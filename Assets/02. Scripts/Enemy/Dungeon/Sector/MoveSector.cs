@@ -25,7 +25,6 @@ public class MoveSector : MonoBehaviour, ISectorCondition
     {
         _isCleared = false;
 
-        // 섹터가 시작되면 어디로 가야 할지 시각적으로 보여줍니다.
         if (goalVisualEffect != null) goalVisualEffect.SetActive(true);
 
         Debug.Log("[GoalSector] 목표 지점으로 이동하세요.");
@@ -49,5 +48,11 @@ public class MoveSector : MonoBehaviour, ISectorCondition
     {
         // 로아 스타일: "적 처치 3 / 10"
         return $"{SectorGoal}";
+    }
+
+    public void ResetCondition()
+    {
+        _isCleared = false;
+        if (goalVisualEffect != null) goalVisualEffect.SetActive(false);
     }
 }

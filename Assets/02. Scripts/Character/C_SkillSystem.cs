@@ -75,6 +75,15 @@ public class C_SkillSystem
     {
         if (!_model.canMove) return;
 
+        if (_model.Stigma != null && _model.Stigma.HasStigma(EStigmaType.Lv10_B))
+        {
+            if (slot == C_Enums.SkillSlot.W || slot == C_Enums.SkillSlot.E || slot == C_Enums.SkillSlot.R)
+            {
+                Debug.Log($"<color=red>[유아독존] {slot} 스킬은 봉인되어 사용할 수 없습니다.</color>");
+                return;
+            }
+        }
+
         SkillBase targetSkill = GetSkillToSlot(slot);
 
         if (targetSkill != null)
@@ -83,7 +92,10 @@ public class C_SkillSystem
             {
                 if (slot == C_Enums.SkillSlot.Space)
                     _model.UseDodge();
+
+                _model.TriggerSkillUsed();
             }
+           
         }
         else
         {
@@ -157,7 +169,7 @@ public class C_SkillSystem
 
     public void LevelUpSkill(SkillBase skill)
     {
-        if (_model.Stat.Stat.skillPoint < 1) return;
+        if (_model.Stat.Stat.remainSkillPoint < 1) return;
 
         SkillBase targetSkill = hasSkillData.Find(x => x == skill);
 

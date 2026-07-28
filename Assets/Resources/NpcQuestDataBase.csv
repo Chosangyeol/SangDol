@@ -1,4 +1,4 @@
 ﻿Quest_ID,Quest_Name,Quest_Dialog,Quest_ClearNpcID,Quest_Type,Quest_Target ,Quest_Count ,Quest_TargetName,Reward_Gold,Reward_Exp,Reward1_Item,Reward1_Count,Reward2_Item,Reward2_Count,Reward3_Item,Reward3_Count
 Q_30001_001,모험의 시작,눈을 뜨니까 처음 보는 마을이다. 마리아에게 가보자.,30002,Talk,30002,,마리아,100,30,,,,,,
-Q_30001_002,슬라임 토벌,퀘스트 설명_Q_30001_002,,Kill,Slime,5,슬라임,100,100,10002,1,10003,1,,
-Q_30001_003,식량 모으기,퀘스트 설명_Q_30001_003,,Item,20001,5,테스트,100,100,,,,,,
+Q_30001_002,제철 사과,"상인에게 '잘 익은 사과' 1개를 구입해, 마리아에게 주자.",30002,Item,20008,1,잘 익은 사과,200,200,20001,20,,,,
+Q_30001_003,늑대 사냥,다일을 도와 마을 주변의 늑대를 5마리 처치하자.,30004,Kill,Wolf,5,늑대,500,400,10008,1,,,,

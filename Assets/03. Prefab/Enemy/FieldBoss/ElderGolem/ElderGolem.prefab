@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 8420764457606298822}
   - component: {fileID: 3223739368702738648}
   - component: {fileID: 4553575041562389235}
+  - component: {fileID: 354254071950064151}
   m_Layer: 7
   m_Name: ElderGolem
   m_TagString: Boss
@@ -33,8 +34,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 6619395660697970811}
   - {fileID: 8228848961756137695}
+  - {fileID: 6619395660697970811}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!195 &2184620072175210217
@@ -79,6 +80,7 @@ MonoBehaviour:
   _groundLayer:
     serializedVersion: 2
     m_Bits: 64
+  _outlineComponent: {fileID: 354254071950064151}
   bossSpawnPoint: {fileID: 0}
   isStatic: 0
   isImmunity: 0
@@ -101,12 +103,19 @@ MonoBehaviour:
       type: 3}
     stoneSpear: {fileID: 3267542341917986316, guid: 42cb25994706f2143a85e537a9d428e3,
       type: 3}
+    explosiveEffect: {fileID: 1210069404974878, guid: dc3a5a16ac1a5384084ce305d1739f4d,
+      type: 3}
+  Pattern2Data:
+    rockPrefab: {fileID: 6469871857681818298, guid: 240c14b20de210144b0dbf0190775de3,
+      type: 3}
   Pattern3Data:
     centerAoe: {fileID: 6028300305463700109, guid: 8b739c9833d28f54ea352beb0ee47b79,
       type: 3}
     lightOrb: {fileID: 2707066863232847996, guid: 94d515e4233382e419c91478f12d1e4c,
       type: 3}
     warning: {fileID: 3610537731222085987, guid: 6bd31190299df0e4bb61d44f20f4fa97,
+      type: 3}
+    effect: {fileID: 3943272759518071520, guid: 8d452129e26cb744aacbf6e3fead9862,
       type: 3}
 --- !u!54 &3223739368702738648
 Rigidbody:
@@ -157,7 +166,25 @@ CapsuleCollider:
   m_Radius: 3
   m_Height: 12
   m_Direction: 1
-  m_Center: {x: 0, y: 6, z: 0}
+  m_Center: {x: 0, y: 3, z: 0}
+--- !u!114 &354254071950064151
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7234416739903266030}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMode: 0
+  outlineColor: {r: 1, g: 0, b: 0, a: 1}
+  outlineWidth: 2
+  precomputeOutline: 0
+  bakeKeys: []
+  bakeValues: []
 --- !u!1 &7355052272610983941
 GameObject:
   m_ObjectHideFlags: 0
@@ -168,7 +195,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8228848961756137695}
   m_Layer: 7
-  m_Name: TestSpawn
+  m_Name: TextSpawn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -182,8 +209,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7355052272610983941}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 4.3, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 7.15, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -561,6 +588,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: -8.041239
+      objectReference: {fileID: 0}
+    - target: {fileID: 3720593270802103293, guid: 30a447625a5fa9a499d341a0d9ae432f,
+        type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3805926865685640814, guid: 30a447625a5fa9a499d341a0d9ae432f,
         type: 3}

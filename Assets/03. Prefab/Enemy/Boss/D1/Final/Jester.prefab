@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7691440301670344250}
   - component: {fileID: 4293196031249674694}
   - component: {fileID: 5196441583648147929}
+  - component: {fileID: 5939842980865708773}
   m_Layer: 7
   m_Name: Jester
   m_TagString: Boss
@@ -79,12 +80,15 @@ MonoBehaviour:
   _groundLayer:
     serializedVersion: 2
     m_Bits: 64
+  _outlineComponent: {fileID: 0}
   bossSpawnPoint: {fileID: 0}
   isStatic: 0
   isImmunity: 0
   isDoingSpecial: 0
   isKnockDown: 0
   isCutsceneFinished: 0
+  isInField: 0
+  isCombatStarted: 0
   counterEffectPrefab: {fileID: 1056961428222709483, guid: b7ed08f8029ea6a408d083725ec62364,
     type: 3}
   counterEffectSpawnPos: {fileID: 0}
@@ -167,6 +171,10 @@ MonoBehaviour:
     warning1: {fileID: 2403169642111090254, guid: 2299572776eb07d4aa488fc394923bb7,
       type: 3}
     warning2: {fileID: 3338519333612958456, guid: e0d3cbdd81b10c446bc6775ea3f200df,
+      type: 3}
+    effect1: {fileID: 8170752514618103492, guid: 04c1ba927acadad4bb6c934132c823e9,
+      type: 3}
+    effect2: {fileID: 8170752514618103492, guid: 5c3c17cd10bee6549a4b16e92d5e4df4,
       type: 3}
   pattern5:
     hat: {fileID: 0}
@@ -261,6 +269,24 @@ CapsuleCollider:
   m_Height: 5
   m_Direction: 1
   m_Center: {x: 0, y: 2.5, z: 0}
+--- !u!114 &5939842980865708773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4660680545929352888}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMode: 0
+  outlineColor: {r: 1, g: 1, b: 1, a: 1}
+  outlineWidth: 2
+  precomputeOutline: 0
+  bakeKeys: []
+  bakeValues: []
 --- !u!1 &6095543473076491775
 GameObject:
   m_ObjectHideFlags: 0

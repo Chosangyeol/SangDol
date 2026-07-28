@@ -44,6 +44,8 @@ public class D1_Final_Normal4Data
     public float damagePercent = 0.2f;
     public GameObject warning1;
     public GameObject warning2;
+    public GameObject effect1;
+    public GameObject effect2;
 }
 
 [System.Serializable]
@@ -687,9 +689,4 @@ public class D1_FinalBoss : BossModel
 
     #endregion
 
-    #region 일반 패턴
-
-
-
-    #endregion
 }

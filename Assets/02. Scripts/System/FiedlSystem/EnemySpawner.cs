@@ -43,7 +43,11 @@ public class EnemySpawner : MonoBehaviour
             Debug.Log("재배치");
             enemy.SetSpawnPoint(data.spanwPos);
             enemy.Reset();
-            enemy.Agent.Warp(data.spanwPos.position);
+
+            if (enemy.Agent.enabled)
+                enemy.Agent.Warp(data.spanwPos.position);
+            else
+                enemy.transform.position = data.spanwPos.position;
 
             spawnedEnemy.Add(enemy);
 

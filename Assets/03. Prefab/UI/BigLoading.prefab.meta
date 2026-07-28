@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 77659d498b43bae418c5744fc18d74f3
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 180688
+  packageName: Medieval Kingdom UI
+  packageVersion: 1.03
+  assetPath: Assets/MedievalKingdomUI/Prefabs/Indicators/BigLoading.prefab
+  uploadId: 861636

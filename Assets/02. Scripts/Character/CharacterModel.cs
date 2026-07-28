@@ -152,6 +152,16 @@ public class CharacterModel : MonoBehaviour
             playerController.StopMove();
             return;
         }
+
+        if (Input.GetKeyDown(KeyCode.F1))
+        {
+            GainExp(1000);
+        }
+
+        if (Input.GetKeyDown(KeyCode.F2))
+        {
+            Heal(1000);
+        }
     }
 
     public void SkillCorutaine(IEnumerator routine)
@@ -257,6 +267,7 @@ public class CharacterModel : MonoBehaviour
         while (true) // 마우스를 떼서 OnAttackEnd가 호출될 때까지 무한 반복
         {
             PerformRapidHit(); // 데미지 판정
+            AudioManager.instance.PlaySFX(C_Enums.SFX_List.Player_Iden_Attack);
             yield return new WaitForSeconds(attackTick); // 틱 주기만큼 대기
         }
     }
@@ -272,6 +283,21 @@ public class CharacterModel : MonoBehaviour
         Collider[] targets = Physics.OverlapSphere(transform.position, hitRadius);
 
         float baseDmg = Stat.Stat.attackDamage.FinalValue * damageMultiplier;
+
+        if (stigma != null && stigma.HasStigma(EStigmaType.Lv10_B))
+        {
+            baseDmg *= 2f;
+        }
+
+        if (stigma != null && stigma.HasStigma(EStigmaType.Lv8_B))
+        {
+            // 현재 체력 비율 계산 (0 ~ 1 사이)
+            float hpPercent = (float)Stat.Stat.curHp / Stat.Stat.maxHp.FinalValue;
+            if (hpPercent <= 0.3f)
+            {
+                baseDmg *= 1.3f; // 주는 피해 30% 증가
+            }
+        }
         bool isCritical = GetCritical();
         if (isCritical) baseDmg *= Stat.Stat.criticalDamage.FinalValue;
 
@@ -303,9 +329,6 @@ public class CharacterModel : MonoBehaviour
                     hitEnemies.Add(enemy); // 중복 타격 방지
                     enemy.Damaged(info);
 
-                    if (target.TryGetComponent<BossModel>(out BossModel boss))
-                        GameEvent.OnBossStateChange?.Invoke(boss);
-
                     OnHitTarget?.Invoke(this, info.damage, true, enemy);
                 }
             }
@@ -324,6 +347,7 @@ public class CharacterModel : MonoBehaviour
     public void IdenFinalAttack()
     {
         StartCoroutine(IdenFinalAttackEffect());
+        AudioManager.instance.PlaySFX(C_Enums.SFX_List.Player_Iden_LastAttack);
     }
 
     IEnumerator IdenFinalAttackEffect()
@@ -379,6 +403,22 @@ public class CharacterModel : MonoBehaviour
         Collider[] targets = Physics.OverlapSphere(transform.position, hitRadius);
 
         float baseDmg = Stat.Stat.attackDamage.FinalValue * damageMultiplier;
+
+        if (stigma != null && stigma.HasStigma(EStigmaType.Lv10_B))
+        {
+            baseDmg *= 2f;
+        }
+
+        if (stigma != null && stigma.HasStigma(EStigmaType.Lv8_B))
+        {
+            // 현재 체력 비율 계산 (0 ~ 1 사이)
+            float hpPercent = (float)Stat.Stat.curHp / Stat.Stat.maxHp.FinalValue;
+            if (hpPercent <= 0.3f)
+            {
+                baseDmg *= 1.3f; // 주는 피해 30% 증가
+            }
+        }
+
         bool isCritical = GetCritical();
 
         if (isCritical)
@@ -414,10 +454,6 @@ public class CharacterModel : MonoBehaviour
                 if (angle <= hitAngle / 2f)
                 {
                     enemy.Damaged(info);
-                    if (target.TryGetComponent<BossModel>(out BossModel boss))
-                    {
-                        GameEvent.OnBossStateChange?.Invoke(boss);
-                    }
                     OnHitTarget?.Invoke(this, info.damage, true, enemy);
                 }
             }
@@ -451,6 +487,21 @@ public class CharacterModel : MonoBehaviour
 
         float baseDmg = Stat.Stat.attackDamage.FinalValue * damageMultiplier;
 
+        if (stigma != null && stigma.HasStigma(EStigmaType.Lv10_B))
+        {
+            baseDmg *= 2f;
+        }
+
+        if (stigma != null && stigma.HasStigma(EStigmaType.Lv8_B))
+        {
+            // 현재 체력 비율 계산 (0 ~ 1 사이)
+            float hpPercent = (float)Stat.Stat.curHp / Stat.Stat.maxHp.FinalValue;
+            if (hpPercent <= 0.3f)
+            {
+                baseDmg *= 1.3f; // 주는 피해 30% 증가
+            }
+        }
+
         bool isCritical = GetCritical();
 
         if (isCritical)
@@ -475,10 +526,6 @@ public class CharacterModel : MonoBehaviour
             if (enemy != null)
             {
                 enemy.Damaged(info);
-                if (target.TryGetComponent<BossModel>(out BossModel boss))
-                {
-                    GameEvent.OnBossStateChange?.Invoke(boss);
-                }
                 OnHitTarget?.Invoke(this, info.damage, true, enemy);
 
                 ICounterable counterable = enemy.GetComponentInParent<ICounterable>();
@@ -556,6 +603,8 @@ public class CharacterModel : MonoBehaviour
 
     public void StunEnable()
     {
+        if (stigma != null && stigma.TryIgnoreCC()) return;
+
         Buff.StunEnable();
         Anim.SetBool("IsStun", true);
     }
@@ -588,6 +637,8 @@ public class CharacterModel : MonoBehaviour
 
     public void PanicEnable()
     {
+        if (stigma != null && stigma.TryIgnoreCC()) return;
+
         Buff.PanicEnable();
         GameEvent.OnPlayerPanic?.Invoke(buff.isPanic);
     }
@@ -646,10 +697,17 @@ public class CharacterModel : MonoBehaviour
         CancelInteraction();
 
         Stat.Damaged(damage,isPercent);
-        
+
         if (DamageTextManager.Instance != null)
         {
-            float finalDamage = Stat.Stat.maxHp.FinalValue * damage;
+            float finalDamage = 0;
+
+            if (isPercent)
+                finalDamage = damage * Stat.Stat.maxHp.FinalValue * Stat.Stat.damageTakeMultiplier.FinalValue;
+            else
+                finalDamage = damage * Stat.Stat.damageTakeMultiplier.FinalValue;
+
+
 
             DamageTextManager.Instance.SpawnDamageText(textPos.position, finalDamage, false, true);
         }
@@ -676,11 +734,22 @@ public class CharacterModel : MonoBehaviour
         anim.SetTrigger("Die");
 
         if (DungeonManager.instance != null)
+        {
             DungeonManager.instance.ReplacePlayer();
+        }
+        else
+        {
+            StartCoroutine(FieldRespawnRoutine());
+        }
 
-        GameEvent.OnBossStateChange(null);
         GameEvent.OnPlayerDie?.Invoke();
         GameEvent.OnBossStateChange?.Invoke(null);
+    }
+
+    private IEnumerator FieldRespawnRoutine()
+    {
+        yield return new WaitForSeconds(3f); // 던전과 동일하게 사망 모션을 본 뒤 3초 후 부활
+        Revive();
     }
 
     public void Heal(float healAmount)
@@ -690,11 +759,56 @@ public class CharacterModel : MonoBehaviour
 
     public void Revive()
     {
+        if (DungeonManager.instance == null)
+        {
+            MoveToNearestSpawnPoint();
+        }
+
+        // 공통 부활 처리
         Heal(Stat.Stat.maxHp.FinalValue);
-
         Anim.SetTrigger("Revive");
-
         isDie = false;
+
+    }
+
+    private void MoveToNearestSpawnPoint()
+    {
+        SpawnPoint[] spawnPoints = FindObjectsOfType<SpawnPoint>();
+
+        if (spawnPoints == null || spawnPoints.Length == 0)
+        {
+            Debug.LogWarning("[부활 시스템] 씬에 'SpawnPoint' 스크립트를 가진 오브젝트가 없어 제자리 부활합니다.");
+            return;
+        }
+
+        Transform nearestPoint = null;
+        float closestDistance = Mathf.Infinity;
+        Vector3 currentPos = transform.position;
+
+        foreach (SpawnPoint point in spawnPoints)
+        {
+            if (point == null) continue;
+
+            float distance = Vector3.Distance(currentPos, point.transform.position);
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                nearestPoint = point.transform;
+            }
+        }
+
+        if (nearestPoint != null)
+        {
+            bool wasNavMeshEnabled = navMesh.enabled;
+            if (wasNavMeshEnabled) navMesh.enabled = false;
+
+            transform.position = nearestPoint.position;
+            transform.rotation = nearestPoint.rotation;
+
+            if (wasNavMeshEnabled) navMesh.enabled = true;
+
+            Debug.Log($"<color=cyan>[필드 부활] 가장 가까운 스폰포인트로 이동: {nearestPoint.gameObject.name} ({closestDistance:F1}m)</color>");
+        }
     }
 
     public void GainIden(float amount)
@@ -999,9 +1113,7 @@ public class CharacterModel : MonoBehaviour
 
     public void EndJump()
     {
-        Navmesh.enabled = true;
-
-        Anim.SetTrigger("JumpEnd");
+        Navmesh.enabled = true;   
     }
 
     #endregion
@@ -1016,6 +1128,11 @@ public class CharacterModel : MonoBehaviour
         yield return new WaitForSeconds(1f);
         effect.transform.parent = null;
         PoolManager.Instance.Push(effect);
+    }
+
+    public void TriggerSkillUsed()
+    {
+        OnSkillUsed?.Invoke();
     }
 
     #endregion
