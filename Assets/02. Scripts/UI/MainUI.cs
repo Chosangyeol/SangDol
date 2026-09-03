@@ -52,6 +52,8 @@ public class MainUI : MonoBehaviour
 
     public void Init(C_SkillSystem skillSystem,C_Inventory inventory, CharacterModel model)
     {
+        UnbindEvents();
+
         _skillSystem = skillSystem;
         _inventory = inventory;
         _model = model;
@@ -89,6 +91,24 @@ public class MainUI : MonoBehaviour
         GameEvent.OnGaugeUpdate += SetGaugeUI;
     }
 
+    private void UnbindEvents()
+    {
+        if (_skillSystem != null)
+            _skillSystem.OnSkillDataChanged -= RefreshAll;
+        if (_inventory != null)
+            _inventory.OnInventoryUpdated -= RefreshAll;
+
+        GameEvent.OnStatChange -= UpdatePlayerUI;
+        GameEvent.OnBossStateChange -= UpdateBossUI;
+        GameEvent.OnBossRoomEnterCount -= BossCountdownAlarm;
+        GameEvent.OnPlayerPanic -= TogglePanicUI;
+        GameEvent.OnGaugeUpdate -= SetGaugeUI;
+    }
+
+    private void OnDestroy()
+    {
+        UnbindEvents();
+    }
     private void RefreshAll()
     {
         foreach (var slot in skillSlots)

@@ -34,18 +34,8 @@ public class UIManager : MonoBehaviour
         if (isInGame && !hasInit)
             InitGameUIs();    
 
-        GameEvent.OnUIInvisable += () =>
-        {
-            mainUI.Toggle(true);
-            inventoryUI.Toggle(true);
-            skillTreeUI.Toggle(true);
-            statusUI.Toggle(true);
-            questUI.Toggle(true);
-            optionUI.Toggle(true);
-            dungentEnterUI.Toggle(true);
-        };
-
-        GameEvent.OnMainUIviable += () => mainUI.Toggle(false);
+        GameEvent.OnUIInvisable += HideGameUIs;
+        GameEvent.OnMainUIviable += ShowMainUI;
     }
 
     void Start()
@@ -64,6 +54,8 @@ public class UIManager : MonoBehaviour
 
     public void InitGameUIs()
     {
+        if (hasInit) return;
+
         CharacterModel character = FindAnyObjectByType<CharacterModel>();
 
         if (character == null)
@@ -83,6 +75,30 @@ public class UIManager : MonoBehaviour
         inGameUIs.SetActive(true);
     }
 
+    private void OnDestroy()
+    {
+        GameEvent.OnUIInvisable -= HideGameUIs;
+        GameEvent.OnMainUIviable -= ShowMainUI;
+
+        if (Instance == this)
+            Instance = null;
+    }
+
+    private void HideGameUIs()
+    {
+        mainUI.Toggle(true);
+        inventoryUI.Toggle(true);
+        skillTreeUI.Toggle(true);
+        statusUI.Toggle(true);
+        questUI.Toggle(true);
+        optionUI.Toggle(true);
+        dungentEnterUI.Toggle(true);
+    }
+
+    private void ShowMainUI()
+    {
+        mainUI.Toggle(false);
+    }
     public void ToggleUI(C_Enums.UIList ui)
     {
         bool isNowOpen = false;

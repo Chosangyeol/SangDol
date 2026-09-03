@@ -17,6 +17,7 @@ public class InventoryUI : MonoBehaviour
 
     public void Init(C_Inventory inventory, C_Equipment equipment)
     {
+        UnbindInventoryEvents();
         _inventory = inventory;
         rectTransform = GetComponent<RectTransform>();
         canvas = GetComponentInParent<Canvas>();
@@ -41,6 +42,18 @@ public class InventoryUI : MonoBehaviour
         _inventory.OnInventoryUpdated += RefreshAll;
     }
 
+    private void UnbindInventoryEvents()
+    {
+        if (_inventory == null) return;
+        _inventory.OnAddItemInventory -= OnInvenytoryChange;
+        _inventory.OnRemoveItemInventory -= OnInvenytoryChange;
+        _inventory.OnInventoryUpdated -= RefreshAll;
+    }
+
+    private void OnDestroy()
+    {
+        UnbindInventoryEvents();
+    }
     private void OnInvenytoryChange(ItemBase _)
     {
         RefreshAll();

@@ -21,6 +21,8 @@ public class SkillTreeUI : MonoBehaviour
 
     public void Init(C_SkillSystem skillSystem, CharacterModel model, SkillToolTip skillToolTip)
     {
+        UnbindSkillEvent();
+
         _model = model;
         _skillSystem = skillSystem;
         _skillToolTip = skillToolTip;
@@ -41,6 +43,16 @@ public class SkillTreeUI : MonoBehaviour
         _skillSystem.OnSkillDataChanged += RefreshAll;
     }
 
+    private void UnbindSkillEvent()
+    {
+        if (_skillSystem != null)
+            _skillSystem.OnSkillDataChanged -= RefreshAll;
+    }
+
+    private void OnDestroy()
+    {
+        UnbindSkillEvent();
+    }
     public void RefreshAll()
     {
         foreach (var slot in slots)

@@ -17,6 +17,8 @@ public class BuffList : MonoBehaviour
 
     public void Init(C_Buff buff, CharacterModel model)
     {
+        UnbindBuffEvent();
+
         _model = model;
         _buff = buff;
 
@@ -26,10 +28,26 @@ public class BuffList : MonoBehaviour
 
     public void BindBuffEvent()
     {
-        _buff.ActionAfterAddBuff += (buff) => RefreshBuffUI();
-        _buff.ActionAfterRemoveBuff += (buff) => RefreshBuffUI();
+        _buff.ActionAfterAddBuff += HandleBuffChanged;
+        _buff.ActionAfterRemoveBuff += HandleBuffChanged;
     }
 
+    private void UnbindBuffEvent()
+    {
+        if (_buff == null) return;
+        _buff.ActionAfterAddBuff -= HandleBuffChanged;
+        _buff.ActionAfterRemoveBuff -= HandleBuffChanged;
+    }
+
+    private void HandleBuffChanged(SBuff _)
+    {
+        RefreshBuffUI();
+    }
+
+    private void OnDestroy()
+    {
+        UnbindBuffEvent();
+    }
     public void RefreshBuffUI()
     {
         var activeBuffs = _buff.ListBuff;

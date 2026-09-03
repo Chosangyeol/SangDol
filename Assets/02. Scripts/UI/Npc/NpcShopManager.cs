@@ -84,7 +84,7 @@ public class NpcShopManager : MonoBehaviour
             return;
         }
 
-        if (!model.Inventory.HasEnoughSpace(amount, itemSO.maxStack))
+        if (!model.Inventory.HasEnoughSpace(itemSO, amount))
         {
             Debug.Log("공간 부족");
             return;

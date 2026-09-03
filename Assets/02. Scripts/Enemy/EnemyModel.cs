@@ -74,6 +74,12 @@ public class EnemyModel : EnemyBase
 
     private void Update()
     {
+        if (_target == null)
+        {
+            _target = FindAnyObjectByType<CharacterModel>();
+            if (_target == null) return;
+        }
+
         if (_isDead)
         {
             stateMachine.UpdateState();
@@ -275,9 +281,8 @@ public class EnemyModel : EnemyBase
 
                     PoolableMono item = PoolManager.Instance.Pop("DropItem");
                     
-                    if (item.GetComponent<DropItemModel>() != null)
+                    if (item != null && item.TryGetComponent(out DropItemModel dropItemModel))
                     {
-                        DropItemModel dropItemModel = item.GetComponent<DropItemModel>();
                         dropItemModel.InitItem(dropItemSO,dropItem.amount);
                         dropItemModel.transform.position = transform.position + Vector3.up * 0.5f;
                     }
@@ -304,5 +309,39 @@ public class EnemyModel : EnemyBase
         // 공격 범위 (빨간색)
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, _stat.attackRange);
+    }
+}
+/// <summary>
+/// 전방 박스 범위를 사용하는 일반 근접 몬스터의 공통 공격 구현입니다.
+/// 필드 이름을 유지하여 기존 프리팹의 직렬화 값을 보존합니다.
+/// </summary>
+public abstract class BoxMeleeEnemy : EnemyModel
+{
+    [Header("오버랩 박스 설정")]
+    public float boxWidthHalf = 1.2f;
+    public float boxHeightHalf = 1.0f;
+    public float centerOffsetY = 1.0f;
+
+    public override void Attack()
+    {
+        base.Attack();
+
+        if (Target == null || Target.isDie) return;
+
+        float attackRange = statSO.attackRange;
+        Vector3 center = transform.position + transform.forward * (attackRange * 0.5f);
+        center.y += centerOffsetY;
+
+        Vector3 halfExtents = new Vector3(boxWidthHalf, boxHeightHalf, attackRange * 0.5f);
+        Collider[] hitColliders = Physics.OverlapBox(center, halfExtents, transform.rotation);
+
+        foreach (Collider hit in hitColliders)
+        {
+            CharacterModel player = hit.GetComponentInParent<CharacterModel>();
+            if (player != Target) continue;
+
+            Target.Damaged(statSO.attackDamage, false);
+            return;
+        }
     }
 }

@@ -127,24 +127,27 @@ public class C_Inventory
         return emptyCount;
     }
 
-    public bool HasEnoughSpace(int buyAmount, int itemMaxStack)
+    public bool HasEnoughSpace(ItemBaseSO item, int buyAmount)
     {
-        // 구매하려는 수량을 바탕으로 총 몇 칸의 슬롯이 필요한지 계산
-        int requiredSlots = Mathf.CeilToInt((float)buyAmount / itemMaxStack);
+        if (item == null || buyAmount <= 0) return item != null;
+        if (item.maxStack <= 0) return false;
 
-        // GetEmptySlotCount()를 호출하여 현재 빈 칸이 몇 개인지 확인
-        int emptySlots = GetEmptySlotCount();
+        int availableCapacity = 0;
+        foreach (ItemBase inventoryItem in items)
+        {
+            if (inventoryItem == null)
+            {
+                availableCapacity += item.maxStack;
+            }
+            else if (inventoryItem.itemBaseSO.itemID == item.itemID)
+            {
+                availableCapacity += Mathf.Max(0, inventoryItem.maxStack - inventoryItem.currentStack);
+            }
 
-        // 빈 칸이 필요한 칸 수보다 많거나 같으면 구매 가능(true)
-        if (emptySlots >= requiredSlots)
-        {
-            return true;
+            if (availableCapacity >= buyAmount) return true;
         }
-        else
-        {
-            Debug.Log($"<color=red>인벤토리 공간 부족! (필요한 빈 칸: {requiredSlots}, 현재 빈 칸: {emptySlots})</color>");
-            return false;
-        }
+
+        return false;
     }
 
     /// <summary>
@@ -156,7 +159,7 @@ public class C_Inventory
     {
         for (int i = 0; i < items.Count; i++)
         {
-            items[i].OnUpdateInventory(delta);
+            items[i]?.OnUpdateInventory(delta);
         }
     }
 
@@ -251,16 +254,19 @@ public class C_Inventory
 
         for (int i = 0; i < items.Count; i++)
         {
-            if (items[i].currentStack > remainToRemove)
+            ItemBase item = items[i];
+            if (item == null || item.itemBaseSO.itemID != targetItemID) continue;
+
+            if (item.currentStack > remainToRemove)
             {
-                items[i].currentStack -= remainToRemove;
+                item.currentStack -= remainToRemove;
                 remainToRemove = 0;
                 break;
             }
             else
             {
-                remainToRemove -= items[i].currentStack;
-                RemoveItem(items[i]);
+                remainToRemove -= item.currentStack;
+                RemoveItem(item);
 
                 if (remainToRemove <= 0)
                     break;

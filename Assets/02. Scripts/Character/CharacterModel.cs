@@ -111,13 +111,21 @@ public class CharacterModel : MonoBehaviour
         buff = new C_Buff(this);
         stigma = new C_Stigma(this, lv5ABuffSO, lv5BBuffSO,lv6ABuffSO,lv10ABuffSO, stunSO, clonePrefeb);
 
-        GameEvent.OnPlayerLevelUp += () =>
-        {
-            StartCoroutine(LevelUpEffect()); 
-        };
+        GameEvent.OnPlayerLevelUp += HandlePlayerLevelUp;
+
         GameEvent.OnStatChange += UpdateAttackSpeed;
     }
 
+    private void OnDestroy()
+    {
+        GameEvent.OnPlayerLevelUp -= HandlePlayerLevelUp;
+        GameEvent.OnStatChange -= UpdateAttackSpeed;
+    }
+
+    private void HandlePlayerLevelUp()
+    {
+        StartCoroutine(LevelUpEffect());
+    }
     private void Start()
     {
 

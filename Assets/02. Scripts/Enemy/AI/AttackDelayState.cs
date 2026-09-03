@@ -18,7 +18,7 @@ public class AttackDelayState : State
 
     public override void UpdateState()
     {
-        timer -= attackDelay;
+        timer -= Time.deltaTime;
 
         if (timer <= 0f)
         {

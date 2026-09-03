@@ -79,21 +79,28 @@ public class PoolManager : MonoBehaviour
 
     public PoolableMono Pop(string prefabName)
     {
-        if (!_pools.ContainsKey(prefabName))
+        if (!_pools.TryGetValue(prefabName, out Pool<PoolableMono> pool))
         {
             Debug.LogError($"Prefab does no exist on pool : {prefabName}");
             return null;
         }
 
-        PoolableMono item = _pools[prefabName].Pop();
-        Debug.Log(item.name + " 꺼냄");
+        PoolableMono item = pool.Pop();
         item.Reset();
         return item;
     }
 
     public void Push(PoolableMono obj)
     {
-        _pools[obj.name].Push(obj);
+        if (obj == null) return;
+
+        if (_pools.TryGetValue(obj.name, out Pool<PoolableMono> pool))
+        {
+            pool.Push(obj);
+            return;
+        }
+
+        Debug.LogWarning($"Pool does not exist for object: {obj.name}");
     }
 
     public void ClearStagePools()

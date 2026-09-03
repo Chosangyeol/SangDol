@@ -79,7 +79,13 @@ public class StatusUI : MonoBehaviour
 
     private void BindStatusEvents()
     {
+        GameEvent.OnStatChange -= RefreshStatus;
         GameEvent.OnStatChange += RefreshStatus;
+    }
+
+    private void OnDestroy()
+    {
+        GameEvent.OnStatChange -= RefreshStatus;
     }
 
     public void RefreshAll()

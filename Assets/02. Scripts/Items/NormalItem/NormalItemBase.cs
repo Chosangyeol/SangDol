@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class NormalItemBase : ItemBase
 {
-    public NormalItemSO itemBaseSO;
+    public new NormalItemSO itemBaseSO;
 
     public NormalItemBase(NormalItemSO itemBaseSO, int currentStack) : base(itemBaseSO, currentStack)
     {
         this.itemBaseSO = itemBaseSO;
-        this.currentStack = 1;
+        this.currentStack = currentStack;
         return;
     }
 

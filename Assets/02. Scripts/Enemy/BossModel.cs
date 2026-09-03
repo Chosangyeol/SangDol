@@ -52,7 +52,6 @@ public class BossModel : EnemyBase, ICounterable
     {
         base.Start();
         _agent = GetComponent<NavMeshAgent>();
-        GameEvent.OnPlayerDie += ResetBossState;
 
         bossSpawnPoint = GameObject.FindGameObjectWithTag("BossSpawnPos")?.transform;
 
@@ -75,6 +74,15 @@ public class BossModel : EnemyBase, ICounterable
         }
     }
 
+    private void OnEnable()
+    {
+        GameEvent.OnPlayerDie += ResetBossState;
+    }
+
+    private void OnDisable()
+    {
+        GameEvent.OnPlayerDie -= ResetBossState;
+    }
     private void Update()
     {
         if (_isDead) return;
