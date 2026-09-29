@@ -1,0 +1,12 @@
+[mcp_servers.ai-game-developer]
+enabled = true
+http_headers = { "Authorization" = "Bearer agd_pk_a7OIo_B7a6ykMvR6YNqhJoVdEK0_4jNh2j294Z5rm6c" }
+startup_timeout_sec = 30
+tool_timeout_sec = 300
+url = "https://ai-game.dev/mcp/p/4f0f22db"
+
+[mcp_servers.ai-game-developer.tools.script-execute]
+approval_mode = "approve"
+
+[mcp_servers.ai-game-developer.tools.tests-run]
+approval_mode = "approve"
