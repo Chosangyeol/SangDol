@@ -80,49 +80,40 @@ public class SkillSlot : MonoBehaviour,
             iconImage.enabled = false;
             iconImage.sprite = null;
         }
+        UpdateSkillCool();
     }
 
     public void UpdateSkillCool()
     {
-        if (_skillSystem == null) return;
-
         SkillBase skill = CurrentSkill;
-
-        // 스킬이 아예 장착되지 않은 경우
-        if (skill == null)
+        if (skill == null || skill.canUse)
         {
-            if (showOnlyOnCooldown && _canvasGroup != null)
-                _canvasGroup.alpha = 0f; // 숨기기
+            ClearCooldownDisplay();
             return;
         }
 
-        if (!skill.canUse)
+        if (showOnlyOnCooldown && _canvasGroup != null)
         {
-            // ⭐️ 쿨타임 중: 슬롯 전체를 보이게 만듦 (투명도 1)
-            if (showOnlyOnCooldown && _canvasGroup != null)
-            {
-                _canvasGroup.alpha = 1f;
-                iconImage.raycastTarget = true  ;
-            }
-
-            if (!coolTimeText.IsActive())
-                coolTimeText.gameObject.SetActive(true);
-
-            coolTimeText.text = Mathf.Ceil(skill.nowCoolTime).ToString() + "s";
-            float fillAmount = skill.nowCoolTime / skill.finalCoolTime;
-            coolOverlay.fillAmount = fillAmount;
+            _canvasGroup.alpha = 1f;
+            iconImage.raycastTarget = true;
         }
-        else
-        {
-            // ⭐️ 사용 가능: 슬롯 전체를 숨김 (투명도 0)
-            if (showOnlyOnCooldown && _canvasGroup != null)
-            {
-                _canvasGroup.alpha = 0f;
-                iconImage.raycastTarget = false;
-            }
+        if (!coolTimeText.IsActive()) coolTimeText.gameObject.SetActive(true);
+        coolTimeText.text = Mathf.Ceil(skill.nowCoolTime).ToString() + "s";
+        coolOverlay.fillAmount = skill.nowCoolTime / skill.finalCoolTime;
+    }
 
+    private void ClearCooldownDisplay()
+    {
+        if (coolTimeText != null)
+        {
+            coolTimeText.text = string.Empty;
             coolTimeText.gameObject.SetActive(false);
-            coolOverlay.fillAmount = 0f;
+        }
+        if (coolOverlay != null) coolOverlay.fillAmount = 0f;
+        if (showOnlyOnCooldown)
+        {
+            if (_canvasGroup != null) _canvasGroup.alpha = 0f;
+            if (iconImage != null) iconImage.raycastTarget = false;
         }
     }
 

@@ -237,6 +237,27 @@ public class EnemyModel : EnemyBase
         Debug.Log("공격 실행");
     }
 
+    protected void PerformBoxMeleeAttack(float boxWidthHalf, float boxHeightHalf, float centerOffsetY)
+    {
+        if (IsDead || Target == null || Target.isDie) return;
+
+        float attackRange = statSO.attackRange;
+        Vector3 center = transform.position + transform.forward * (attackRange * 0.5f);
+        center.y += centerOffsetY;
+
+        Vector3 halfExtents = new Vector3(boxWidthHalf, boxHeightHalf, attackRange * 0.5f);
+        Collider[] hitColliders = Physics.OverlapBox(center, halfExtents, transform.rotation);
+
+        foreach (Collider hit in hitColliders)
+        {
+            CharacterModel player = hit.GetComponentInParent<CharacterModel>();
+            if (player != Target) continue;
+
+            Target.Damaged(statSO.attackDamage, false);
+            return;
+        }
+    }
+
     public virtual void AttackEnd()
     {
         canAttack = true;
@@ -326,22 +347,6 @@ public abstract class BoxMeleeEnemy : EnemyModel
     {
         base.Attack();
 
-        if (Target == null || Target.isDie) return;
-
-        float attackRange = statSO.attackRange;
-        Vector3 center = transform.position + transform.forward * (attackRange * 0.5f);
-        center.y += centerOffsetY;
-
-        Vector3 halfExtents = new Vector3(boxWidthHalf, boxHeightHalf, attackRange * 0.5f);
-        Collider[] hitColliders = Physics.OverlapBox(center, halfExtents, transform.rotation);
-
-        foreach (Collider hit in hitColliders)
-        {
-            CharacterModel player = hit.GetComponentInParent<CharacterModel>();
-            if (player != Target) continue;
-
-            Target.Damaged(statSO.attackDamage, false);
-            return;
-        }
+        PerformBoxMeleeAttack(boxWidthHalf, boxHeightHalf, centerOffsetY);
     }
 }

@@ -44296,28 +44296,28 @@ AnimationClip:
   m_HasMotionFloatCurves: 0
   m_Events:
   - time: 0
-    functionName: SetCantMove
+    functionName: OnSkillCantMove
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 1.9
-    functionName: SetCanMove
+    functionName: OnSkillCanMove
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 1.9
-    functionName: SetCanAttack
+    functionName: OnSkillCanAttack
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 1.9
-    functionName: SetCanSkill
+    functionName: OnSkillCanSkill
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

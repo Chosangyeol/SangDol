@@ -39,9 +39,8 @@ public class NpcBase : InteractableObject
 
         GameEvent.OnTalkNpc?.Invoke(npcSO.npcID);
 
+        model.isInteracting = true;
         NpcDialogManager.Instance.OpenNpcUI(npcSO);
-
-        target.GetComponent<CharacterModel>().isInteracting = true;
 
         return true;
     }

@@ -16,8 +16,11 @@ public class Skill_1 : SkillBase
 
     public override bool UseSkill(Vector3 targetPos)
     {
+        if (_model.isDie || _model.Buff.isStun || _model.IsExternalControlLocked ||
+            _agent == null || !_agent.isActiveAndEnabled || !_agent.isOnNavMesh) return false;
         if (base.UseSkill(targetPos))
         {
+            BeginExecution();
             finalCoolTime = coolTime * _model.Stat.Stat.cooldownReduction.FinalValue;
             canUse = false;
             Debug.Log("skill_1 사용");
@@ -31,8 +34,8 @@ public class Skill_1 : SkillBase
 
             _model.Anim.SetTrigger("Skill1");
 
-            _model.StartCoroutine(SkillRoutine(targetPos));
-            _model.SkillCorutaine(Effect1(skillData.skillEffects[0],targetPos));
+            StartExecutionRoutine(SkillRoutine(targetPos));
+            StartExecutionRoutine(Effect1(GetExecutionEffectPrefab(0),targetPos));
             return true;
         }
         Debug.Log("쿨타임 입니다.");
@@ -45,10 +48,12 @@ public class Skill_1 : SkillBase
         float dashDuration = 0.35f; // 돌진 시간 (10거리 / 50속도 = 0.2초)
 
         _agent.ResetPath();
+        _agent.isStopped = true;
         _agent.velocity = Vector3.zero;
 
-        Vector3 dashDirection = (targetPos - _model.transform.position).normalized;
+        Vector3 dashDirection = targetPos - _model.transform.position;
         dashDirection.y = 0;
+        dashDirection.Normalize();
 
         float castRadius = _agent.radius + 0.3f;
         int enemyLayer = LayerMask.GetMask("Enemy"); // ExecuteAttack의 LayerMask와 이름이 맞는지 확인하세요!
@@ -77,18 +82,19 @@ public class Skill_1 : SkillBase
 
         yield return new WaitForSeconds(0.35f);
 
-        _model.StartCoroutine(Effect2(skillData.skillEffects[1], _model.transform.position));
+        StartExecutionRoutine(Effect2(GetExecutionEffectPrefab(1), _model.transform.position));
 
         yield return new WaitForSeconds(0.07f);
 
-        _model.StartCoroutine(Effect3(skillData.skillEffects[2], _model.transform.position));
+        StartExecutionRoutine(Effect3(GetExecutionEffectPrefab(2), _model.transform.position));
     }
 
     IEnumerator Effect1(PoolableMono prefab,Vector3 targetPos)
     {
         Vector3 dir = targetPos - _model.transform.position;
         
-        PoolableMono effect = PoolManager.Instance.Pop(prefab.name);
+        PoolableMono effect = TakeExecutionEffect(prefab);
+        if (effect == null) yield break;
 
         effect.transform.SetParent(_model.transform);
 
@@ -99,12 +105,13 @@ public class Skill_1 : SkillBase
 
         effect.transform.SetParent(null);
 
-        PoolManager.Instance.Push(effect);
+        ReturnExecutionEffect(effect);
     }
 
     IEnumerator Effect2(PoolableMono prefab, Vector3 targetPos)
     {
-        PoolableMono effect = PoolManager.Instance.Pop(prefab.name);
+        PoolableMono effect = TakeExecutionEffect(prefab);
+        if (effect == null) yield break;
 
         Vector3 dir = _model.transform.forward;
 
@@ -113,12 +120,13 @@ public class Skill_1 : SkillBase
 
         yield return new WaitForSeconds(1f);
 
-        PoolManager.Instance.Push(effect);
+        ReturnExecutionEffect(effect);
     }
 
     IEnumerator Effect3(PoolableMono prefab, Vector3 targetPos)
     {
-        PoolableMono effect = PoolManager.Instance.Pop(prefab.name);
+        PoolableMono effect = TakeExecutionEffect(prefab);
+        if (effect == null) yield break;
 
         Vector3 dir = _model.transform.forward;
 
@@ -127,7 +135,7 @@ public class Skill_1 : SkillBase
 
         yield return new WaitForSeconds(1f);
 
-        PoolManager.Instance.Push(effect);
+        ReturnExecutionEffect(effect);
     }
 
 }

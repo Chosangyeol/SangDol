@@ -23,5 +23,5 @@ MonoBehaviour:
   craftTableSO: {fileID: 0}
   canTeleport: 0
   teleportTargets: []
-  talkDialogID: D_30001_002
+  talkDialogID: D_30003_001
   npcQuests: []

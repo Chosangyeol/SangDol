@@ -15,6 +15,8 @@ public class Skill_Space : SkillBase
 
     public override bool UseSkill(Vector3 targetPos)
     {
+        if (_model.isDie || _model.Buff.isStun || _agent == null ||
+            !_agent.isActiveAndEnabled || !_agent.isOnNavMesh) return false;
         if (canUse)
         {
             finalCoolTime = coolTime - _model.Stat.Stat.dodgeCooldownReduction;
@@ -22,6 +24,7 @@ public class Skill_Space : SkillBase
             canUse = false;
 
             _model.PlayerController.StopMove();
+            _model.PlayerController.InterruptAttackForSkill();
             _model.PlayerController.FaceTo(targetPos);
 
             _model.Anim.SetTrigger("Skill_Space");
@@ -37,38 +40,50 @@ public class Skill_Space : SkillBase
 
     IEnumerator SkillActive(Vector3 targetPos)
     {
+        bool previousAttack = _model.canAttack;
+        bool previousSkill = _model.canSkill;
         _model.canMove = false;
+        _model.canAttack = false;
+        _model.canSkill = false;
 
         float startTime = Time.time;
         float dashDuration = 0.2f; // 돌진 시간 (10거리 / 50속도 = 0.2초)
 
         _agent.ResetPath();
+        _agent.isStopped = true;
         _agent.velocity = Vector3.zero;
 
-        Vector3 dashDirection = (targetPos - _model.transform.position).normalized;
+        Vector3 dashDirection = targetPos - _model.transform.position;
         dashDirection.y = 0;
+        dashDirection.Normalize();
 
         float castRadius = 1f;
         int enemyLayer = LayerMask.GetMask("Enemy"); // ExecuteAttack의 LayerMask와 이름이 맞는지 확인하세요!
 
-        // 0.2초 동안 무조건 루프가 돌아감
-        while (Time.time < startTime + dashDuration)
+        try
         {
-            float moveStep = 20f * Time.deltaTime;
-
-            // 1. 앞에 몬스터가 있는지 확인 (break 제거)
-            if (Physics.SphereCast(_model.transform.position, castRadius, dashDirection, out RaycastHit hit, moveStep, enemyLayer))
+            while (Time.time < startTime + dashDuration && !_model.isDie && !_model.Buff.isStun &&
+                _agent.isActiveAndEnabled && _agent.isOnNavMesh)
             {
-                // 부딪히면 _agent.Move를 실행하지 않고 생략함 (이동 막힘 효과)
-                // 만약 부딪혔을 때 살짝 밀려나는 효과나 이펙트를 추가하고 싶다면 이 안에 작성하면 됩니다.
-            }
-            else
-            {
-                // 2. 앞에 아무것도(몬스터가) 없을 때만 전진
-                _agent.Move(dashDirection * moveStep);
-            }
+                float moveStep = 20f * Time.deltaTime;
+                if (!Physics.SphereCast(_model.transform.position, castRadius, dashDirection,
+                    out RaycastHit hit, moveStep, enemyLayer))
+                    _agent.Move(dashDirection * moveStep);
 
-            yield return null;
+                yield return null;
+            }
+            // Match the existing dash animation's recovery window without relying on its event.
+            while (Time.time < startTime + 1f / 3f && !_model.isDie && !_model.Buff.isStun)
+                yield return null;
+        }
+        finally
+        {
+            if (_model != null && !_model.isDie)
+            {
+                _model.canMove = true;
+                _model.canAttack = previousAttack;
+                _model.canSkill = previousSkill;
+            }
         }
     }
 }

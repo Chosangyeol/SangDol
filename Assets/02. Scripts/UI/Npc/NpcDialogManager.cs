@@ -72,7 +72,9 @@ public class NpcDialogManager : MonoBehaviour
 
         CreateButton("대화 하기", () =>
         {
-            Debug.Log("대화 하기 실행 ");
+            buttonGroup.gameObject.SetActive(false);
+            string dialogID = string.IsNullOrWhiteSpace(npc.talkDialogID) ? npc.defaultDialogID : npc.talkDialogID;
+            DialogManager.Instance.StartDialogue(dialogID);
         });
         
         if (npc.canTeleport)
@@ -145,6 +147,7 @@ public class NpcDialogManager : MonoBehaviour
     public void CloseUI()
     {
         npcDialogPanel.SetActive(false);
+        QuestManager.Instance?.RefuseQuest();
         _model.ControlEnable();
         _model.isInteracting = false;
         GameEvent.OnMainUIviable?.Invoke();

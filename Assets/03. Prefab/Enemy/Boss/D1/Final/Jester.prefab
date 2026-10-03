@@ -100,7 +100,7 @@ MonoBehaviour:
   - patternName: "\uC6B4\uBA85\uC758 \uC810"
     hpPercent: 0.8
     hasDone: 0
-  - patternName: "\uCE69\uB9C9\uAE30"
+  - patternName: "\uC911\uAC04 \uBCF4\uC2A4"
     hpPercent: 0.6
     hasDone: 0
   - patternName: "\uC57C\uBC14\uC704"
@@ -196,7 +196,12 @@ MonoBehaviour:
   Special2:
     prefab: {fileID: 932413519242352343, guid: b394d6319b3aa5246bdf9787d15ac081, type: 3}
   Special3:
-    prefab: {fileID: 0}
+    prefab: {fileID: 2162409769526798646, guid: 5fd09efb592d2654d9001731908100cf,
+      type: 3}
+    cutsceneClip: {fileID: 32900000, guid: 91118005997c0ee44813a892433aef45, type: 3}
+    waitingArea: {fileID: 0}
+    middleBossSpawnPoint: {fileID: 0}
+    returnPoint: {fileID: 0}
   Special4:
     yabawiPrefab: {fileID: 5587372566767514686, guid: 82e26ed3f0e47db469a6b7c02519bbf0,
       type: 3}

@@ -1,6 +1,8 @@
 {
   "dependencies": {
     "com.ivanmurzak.unity.mcp": "https://github.com/IvanMurzak/Unity-MCP.git?path=/Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp",
+    "com.ivanmurzak.unity.mcp.animation": "1.2.34",
+    "com.ivanmurzak.unity.mcp.inputsystem": "1.0.19",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.ai.navigation": "1.1.7",
     "com.unity.burst": "1.8.21",
@@ -54,7 +56,8 @@
     "com.unity.modules.video": "1.0.0",
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
-    "com.unity.modules.xr": "1.0.0"
+    "com.unity.modules.xr": "1.0.0",
+    "com.ivanmurzak.unity.mcp.timeline": "1.0.19"
   },
   "scopedRegistries": [
     {

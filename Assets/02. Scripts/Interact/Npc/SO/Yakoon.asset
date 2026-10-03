@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   npcID: 30006
   npcName: "\uC57C\uD054"
-  defaultDialogID: D_30001_001
+  defaultDialogID: D_30006_001
   npcIncounterSound: {fileID: 0}
   hasShop: 0
   shopID: 
@@ -23,5 +23,5 @@ MonoBehaviour:
   craftTableSO: {fileID: 0}
   canTeleport: 0
   teleportTargets: []
-  talkDialogID: D_30001_002
+  talkDialogID: D_30006_001
   npcQuests: []

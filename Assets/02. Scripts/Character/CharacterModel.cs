@@ -41,6 +41,7 @@ public class CharacterModel : MonoBehaviour
     public float attackTick = 0.2f;
     public float damageMultiplier = 0.5f;
     private Coroutine attackCoroutine;
+    private bool resumeIdenControlsAfterStun;
     public PoolableMono idenActiveEffect;
     public PoolableMono idenEnableEffect;
     private PoolableMono idenEffectObject;
@@ -79,6 +80,12 @@ public class CharacterModel : MonoBehaviour
     private C_Controller playerController;
     public C_SkillSystem SkillSystem => skillSystem;
     private C_SkillSystem skillSystem;
+    private bool externalControlLocked;
+    private bool resumeExternalControlsAfterStun;
+    internal bool IsExternalControlLocked => externalControlLocked;
+    internal bool CanRecoverSkillControls => !isDie && !externalControlLocked && !Buff.isStun;
+    private bool CanAcceptControlEvent => !isDie && !externalControlLocked &&
+        !(skillSystem != null && skillSystem.HasInterruptedControlRecovery);
 
     private C_Buff buff;
     public C_Buff Buff => buff;
@@ -118,6 +125,7 @@ public class CharacterModel : MonoBehaviour
 
     private void OnDestroy()
     {
+        skillSystem?.InterruptActiveSkill(false);
         GameEvent.OnPlayerLevelUp -= HandlePlayerLevelUp;
         GameEvent.OnStatChange -= UpdateAttackSpeed;
     }
@@ -202,11 +210,15 @@ public class CharacterModel : MonoBehaviour
 
     public void SetControlable(bool canControl)
     {
+        externalControlLocked = !canControl;
+        if (!canControl) skillSystem?.InterruptActiveSkill(false);
+        resumeExternalControlsAfterStun = canControl && !isDie && Buff.isStun;
+        bool canAct = canControl && !isDie && !Buff.isStun;
         navMesh.enabled = canControl;
-        canAttack = canControl;
-        canMove = canControl;
-        canSkill = canControl;
-        canUse = canControl;
+        canAttack = canAct;
+        canMove = canAct;
+        canSkill = canAct;
+        canUse = canAct;
     }
 
     #region 일반 공격
@@ -235,7 +247,10 @@ public class CharacterModel : MonoBehaviour
 
     public void OnAttackEnd()
     {
-        if (isIdenOn || attackCoroutine != null || isWaitingForRelease)
+        // The finisher owns control recovery; releasing the mouse must not interrupt it.
+        if (isWaitingForRelease) return;
+
+        if (isIdenOn || attackCoroutine != null)
         {
             playerController.isAttacking = false;
             canMove = true;
@@ -246,11 +261,6 @@ public class CharacterModel : MonoBehaviour
             {
                 StopCoroutine(attackCoroutine);
                 attackCoroutine = null;
-            }
-            if (isWaitingForRelease)
-            {
-                isWaitingForRelease = false;
-                RemoveIdenAura();            
             }
         }
         else
@@ -367,6 +377,29 @@ public class CharacterModel : MonoBehaviour
         PoolManager.Instance.Push(effect);
     }
 
+    private void ClearIdenAttackState()
+    {
+        resumeIdenControlsAfterStun = false;
+        isWaitingForRelease = false;
+        playerController.isAttacking = false;
+        playerController.nextAttackReady = false;
+        playerController.currentCombo = 0;
+    }
+
+    // Animation event in the finisher recovery window.
+    private void OnIdenAttackFinished()
+    {
+        bool interruptedByStun = Buff.isStun && (isWaitingForRelease || resumeIdenControlsAfterStun);
+        ClearIdenAttackState();
+        resumeIdenControlsAfterStun = interruptedByStun;
+        RemoveIdenAura();
+
+        if (!isDie && !Buff.isStun && navMesh != null && navMesh.enabled)
+        {
+            canMove = true;
+            canAttack = true;
+        }
+    }
     private void RemoveIdenAura()
     {
         if (isIdenOn) return;
@@ -445,6 +478,7 @@ public class CharacterModel : MonoBehaviour
         };
 
         HashSet<EnemyBase> hitEnemies = new HashSet<EnemyBase>();
+        HashSet<ICounterable> counteredTargets = new HashSet<ICounterable>();
 
         foreach (Collider target in targets)
         {
@@ -461,12 +495,14 @@ public class CharacterModel : MonoBehaviour
 
                 if (angle <= hitAngle / 2f)
                 {
+                    hitEnemies.Add(enemy);
                     enemy.Damaged(info);
                     OnHitTarget?.Invoke(this, info.damage, true, enemy);
                 }
             }
 
-            if (target.TryGetComponent<ICounterable>(out ICounterable counterable))
+            ICounterable counterable = target.GetComponentInParent<ICounterable>();
+            if (counterable != null && !counteredTargets.Contains(counterable))
             {
                 Vector3 dir = (target.transform.position - transform.position).normalized;
                 dir.y = 0;
@@ -474,6 +510,7 @@ public class CharacterModel : MonoBehaviour
 
                 if (angle <= hitAngle / 2f)
                 {
+                    counteredTargets.Add(counterable);
                     counterable.OnCounterSuccess(info);
                 }
             }
@@ -527,17 +564,18 @@ public class CharacterModel : MonoBehaviour
         };
 
         HashSet<EnemyBase> hitEnemies = new HashSet<EnemyBase>();
+        HashSet<ICounterable> counteredTargets = new HashSet<ICounterable>();
 
         foreach (Collider target in targets)
         {
             EnemyBase enemy = target.GetComponentInParent<EnemyBase>();
-            if (enemy != null)
+            if (enemy != null && hitEnemies.Add(enemy))
             {
                 enemy.Damaged(info);
                 OnHitTarget?.Invoke(this, info.damage, true, enemy);
 
                 ICounterable counterable = enemy.GetComponentInParent<ICounterable>();
-                if (counterable != null)
+                if (counterable != null && counteredTargets.Add(counterable))
                 {
                     counterable.OnCounterSuccess(info);
                 }
@@ -563,6 +601,13 @@ public class CharacterModel : MonoBehaviour
     #region 캐릭터 상태 및 상태이상
     public void ControlEnable()
     {
+        if (isDie) return;
+        externalControlLocked = false;
+        if (Buff.isStun)
+        {
+            resumeExternalControlsAfterStun = true;
+            return;
+        }
         navMesh.enabled = true;
 
         SetCanAttack();
@@ -572,6 +617,9 @@ public class CharacterModel : MonoBehaviour
 
     public void ControlDisable()
     {
+        externalControlLocked = true;
+        resumeExternalControlsAfterStun = false;
+        skillSystem?.InterruptActiveSkill(false);
         navMesh.enabled = false;
 
         SetCantAttack();
@@ -579,8 +627,31 @@ public class CharacterModel : MonoBehaviour
         SetCantSkill();
     }
 
+    private void OnSkillCanMove(AnimationEvent animationEvent)
+    {
+        if (skillSystem != null && skillSystem.OwnsRecoveryEvent(animationEvent)) SetCanMove();
+    }
+
+    private void OnSkillCanAttack(AnimationEvent animationEvent)
+    {
+        if (skillSystem != null && skillSystem.OwnsRecoveryEvent(animationEvent)) SetCanAttack();
+    }
+
+    private void OnSkillCanSkill(AnimationEvent animationEvent)
+    {
+        if (skillSystem == null || !skillSystem.OwnsRecoveryEvent(animationEvent)) return;
+        SetCanSkill();
+        skillSystem.CompleteSkillAction(animationEvent);
+    }
+
+    private void OnSkillCantMove(AnimationEvent animationEvent)
+    {
+        if (skillSystem != null && skillSystem.OwnsRecoveryEvent(animationEvent)) SetCantMove();
+    }
+
     public void SetCanMove()
     {
+        if (!CanAcceptControlEvent) return;
         canMove = true;
     }
 
@@ -591,6 +662,7 @@ public class CharacterModel : MonoBehaviour
 
     public void SetCanAttack()
     {
+        if (!CanAcceptControlEvent) return;
         canAttack = true;
     }
 
@@ -601,6 +673,7 @@ public class CharacterModel : MonoBehaviour
 
     public void SetCanSkill()
     {
+        if (!CanAcceptControlEvent) return;
         canSkill = true;
     }
 
@@ -613,14 +686,36 @@ public class CharacterModel : MonoBehaviour
     {
         if (stigma != null && stigma.TryIgnoreCC()) return;
 
+        if (isWaitingForRelease)
+        {
+            ClearIdenAttackState();
+            resumeIdenControlsAfterStun = true;
+            RemoveIdenAura();
+        }
         Buff.StunEnable();
+        skillSystem?.InterruptActiveSkill(true);
         Anim.SetBool("IsStun", true);
     }
 
     public void StunDisable()
     {
         Buff.StunDisable();
+        skillSystem?.TryRecoverInterruptedControls();
+        if (resumeExternalControlsAfterStun)
+        {
+            resumeExternalControlsAfterStun = false;
+            if (!isDie && !externalControlLocked) SetControlable(true);
+        }
         Anim.SetBool("IsStun", false);
+        if (resumeIdenControlsAfterStun)
+        {
+            resumeIdenControlsAfterStun = false;
+            if (!isDie && !externalControlLocked && navMesh != null && navMesh.enabled)
+            {
+                canMove = true;
+                canAttack = true;
+            }
+        }
     }
 
     public void ImmunityEnable()
@@ -681,7 +776,8 @@ public class CharacterModel : MonoBehaviour
             attackCoroutine = null;
             Anim.SetBool("IsIden", false);
 
-            Anim.SetTrigger("IdenFinish"); // 막타 애니메이션 실행
+            canMove = false;
+            canAttack = false;
 
             isWaitingForRelease = true; // 막타 치는 중이니 마우스 뗄 때까지 기다리라고 상태 변경
             playerController.isAttacking = true;
@@ -711,9 +807,9 @@ public class CharacterModel : MonoBehaviour
             float finalDamage = 0;
 
             if (isPercent)
-                finalDamage = damage * Stat.Stat.maxHp.FinalValue * Stat.Stat.damageTakeMultiplier.FinalValue;
+                finalDamage = damage * Stat.Stat.maxHp.FinalValue * Mathf.Max(0f, Stat.Stat.damageTakeMultiplier.FinalValue);
             else
-                finalDamage = damage * Stat.Stat.damageTakeMultiplier.FinalValue;
+                finalDamage = damage * Mathf.Max(0f, Stat.Stat.damageTakeMultiplier.FinalValue);
 
 
 
@@ -736,8 +832,12 @@ public class CharacterModel : MonoBehaviour
         canMove = false;
         isDie = true;
 
+        skillSystem.InterruptActiveSkill(false);
+        canAttack = false;
+        canSkill = false;
         skillSystem.ResetSkillCooldown();
         buff.RemoveAllBuff();
+        ClearIdenAttackState();
 
         anim.SetTrigger("Die");
 

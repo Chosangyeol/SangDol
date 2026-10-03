@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
+using System.Collections.Generic;
 
 public class PlayerInputs : MonoBehaviour
 {
@@ -16,6 +17,13 @@ public class PlayerInputs : MonoBehaviour
 
     private bool isAttackHeld = false;
     private bool isMoveHeld = false;
+    private readonly Queue<SkillInput> skillInputs = new Queue<SkillInput>();
+    private struct SkillInput
+    {
+        public C_Enums.SkillSlot slot;
+        public Vector2 position;
+        public bool released;
+    }
 
     private void Awake()
     {
@@ -24,12 +32,24 @@ public class PlayerInputs : MonoBehaviour
 
     private void Update()
     {
-        if (model.isDie) return;
+        if (model == null || model.isDie)
+        {
+            skillInputs.Clear();
+            return;
+        }
 
-        bool isPointerOverUI = EventSystem.current.IsPointerOverGameObject();
+        bool isPointerOverUI = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
 
         if (model != null && model.PlayerInput != null)
         {
+            while (skillInputs.Count > 0)
+            {
+                SkillInput input = skillInputs.Dequeue();
+                if (input.released)
+                    model.PlayerInput.OnSkillKeyUp(input.slot, input.position);
+                else if (!isPointerOverUI)
+                    model.PlayerInput.OnSkillKeyDown(input.slot, input.position);
+            }
             // 🌟 수정된 공격 로직 🌟
             // UI 위가 아니거나, 혹은 마우스를 뗐을 때(!isAttackHeld)
             if (!isPointerOverUI || !isAttackHeld)
@@ -46,7 +66,7 @@ public class PlayerInputs : MonoBehaviour
                 }
             }
 
-            if (isMoveHeld && !isPointerOverUI && model.canMove)
+            if (isMoveHeld && !isPointerOverUI)
             {
                 model.PlayerInput.OnMoveClick(GetPointerScreenPos());
             }
@@ -82,6 +102,9 @@ public class PlayerInputs : MonoBehaviour
 
     private void OnDisable()
     {
+        isMoveHeld = false;
+        isAttackHeld = false;
+        skillInputs.Clear();
         moveAction.action.started -= OnMoveStarted;
         moveAction.action.canceled -= OnMoveCanceled;
 
@@ -108,19 +131,13 @@ public class PlayerInputs : MonoBehaviour
 
     private void OnSkillSlotStarted(InputAction.CallbackContext ctx)
     {
-        if (EventSystem.current.IsPointerOverGameObject()) return; // UI 위면 무시
-
-        C_Enums.SkillSlot slot = GetSkillSlotFromInput(ctx);
-        // OnSkillInput 대신 명확하게 '누름'을 전달합니다 (모델쪽 함수 이름도 맞춰서 변경 필요)
-        model.PlayerInput.OnSkillKeyDown(slot, GetPointerScreenPos());
+        skillInputs.Enqueue(new SkillInput { slot = GetSkillSlotFromInput(ctx), position = GetPointerScreenPos() });
     }
 
     // 스킬 버튼에서 손을 뗐을 때 (차징 종료 및 발사)
     private void OnSkillSlotCanceled(InputAction.CallbackContext ctx)
     {
-        C_Enums.SkillSlot slot = GetSkillSlotFromInput(ctx);
-        // 손을 뗐다는 신호를 전달합니다.
-        model.PlayerInput.OnSkillKeyUp(slot, GetPointerScreenPos());
+        skillInputs.Enqueue(new SkillInput { slot = GetSkillSlotFromInput(ctx), position = GetPointerScreenPos(), released = true });
     }
 
     private void OnUseItemSlot(InputAction.CallbackContext ctx)

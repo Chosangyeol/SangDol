@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b34247faa7bd69d44bd1c88d1e822fdc, type: 3}
-  m_Name: TestBoss
+  m_Name: D1_FinalBoss
   m_EditorClassIdentifier: 
   enemyID: Jester
   enemyName: "\uC81C\uC2A4\uD130"

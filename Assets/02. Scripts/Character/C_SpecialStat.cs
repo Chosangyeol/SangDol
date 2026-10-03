@@ -77,7 +77,7 @@ public class C_SpecialStat
                 break;
             case C_Enums.SpecialStat.S5:
                 _model.AddStat(C_Enums.CharacterStat.MaxHp, true, 0.05f);
-                _model.AddStat(C_Enums.CharacterStat.DamageTakeMultiplier, false, 0.01f);
+                _model.AddStat(C_Enums.CharacterStat.DamageTakeMultiplier, false, -0.01f);
                 break;
         }
     }
@@ -99,7 +99,7 @@ public class C_SpecialStat
         _model.RemoveStat(C_Enums.CharacterStat.CriticalDamage, false, 0.05f * _currentStatState[C_Enums.SpecialStat.S4]);
 
         _model.RemoveStat(C_Enums.CharacterStat.MaxHp, true, 0.05f * _currentStatState[C_Enums.SpecialStat.S5]);
-        _model.RemoveStat(C_Enums.CharacterStat.DamageTakeMultiplier, false, 0.01f * _currentStatState[C_Enums.SpecialStat.S4]);
+        _model.RemoveStat(C_Enums.CharacterStat.DamageTakeMultiplier, false, -0.01f * _currentStatState[C_Enums.SpecialStat.S5]);
 
         _currentStatState[C_Enums.SpecialStat.S1] = 0;
         _currentStatState[C_Enums.SpecialStat.S2] = 0;

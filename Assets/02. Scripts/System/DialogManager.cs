@@ -121,6 +121,10 @@ public class DialogManager : MonoBehaviour
 
         if (dialogueDict.TryGetValue(id, out DialogueData data))
         {
+            nextButton.onClick.RemoveAllListeners();
+            choice1Button.onClick.RemoveAllListeners();
+            choice2Button.onClick.RemoveAllListeners();
+
             string replacedText = data.textKR.Replace("{PlayerName}", NpcDialogManager.Instance.Model.Stat.Stat.characterName);
 
             // 텍스트 갱신
@@ -130,13 +134,19 @@ public class DialogManager : MonoBehaviour
             // 💡 액션(Action) 처리: 데이터에 액션이 있으면 즉시 실행
             if (!string.IsNullOrWhiteSpace(data.actionType))
             {
-                ExecuteAction(data.actionType, data.actionValue);
+                if (!ExecuteAction(data.actionType, data.actionValue, out string failureMessage))
+                {
+                    dialogueText.text = failureMessage;
+                    nextButton.gameObject.SetActive(false);
+                    choicePanel.SetActive(true);
+                    choice1TextUI.text = "다시 시도";
+                    choice1Button.onClick.AddListener(() => PlayDialogue(id));
+                    choice2Button.gameObject.SetActive(true);
+                    choice2TextUI.text = "나가기";
+                    choice2Button.onClick.AddListener(EndDialogue);
+                    return;
+                }
             }
-
-            // 이전 버튼 이벤트 초기화
-            nextButton.onClick.RemoveAllListeners();
-            choice1Button.onClick.RemoveAllListeners();
-            choice2Button.onClick.RemoveAllListeners();
 
             // 💡 선택지 분기 처리
             if (data.HasChoices)
@@ -180,8 +190,9 @@ public class DialogManager : MonoBehaviour
     }
 
     // 3. 액션(Action) 실행 기능
-    private void ExecuteAction(string type, string value)
+    private bool ExecuteAction(string type, string value, out string failureMessage)
     {
+        failureMessage = null;
         switch (type)
         {
             case "Quest_Show":
@@ -200,9 +211,14 @@ public class DialogManager : MonoBehaviour
                 break;
 
             case "Quest_Clear": // 나중에 퀘스트 완료 대사용 액션
-                QuestManager.Instance.CompleteQuest(value);
-                break;
+                if (QuestManager.Instance == null)
+                {
+                    failureMessage = "퀘스트 정보를 불러올 수 없습니다. 잠시 후 다시 시도해주세요.";
+                    return false;
+                }
+                return QuestManager.Instance.TryCompleteQuest(value, out failureMessage);
         }
+        return true;
     }
 
     public bool IsDialogueActive()
@@ -230,6 +246,7 @@ public class DialogManager : MonoBehaviour
     private void EndDialogue()
     {
         choicePanel.SetActive(false);
+        dialoguePanel.SetActive(false);
 
         NpcDialogManager.Instance.CloseUI();
         Debug.Log("대화가 종료되었습니다.");

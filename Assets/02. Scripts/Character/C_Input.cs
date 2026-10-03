@@ -62,7 +62,7 @@ public class C_Input
     {
         // 손을 뗄 때 마우스 위치가 허공일 수도 있으니 동일하게 포인트 계산
         if (!GetMouseInput(screenPos, out var point))
-            return;
+            point = _model.transform.position + _model.transform.forward;
 
         // 컨트롤러에게 스킬 뗌을 요청
         _controller.RequestSkillKeyUp(skillSlot, point);

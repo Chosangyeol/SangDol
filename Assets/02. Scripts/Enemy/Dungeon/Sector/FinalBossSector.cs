@@ -11,12 +11,36 @@ public class FinalBossSector : MonoBehaviour, ISectorCondition
     [SerializeField] private string _goal;
 
     private List<EnemyBase> _spawnedEnemies = new List<EnemyBase>();
+    private readonly HashSet<int> completedEnemies = new HashSet<int>();
 
     private bool _isStarted = false;
     public string SectorGoal => _goal;
 
     public int TotalEnemyCount => spawnDataList.Count;
-    public int DeadEnemyCount => _spawnedEnemies.Count(e => e != null && e.IsDead);
+    public int DeadEnemyCount
+    {
+        get
+        {
+            for (int i = 0; i < _spawnedEnemies.Count; i++)
+            {
+                var enemy = _spawnedEnemies[i];
+                if (enemy != null && enemy.IsDead && (!(enemy is BossModel boss) || boss.IsDeathSequenceFinished))
+                    completedEnemies.Add(i);
+            }
+            return completedEnemies.Count;
+        }
+    }
+
+    private void OnBossDefeated(BossModel boss)
+    {
+        for (int i = 0; i < _spawnedEnemies.Count; i++)
+            if (ReferenceEquals(_spawnedEnemies[i], boss)) completedEnemies.Add(i);
+    }
+    private void OnDestroy()
+    {
+        foreach (var enemy in _spawnedEnemies)
+            if (enemy is BossModel boss) boss.DeathPresentationCompleted -= OnBossDefeated;
+    }
 
     public bool IsSatisfied => _isStarted && DeadEnemyCount >= TotalEnemyCount;
 
@@ -27,6 +51,7 @@ public class FinalBossSector : MonoBehaviour, ISectorCondition
         _isStarted = true;
         Debug.Log("보스 섹터 시작");
         _spawnedEnemies.Clear();
+        completedEnemies.Clear();
 
         foreach (var data in spawnDataList)
         {
@@ -62,6 +87,7 @@ public class FinalBossSector : MonoBehaviour, ISectorCondition
 
         if (enemy is BossModel model)
         {
+            model.DeathPresentationCompleted += OnBossDefeated;
             model.OnReturnToPool = (e) => {
                 // 필요 시 여기서 사망 알림 등만 처리
                 DungeonManager.instance.UpdateDungeonUI();
@@ -78,6 +104,7 @@ public class FinalBossSector : MonoBehaviour, ISectorCondition
 
         foreach (var enemy in _spawnedEnemies)
         {
+            if (enemy is BossModel trackedBoss) trackedBoss.DeathPresentationCompleted -= OnBossDefeated;
             if (enemy != null && enemy.gameObject.activeSelf)
             {
                 if (enemy is BossModel model)
@@ -85,6 +112,7 @@ public class FinalBossSector : MonoBehaviour, ISectorCondition
                     model.ResetBossState();
                     model.OnReturnToPool = null;
                     Debug.Log("보스 상태 초기화 완료");
+                    if (!model.gameObject.activeSelf) continue;
                 }
 
                 PoolableMono poolObj = enemy.GetComponent<PoolableMono>();
@@ -100,6 +128,7 @@ public class FinalBossSector : MonoBehaviour, ISectorCondition
         }
 
         _spawnedEnemies.Clear();
+        completedEnemies.Clear();
         _isStarted = false;
 
         // (참고: ResetSector에서 UpdateDungeonUI를 하므로 여기서 뺄 수 있으면 빼도 됩니다)

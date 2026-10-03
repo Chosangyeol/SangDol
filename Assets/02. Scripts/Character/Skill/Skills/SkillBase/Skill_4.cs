@@ -15,8 +15,11 @@ public class Skill_4 : ChargeSkillBase
 
     public override bool UseSkill(Vector3 targetPos)
     {
+        if (_model.isDie || _model.Buff.isStun || _model.IsExternalControlLocked) return false;
         if (base.UseSkill(targetPos))
         {
+            BeginExecution();
+            spinEffect = null;
             isCharging = true;
             
             currentChargeTime = 0f;
@@ -27,7 +30,7 @@ public class Skill_4 : ChargeSkillBase
             _model.canSkill = false;
 
             _model.Anim.SetTrigger("Skill4_Spin");
-            _model.StartCoroutine(Effect(skillData.skillEffects[0], _model.transform.position));
+            StartExecutionRoutine(Effect(GetExecutionEffectPrefab(0), _model.transform.position));
             return true;
         }
         return false;
@@ -90,7 +93,7 @@ public class Skill_4 : ChargeSkillBase
 
     public override void ReleaseSkill(Vector3 targetPos)
     {
-        if (!isCharging) return;
+        if (!isCharging || !CanContinueExecution) return;
 
         CheckPerfectCharge();
 
@@ -109,12 +112,11 @@ public class Skill_4 : ChargeSkillBase
             _model.canMove = false;
             _model.PlayerController.StopMove();
             _model.Anim.SetTrigger("Skill4_Perfect");
-            AudioManager.instance.PlaySFX(C_Enums.SFX_List.Player_Skill4);
-            _model.StartCoroutine(Effect2(skillData.skillEffects[1], _model.transform.position));
+            if (AudioManager.instance != null) AudioManager.instance.PlaySFX(C_Enums.SFX_List.Player_Skill4);
+            StartExecutionRoutine(Effect2(GetExecutionEffectPrefab(1), _model.transform.position));
             if (spinEffect != null)
             {
-                spinEffect.transform.SetParent(null);
-                PoolManager.Instance.Push(spinEffect);
+                ReturnExecutionEffect(spinEffect);
                 spinEffect = null;
             }
             
@@ -126,8 +128,7 @@ public class Skill_4 : ChargeSkillBase
             _model.Anim.SetTrigger("Skill4_End");
             if (spinEffect != null)
             {
-                spinEffect.transform.SetParent(null);
-                PoolManager.Instance.Push(spinEffect);
+                ReturnExecutionEffect(spinEffect);
                 spinEffect = null;
             }
             // 덜 모았거나 지나쳤을 때 나가는 약한 피니시 애니메이션
@@ -137,7 +138,8 @@ public class Skill_4 : ChargeSkillBase
 
     IEnumerator Effect(PoolableMono prefab, Vector3 targetPos)
     {
-        PoolableMono effect = PoolManager.Instance.Pop(prefab.name);
+        PoolableMono effect = TakeExecutionEffect(prefab);
+        if (effect == null) yield break;
         spinEffect = effect;
 
         Vector3 dir = _model.transform.forward;
@@ -148,22 +150,22 @@ public class Skill_4 : ChargeSkillBase
         effect.transform.rotation = Quaternion.LookRotation(dir);
         yield return new WaitForSeconds(3f);
 
-        effect.transform.SetParent(null);
         spinEffect = null;
-        PoolManager.Instance.Push(effect);
+        ReturnExecutionEffect(effect);
     }
 
     IEnumerator Effect2(PoolableMono prefab, Vector3 targetPos)
     {
         yield return new WaitForSeconds(1.3f);
 
-        PoolableMono effect = PoolManager.Instance.Pop(prefab.name);
+        PoolableMono effect = TakeExecutionEffect(prefab);
+        if (effect == null) yield break;
 
         Vector3 dir = _model.transform.forward;
 
         effect.transform.position = targetPos;
         effect.transform.rotation = Quaternion.LookRotation(dir);
         yield return new WaitForSeconds(1f);
-        PoolManager.Instance.Push(effect);
+        ReturnExecutionEffect(effect);
     }
 }

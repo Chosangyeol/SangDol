@@ -19,31 +19,30 @@ public class DropItemModel : InteractableObject
     {
         this.dropItemSO = dropItemSO;
 
-        if (this.dropItemSO != null)
+        dropItem = this.dropItemSO != null ? this.dropItemSO.CreateItem(amount) : null;
+        if (this.dropItemSO != null && itemNameText != null)
         {
             itemNameText.text = dropItemSO.itemName;
-            dropItem = this.dropItemSO.CreateItem(amount);
         }
     }
 
     public override bool Interact(Transform target)
     {
-        if (base.Interact(target))
+        if (!gameObject.activeInHierarchy || target == null || dropItem == null || dropItem.currentStack <= 0)
+            return false;
+        CharacterModel model = target.GetComponent<CharacterModel>();
+        if (model == null || model.Inventory == null || !base.Interact(target)) return false;
+
+        int received = model.Inventory.AddItemWithResult(dropItem);
+        if (dropItem.currentStack > 0)
         {
-            // 아이템 획득 로직 추가
-            Debug.Log($"아이템 '{InteractName}' 획득!");
-
-            CharacterModel model = target.GetComponent<CharacterModel>();
-
-            if (model != null )
-            {
-                model.Inventory.AddItem(dropItem);
-            }
-            Debug.Log($"아이템 '{dropItem.itemBaseSO.itemName}'이(가) 인벤토리에 추가되었습니다.");
-            PoolManager.Instance.Push(this);
-            return true;
+            // Keep the uncollected remainder and restore its interaction guide.
+            UpdateUIState();
+            return received > 0;
         }
 
-        return false;
+        if (PoolManager.Instance != null) PoolManager.Instance.Push(this);
+        else gameObject.SetActive(false);
+        return received > 0;
     }
 }

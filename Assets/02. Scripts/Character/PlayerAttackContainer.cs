@@ -18,6 +18,7 @@ public class PlayerAttackContainer : MonoBehaviour
 
     public void AnimEvent_ExevuteSkillAttack()
     {
+        if (_model.isDie || _model.Buff.isStun || _model.IsExternalControlLocked) return;
         if (currentSkill == null || currentSkill.skillData == null) return;
 
         SkillBaseSO data = currentSkill.skillData;
@@ -84,6 +85,12 @@ public class PlayerAttackContainer : MonoBehaviour
                 Debug.Log($"{target.name}에게 {data.attackShape} 형태의 타격 적중!");
             }
         }
+    }
+
+    private void AnimEvent_ExecuteManagedSkillAttack(AnimationEvent animationEvent)
+    {
+        if (currentSkill != null && currentSkill.OwnsAnimationEvent(animationEvent))
+            AnimEvent_ExevuteSkillAttack();
     }
 
     private void OnDrawGizmos()

@@ -48,6 +48,8 @@ public class QuestManager : MonoBehaviour
     public event Action OnQuestProgressUpdated;
 
     private CharacterModel _model;
+    private C_Inventory observedInventory;
+    private readonly HashSet<string> completingQuests = new HashSet<string>();
     [SerializeField] ItemTooltip tooltip;
 
     [Header("퀘스트 미리보기")]
@@ -80,6 +82,8 @@ public class QuestManager : MonoBehaviour
     private void Start()
     {
         _model = FindAnyObjectByType<CharacterModel>();
+        BindInventory();
+        RefreshItemQuests();
     }
 
     private void OnEnable()
@@ -87,6 +91,8 @@ public class QuestManager : MonoBehaviour
         GameEvent.OnMonsterKill += HandleCountMonsterKill;
         GameEvent.OnGetItem += HandleCountItem;
         GameEvent.OnTalkNpc += HandleTalkNpc;
+        BindInventory();
+        RefreshItemQuests();
     }
 
     private void OnDisable()
@@ -94,6 +100,8 @@ public class QuestManager : MonoBehaviour
         GameEvent.OnMonsterKill -= HandleCountMonsterKill;
         GameEvent.OnGetItem -= HandleCountItem;
         GameEvent.OnTalkNpc -= HandleTalkNpc;
+        if (observedInventory != null) observedInventory.OnInventoryUpdated -= OnInventoryChanged;
+        observedInventory = null;
     }
 
     private void LoadQuestCsv(string fileName)
@@ -200,39 +208,37 @@ public class QuestManager : MonoBehaviour
         OnQuestProgressUpdated?.Invoke();
     }
 
-    private void HandleCountItem(string targetItemID)
+    private void HandleCountItem(string targetItemID) => RefreshItemQuests(targetItemID);
+
+    private void BindInventory()
     {
-        List<string> activeQuests = new List<string>(questStateDict.Keys);
+        if (observedInventory != null) observedInventory.OnInventoryUpdated -= OnInventoryChanged;
+        observedInventory = _model != null ? _model.Inventory : null;
+        if (observedInventory != null) observedInventory.OnInventoryUpdated += OnInventoryChanged;
+    }
+    private void OnInventoryChanged() => RefreshItemQuests();
 
-        foreach (var questID in activeQuests)
+    private void RefreshItemQuests(string targetItemID = null)
+    {
+        if (_model == null || _model.Inventory == null) return;
+        foreach (var id in new List<string>(questStateDict.Keys))
         {
-            QuestData data = questDict[questID];
-
-            if (data.questType == "Item" && data.questTarget == targetItemID)
-            {
-                int currentItemCount = _model.Inventory.GetTotalItemCount(data.questTarget);
-                Debug.Log(currentItemCount);
-                questItemProgressDict[questID] = currentItemCount;
-
-                if (questStateDict[questID] == QuestState.InProgress)
-                {
-                    if (questItemProgressDict[questID] >= data.questCount)
-                    {
-                        questStateDict[questID] = QuestState.CanClear;
-                        Debug.Log($"<color=cyan>[아이템 수집 완료] NPC에게 돌아가세요!</color>");
-                    }
-                }
-                else if (questStateDict[questID] == QuestState.CanClear)
-                {
-                    if (questItemProgressDict[questID] < data.questCount)
-                    {
-                        questStateDict[questID] = QuestState.InProgress;
-                        Debug.Log($"<color=red>퀘스트 아이템이 부족해졌습니다.</color>");
-                    }
-                }
-            }
+            var state = questStateDict[id];
+            if (state != QuestState.InProgress && state != QuestState.CanClear) continue;
+            if (!questDict.TryGetValue(id, out var data) || data == null || data.questType != "Item" ||
+                string.IsNullOrEmpty(data.questTarget) ||
+                (targetItemID != null && data.questTarget != targetItemID)) continue;
+            int count = _model.Inventory.GetTotalItemCount(data.questTarget);
+            questItemProgressDict[id] = count;
+            questStateDict[id] = count >= data.questCount ? QuestState.CanClear : QuestState.InProgress;
         }
         OnQuestProgressUpdated?.Invoke();
+    }
+
+    private void OnDestroy()
+    {
+        if (observedInventory != null) observedInventory.OnInventoryUpdated -= OnInventoryChanged;
+        if (Instance == this) Instance = null;
     }
 
     private void HandleTalkNpc(string targetNpcID)
@@ -310,45 +316,74 @@ public class QuestManager : MonoBehaviour
 
     public void RefuseQuest()
     {
-        questPreview.SetActive(false);
+        questPreview?.SetActive(false);
     }
 
     public void CompleteQuest(string questID)
     {
+        TryCompleteQuest(questID, out _);
+    }
+
+    internal bool TryCompleteQuest(string questID, out string failureMessage)
+    {
+        failureMessage = "퀘스트 보상을 받을 수 없습니다. 잠시 후 다시 시도해주세요.";
+        if (string.IsNullOrWhiteSpace(questID)) return false;
         questID = questID.Trim();
-
-        Debug.Log(questDict[questID].questName);
-
-        if (GetQuestState(questID) == QuestState.CanClear)
+        if (!questDict.TryGetValue(questID, out var data) || data == null ||
+            !questStateDict.TryGetValue(questID, out var state)) return false;
+        if (state == QuestState.Completed)
         {
-            questStateDict[questID] = QuestState.Completed;
-
-            if (questDict.TryGetValue(questID, out QuestData data))
+            failureMessage = null;
+            return true;
+        }
+        if (state != QuestState.CanClear)
+        {
+            failureMessage = "아직 퀘스트 완료 조건을 충족하지 못했습니다.";
+            return false;
+        }
+        if (_model == null || _model.Inventory == null || _model.Stat == null || !completingQuests.Add(questID)) return false;
+        try
+        {
+            if (data.questType == "Item")
             {
-                if (data.rewardExp > 0)
+                RefreshItemQuests(data.questTarget);
+                if (GetQuestState(questID) != QuestState.CanClear)
                 {
-                    Debug.Log($"경험치 {data.rewardExp} 획득");
-                    _model.GainExp(data.rewardExp);
-                }
-
-                if (data.rewardGold > 0)
-                {
-                    Debug.Log($"골드 {data.rewardGold} 획득");
-                    _model.GainGold(data.rewardGold);
-                }
-
-                foreach (var reward in data.rewardItems)
-                {
-                    Debug.Log($"아이템 획득: {reward.itemID} x {reward.count}");
-                    // 실제 연동 시: _model.Inventory.AddItem(reward.itemID, reward.count);
+                    failureMessage = "퀘스트에 필요한 아이템이 부족합니다.";
+                    return false;
                 }
             }
+            if (data.rewardGold < 0 || data.rewardExp < 0 ||
+                (long)_model.Stat.Stat.gold + data.rewardGold > int.MaxValue) return false;
+            var rewards = new List<KeyValuePair<ItemBaseSO, int>>();
+            if (data.rewardItems != null)
+            {
+                foreach (var reward in data.rewardItems)
+                {
+                    if (string.IsNullOrWhiteSpace(reward.itemID) || reward.count <= 0 || ItemManager.Instance == null) return false;
+                    var item = ItemManager.Instance.GetItemBaseSO(reward.itemID.Trim());
+                    if (item == null) return false;
+                    rewards.Add(new KeyValuePair<ItemBaseSO, int>(item, reward.count));
+                }
+            }
+            bool granted = _model.Inventory.TryAddRewards(rewards, () =>
+            {
+                // Final inventory and completion state are visible to reentrant subscribers.
+                questStateDict[questID] = QuestState.Completed;
+                if (data.rewardGold > 0) _model.GainGold(data.rewardGold);
+                if (data.rewardExp > 0) _model.GainExp(data.rewardExp);
+            });
+            if (!granted)
+            {
+                Debug.LogWarning("[QuestManager] Not enough inventory space for all quest rewards.");
+                failureMessage = "보상을 받을 인벤토리 공간이 부족합니다. 공간을 확보한 뒤 다시 시도해주세요.";
+                return false;
+            }
+            OnQuestProgressUpdated?.Invoke();
+            failureMessage = null;
+            return true;
         }
-        else
-        {
-            Debug.LogWarning("아직 퀘스트 완료 조건을 달성하지 못했습니다.");
-        }
-        OnQuestProgressUpdated?.Invoke();
+        finally { completingQuests.Remove(questID); }
     }
 
     public QuestData GetQuestData(string questID)

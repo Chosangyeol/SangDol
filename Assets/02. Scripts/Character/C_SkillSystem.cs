@@ -30,6 +30,70 @@ public class C_SkillSystem
     public event Action OnSkillDataChanged;
 
     private int useSkillPoint = 0;
+    private SkillBase bufferedSkill;
+    private C_Enums.SkillSlot bufferedSlot;
+    private Vector3 bufferedTarget;
+    private float bufferRemaining;
+    private float bufferExpiresAt;
+    private bool bufferedRelease;
+    private const float InputBufferDuration = 0.18f;
+    private SkillBase executingSkill;
+    private readonly HashSet<SkillBase> executionSkills = new HashSet<SkillBase>();
+    private bool restoreInterruptedControls;
+    private bool previousMove, previousAttack, previousSkill;
+    internal bool HasInterruptedControlRecovery => restoreInterruptedControls;
+
+    internal void BeginSkillAction(SkillBase skill)
+    {
+        executingSkill = skill;
+        executionSkills.Add(skill);
+        restoreInterruptedControls = false;
+        previousMove = _model.canMove;
+        previousAttack = _model.canAttack;
+        previousSkill = _model.canSkill;
+    }
+
+    internal bool OwnsRecoveryEvent(AnimationEvent animationEvent)
+        => executingSkill != null && executingSkill.OwnsAnimationEvent(animationEvent);
+
+    internal void CompleteSkillAction(AnimationEvent animationEvent)
+    {
+        if (OwnsRecoveryEvent(animationEvent)) executingSkill = null;
+        // The final damage event may overlap recovery; retain the attack reference on normal completion.
+    }
+
+    internal void InterruptActiveSkill(bool recoverControls)
+    {
+        bufferedSkill = null;
+        if (!recoverControls) restoreInterruptedControls = false;
+        if (executingSkill != null)
+        {
+            SkillBase skill = executingSkill;
+            executingSkill = null;
+            skill.InterruptExecution();
+            _model.PlayerController.InterruptAttackForSkill();
+            _model.PlayerController.StopMove();
+            if (!_model.isDie && !_model.Buff.isStun && _model.Anim != null &&
+                _model.Anim.runtimeAnimatorController != null && _model.Anim.HasState(0, Animator.StringToHash("Base Layer.Idle")))
+                _model.Anim.CrossFade("Base Layer.Idle", 0.1f);
+            _model.canMove = false;
+            _model.canAttack = false;
+            _model.canSkill = false;
+            restoreInterruptedControls = recoverControls;
+        }
+        foreach (SkillBase skill in executionSkills) skill.InterruptExecution();
+        executionSkills.Clear();
+        TryRecoverInterruptedControls();
+    }
+
+    internal void TryRecoverInterruptedControls()
+    {
+        if (!restoreInterruptedControls || !_model.CanRecoverSkillControls) return;
+        restoreInterruptedControls = false;
+        _model.canMove = previousMove;
+        _model.canAttack = previousAttack;
+        _model.canSkill = previousSkill;
+    }
 
     public C_SkillSystem(CharacterModel model)
     {
@@ -45,6 +109,9 @@ public class C_SkillSystem
     public virtual bool UpdateSkills(float deltaTime)
     {
         bool result = false;
+        if (_model.isDie || _model.Buff.isStun || _model.IsExternalControlLocked)
+            InterruptActiveSkill(!_model.isDie && !_model.IsExternalControlLocked);
+        else TryRecoverInterruptedControls();
 
         IdentitySkill?.UpdateSkill(deltaTime);
         DodgeSkill?.UpdateSkill(deltaTime);
@@ -56,6 +123,7 @@ public class C_SkillSystem
                 skillPair.Value.UpdateSkill(deltaTime);
             }
         }
+        UpdateBufferedSkill(deltaTime);
         return result;
     }
 
@@ -73,7 +141,11 @@ public class C_SkillSystem
 
     public void UseSkill(C_Enums.SkillSlot slot, Vector3 targetPos)
     {
-        if (!_model.canMove) return;
+        if (_model.isDie || _model.Buff.isStun || _model.IsExternalControlLocked)
+        {
+            bufferedSkill = null;
+            return;
+        }
 
         if (_model.Stigma != null && _model.Stigma.HasStigma(EStigmaType.Lv10_B))
         {
@@ -85,6 +157,21 @@ public class C_SkillSystem
         }
 
         SkillBase targetSkill = GetSkillToSlot(slot);
+
+        if (!_model.canSkill || !_model.canMove)
+        {
+            if (targetSkill != null && targetSkill.canUse)
+            {
+                bufferedSkill = targetSkill;
+                bufferedSlot = slot;
+                bufferedTarget = targetPos;
+                bufferRemaining = InputBufferDuration;
+                bufferExpiresAt = Time.time + InputBufferDuration;
+                bufferedRelease = false;
+            }
+            return;
+        }
+        bufferedSkill = null;
 
         if (targetSkill != null)
         {
@@ -105,12 +192,42 @@ public class C_SkillSystem
 
     public void ReleaseSkill(C_Enums.SkillSlot slot, Vector3 targetPos)
     {
+        if (_model.isDie || _model.Buff.isStun || _model.IsExternalControlLocked)
+        {
+            InterruptActiveSkill(!_model.isDie && !_model.IsExternalControlLocked);
+            return;
+        }
+        if (bufferedSkill != null && bufferedSlot == slot)
+        {
+            bufferedRelease = true;
+            bufferedTarget = targetPos;
+            return;
+        }
         SkillBase targetSkill = GetSkillToSlot(slot);
 
         if (targetSkill != null)
         {
             targetSkill.ReleaseSkill(targetPos);
         }
+    }
+
+    private void UpdateBufferedSkill(float deltaTime)
+    {
+        if (bufferedSkill == null) return;
+        bufferRemaining -= deltaTime;
+        if (bufferRemaining <= 0f || Time.time >= bufferExpiresAt || _model.isDie || _model.Buff.isStun ||
+            GetSkillToSlot(bufferedSlot) != bufferedSkill)
+        {
+            bufferedSkill = null;
+            return;
+        }
+        if (!_model.canSkill || !_model.canMove) return;
+
+        SkillBase skill = bufferedSkill;
+        bool release = bufferedRelease;
+        bufferedSkill = null;
+        UseSkill(bufferedSlot, bufferedTarget);
+        if (release && skill.isCharging) skill.ReleaseSkill(bufferedTarget);
     }
 
     public void RegisterSkillToSlot(C_Enums.SkillSlot slot, SkillBase skill)

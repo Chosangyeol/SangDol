@@ -10,6 +10,7 @@ public abstract class BossPatternBase
     public float range;
 
     protected float lastUsedTime = -999f;
+    internal void ResetCooldown() => lastUsedTime = -999f;
 
     public virtual bool IsReady(BossModel boss, Transform player)
     {

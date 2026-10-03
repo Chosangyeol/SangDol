@@ -80728,28 +80728,28 @@ AnimationClip:
   m_HasMotionFloatCurves: 0
   m_Events:
   - time: 1.0666667
-    functionName: AnimEvent_ExevuteSkillAttack
+    functionName: AnimEvent_ExecuteManagedSkillAttack
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 1.5
-    functionName: SetCanMove
+    functionName: OnSkillCanMove
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 1.5
-    functionName: SetCanAttack
+    functionName: OnSkillCanAttack
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 1.5
-    functionName: SetCanSkill
+    functionName: OnSkillCanSkill
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

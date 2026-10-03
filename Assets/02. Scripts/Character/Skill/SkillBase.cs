@@ -1,4 +1,6 @@
 using Unity.VisualScripting.FullSerializer.Internal;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class SkillBase
@@ -21,6 +23,88 @@ public abstract class SkillBase
     public float currentHoldTime = 0f;
 
     protected PlayerAttackContainer _attackContainer;
+    private bool managedExecution;
+    private bool executionCancelled;
+    private readonly List<Coroutine> executionRoutines = new List<Coroutine>();
+    private readonly Dictionary<PoolableMono, Vector3> executionEffects = new Dictionary<PoolableMono, Vector3>();
+
+    protected bool CanContinueExecution => !executionCancelled && !_model.isDie &&
+        !_model.Buff.isStun && !_model.IsExternalControlLocked;
+
+    protected void BeginExecution()
+    {
+        StopExecutionResources();
+        managedExecution = true;
+        executionCancelled = false;
+        _model.SkillSystem.BeginSkillAction(this);
+    }
+
+    protected void StartExecutionRoutine(IEnumerator routine)
+    {
+        executionRoutines.Add(_model.StartCoroutine(routine));
+    }
+
+    protected PoolableMono TakeExecutionEffect(PoolableMono prefab)
+    {
+        if (!CanContinueExecution || prefab == null || PoolManager.Instance == null) return null;
+        PoolableMono effect = PoolManager.Instance.Pop(prefab.name);
+        if (effect != null) executionEffects[effect] = effect.transform.localScale;
+        return effect;
+    }
+
+    protected PoolableMono GetExecutionEffectPrefab(int index)
+        => skillData.skillEffects != null && index < skillData.skillEffects.Length ? skillData.skillEffects[index] : null;
+
+    protected void ReturnExecutionEffect(PoolableMono effect)
+    {
+        if (effect == null || !executionEffects.TryGetValue(effect, out Vector3 scale)) return;
+        executionEffects.Remove(effect); // Release ownership before returning; delayed cleanup becomes a no-op.
+        effect.transform.SetParent(null);
+        effect.transform.localScale = scale;
+        if (PoolManager.Instance != null) PoolManager.Instance.Push(effect);
+        else effect.gameObject.SetActive(false);
+    }
+
+    private void StopExecutionResources()
+    {
+        foreach (Coroutine routine in executionRoutines)
+            if (routine != null && _model != null) _model.StopCoroutine(routine);
+        executionRoutines.Clear();
+        foreach (PoolableMono effect in new List<PoolableMono>(executionEffects.Keys))
+            ReturnExecutionEffect(effect);
+        executionEffects.Clear();
+    }
+
+    internal void InterruptExecution()
+    {
+        if (!managedExecution || executionCancelled) return;
+        executionCancelled = true;
+        bool wasCharging = isCharging;
+        isCharging = false;
+        isPerfectCharge = false;
+        currentChargeTime = 0f;
+        currentHoldTime = 0f;
+        StopExecutionResources();
+        if (_attackContainer != null && _attackContainer.currentSkill == this)
+            _attackContainer.currentSkill = null;
+        if (wasCharging) GameEvent.OnGaugeUpdate?.Invoke(false, "", 0f, -1f, -1f);
+        if (_model.Anim != null)
+        {
+            string[] triggers = GetType().Name == "Skill_1" ? new[] { "Skill1" } :
+                GetType().Name == "Skill_3" ? new[] { "Skill3_Charge", "Skill3_ChargeEnd" } :
+                new[] { "Skill4_Spin", "Skill4_Perfect", "Skill4_End" };
+            foreach (string trigger in triggers) _model.Anim.ResetTrigger(trigger);
+        }
+    }
+
+    internal bool OwnsAnimationEvent(AnimationEvent animationEvent)
+    {
+        if (!managedExecution || executionCancelled || !CanContinueExecution || animationEvent == null) return false;
+        AnimationClip clip = animationEvent.animatorClipInfo.clip;
+        if (clip == null) return false;
+        string name = clip.name.Replace("(Clone)", "");
+        return name == GetType().Name || name.StartsWith(GetType().Name + "_");
+    }
 
     public SkillBase(CharacterModel model, SkillBaseSO skillData)
     {
@@ -55,6 +139,7 @@ public abstract class SkillBase
             canUse = false;
 
             _model.PlayerController.StopMove();
+            _model.PlayerController.InterruptAttackForSkill();
             _model.PlayerController.FaceTo(targetPos);
 
             currentHoldTime = 0f;
@@ -132,6 +217,11 @@ public abstract class SkillBase
 
     public virtual void UpdateSkill(float deltaTime)
     {
+        if (managedExecution && !executionCancelled && !CanContinueExecution)
+        {
+            _model.SkillSystem.InterruptActiveSkill(!_model.isDie && !_model.IsExternalControlLocked);
+            InterruptExecution();
+        }
         if (isCharging)
         {
             // 1. 차징 시간 계산

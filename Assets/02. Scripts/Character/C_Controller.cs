@@ -12,6 +12,13 @@ public class C_Controller
     private bool isRotating;
     private Quaternion rotateTarget;
     private readonly float rotateSpeed = 360f;
+    private Vector3 lastMoveDestination;
+    private bool hasMoveDestination;
+    private float nextRepathTime;
+    private const float RepathInterval = 0.08f;
+    private const float DestinationThreshold = 0.1f;
+    private Vector3 bufferedMoveDestination;
+    private bool hasBufferedMoveDestination;
 
 
     [Header("공격")]
@@ -38,6 +45,27 @@ public class C_Controller
 
     public void Tick()
     {
+        if (hasBufferedMoveDestination)
+        {
+            if (_model.isDie || _model.Buff.isStun)
+            {
+                hasBufferedMoveDestination = false;
+            }
+            else if (!isAttacking && _model.canMove)
+            {
+                Vector3 destination = bufferedMoveDestination;
+                hasBufferedMoveDestination = false;
+                RequestMove(destination);
+            }
+        }
+
+        if (CanNavigate && !agent.isStopped && _model.canMove && !isAttacking)
+        {
+            Vector3 direction = agent.desiredVelocity;
+            direction.y = 0f;
+            if (direction.sqrMagnitude > 0.01f)
+                RotateTo(tr.position + direction);
+        }
         // 1. 회전 로직 (기존 코드 유지)
         if (isRotating)
         {
@@ -47,34 +75,18 @@ public class C_Controller
                 rotateSpeed * Time.deltaTime
             );
 
-            if (Quaternion.Angle(tr.rotation, rotateTarget) < 0.5f)
+            if (Quaternion.Angle(tr.rotation, rotateTarget) < 0.01f)
             {
-                tr.rotation = rotateTarget;
                 isRotating = false;
             }
         }
 
-        // 2. NavMeshAgent 도착 여부 체크 로직 추가
-        if (agent != null && !agent.pathPending) // 경로 계산이 끝났고
-        {
-            if (agent != null && agent.isActiveAndEnabled && agent.isOnNavMesh)
-            {
-                if (agent.remainingDistance < 0.5f)
-                {
-                    if (agent.remainingDistance <= agent.stoppingDistance) // 목적지에 도달했거나 멈출 거리에 진입했다면
-                    {
-                        if (!agent.hasPath || agent.velocity.sqrMagnitude == 0f) // 경로가 없거나 속도가 0이라면 (완전히 멈춤)
-                        {
-                            // 이동 애니메이션이 켜져 있을 때만 꺼주기 (매 프레임 불필요한 호출 방지)
-                            if (_model.Anim.GetBool("Move"))
-                            {
-                                StopMove();
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        bool destinationReached = agent.hasPath
+            && agent.remainingDistance <= Mathf.Max(agent.stoppingDistance, 0.1f)
+            && agent.velocity.sqrMagnitude < 0.01f;
+        bool pathFailed = !agent.hasPath && Time.time >= nextRepathTime;
+        if (CanNavigate && !agent.isStopped && !agent.pathPending && (pathFailed || destinationReached))
+            StopMove();
     }
 
     public void TeleportTo(Vector3 dest)
@@ -93,7 +105,16 @@ public class C_Controller
 
     public void RequestMove(Vector3 dest)
     {
-        if (_model.Buff.isStun) return;
+        if (_model.isDie || _model.Buff.isStun) return;
+
+        if (isAttacking && !_model.canMove)
+        {
+            bufferedMoveDestination = dest;
+            hasBufferedMoveDestination = true;
+            return;
+        }
+
+        if (!CanNavigate) return;
 
         if (isAttacking)
         {
@@ -108,20 +129,29 @@ public class C_Controller
                 return;
         }
 
-        FaceTo(dest);
+        bool restarting = agent.isStopped || !hasMoveDestination;
+        if (!restarting && ((dest - lastMoveDestination).sqrMagnitude <
+            DestinationThreshold * DestinationThreshold || Time.time < nextRepathTime))
+            return;
 
+        if (!NavMesh.SamplePosition(dest, out NavMeshHit hit, 1f, agent.areaMask)) return;
+        if ((hit.position - tr.position).sqrMagnitude <=
+            Mathf.Pow(Mathf.Max(agent.stoppingDistance, 0.1f), 2f))
+        {
+            StopMove();
+            return;
+        }
+        if (!agent.SetDestination(hit.position)) return;
+
+        agent.isStopped = false;
         currentCombo = 0;
-
-        if (agent != null)
-        {
-            agent.SetDestination(dest);
-        }
-
-        if (_model.Anim != null)
-        {
-            _model.Anim.SetBool("Move", true);
-        }
+        lastMoveDestination = dest;
+        hasMoveDestination = true;
+        nextRepathTime = Time.time + RepathInterval;
+        if (_model.Anim != null) _model.Anim.SetBool("Move", true);
     }
+
+    private bool CanNavigate => agent != null && agent.isActiveAndEnabled && agent.isOnNavMesh;
 
     public void RequestInteract()
     {
@@ -224,6 +254,14 @@ public class C_Controller
             _model.Anim.ResetTrigger("Attack");
     }
 
+    internal void InterruptAttackForSkill()
+    {
+        isAttacking = false;
+        nextAttackReady = false;
+        currentCombo = 0;
+        if (_model.Anim != null) _model.Anim.ResetTrigger("Attack");
+    }
+
     public void RequestSkillKeyDown(C_Enums.SkillSlot slot, Vector3 targetPos)
     {
         // C_SkillSystem의 기존 스킬 사용 로직 (차징 시작 또는 즉발)
@@ -254,10 +292,13 @@ public class C_Controller
 
     public void StopMove()
     {
-        if (_model.Navmesh.enabled && _model.Navmesh.isOnNavMesh)
+        isRotating = false;
+        hasMoveDestination = false;
+        hasBufferedMoveDestination = false;
+        if (CanNavigate)
         {
-            _model.Navmesh.isStopped = true;
             _model.Navmesh.ResetPath();
+            _model.Navmesh.isStopped = true;
         }
 
         if (_model.Anim != null)
@@ -280,6 +321,7 @@ public class C_Controller
 
     public void FaceTo(Vector3 target)
     {
+        isRotating = false;
         Vector3 dir = target - tr.position;
         dir.y = 0f;
 

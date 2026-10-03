@@ -1,0 +1,6 @@
+{
+    "name": "PlayerMovement.PlayModeTests",
+    "optionalUnityReferences": ["TestAssemblies"],
+    "autoReferenced": false,
+    "defineConstraints": ["UNITY_EDITOR"]
+}

@@ -1,8 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Video;
 
 [System.Serializable]
 public class BossSpecialPattern
@@ -45,7 +48,43 @@ public class BossModel : EnemyBase, ICounterable
     protected List<BossPatternBase> normalPatterns = new List<BossPatternBase>();
     protected BossPatternBase currentPattern = null;
 
+    [Header("Defeat presentation")]
+    [SerializeField] private VideoClip defeatCutsceneClip;
+    [SerializeField, Min(0f)] private float deathPresentationDelay = 3f;
+    private bool deathSequenceFinished;
+    internal bool IsDeathSequenceFinished => _isDead && deathSequenceFinished;
+    internal event System.Action<BossModel> DeathPresentationCompleted;
+    private CharacterModel deathLockedPlayer;
+    private VideoPlayManager deathVideoManager;
+    private int deathVideoSession;
+
+    protected override void Awake()
+    {
+        base.Awake();
+        _agent = GetComponent<NavMeshAgent>();
+        initialAgentEnabled = _agent != null && _agent.enabled;
+    }
+
+    public override void Reset()
+    {
+        ForceStopCurrentAction();
+        base.Reset();
+        deathSequenceFinished = false;
+        isCutsceneFinished = false;
+        isCombatStarted = !isInField;
+        if (_stat != null) _stat.curDown = _stat.maxDown;
+        if (specialPatterns != null)
+            foreach (var pattern in specialPatterns) if (pattern != null) pattern.hasDone = false;
+        foreach (var pattern in normalPatterns) pattern?.ResetCooldown();
+        if (_agent != null)
+        {
+            _agent.enabled = initialAgentEnabled;
+            if (_agent.enabled && _agent.isOnNavMesh) { _agent.ResetPath(); _agent.isStopped = false; }
+        }
+    }
+
     private NavMeshAgent _agent;
+    private bool initialAgentEnabled;
     public NavMeshAgent Agent => _agent;
 
     protected override void Start()
@@ -53,7 +92,8 @@ public class BossModel : EnemyBase, ICounterable
         base.Start();
         _agent = GetComponent<NavMeshAgent>();
 
-        bossSpawnPoint = GameObject.FindGameObjectWithTag("BossSpawnPos")?.transform;
+        if (bossSpawnPoint == null)
+            bossSpawnPoint = GameObject.FindGameObjectWithTag("BossSpawnPos")?.transform;
 
         if (isInField && bossSpawnPoint == null)
         {
@@ -62,7 +102,7 @@ public class BossModel : EnemyBase, ICounterable
             spawnAnchor.transform.rotation = transform.rotation;
             bossSpawnPoint = spawnAnchor.transform;
         }
-        else
+        else if (bossSpawnPoint != null && Agent != null && Agent.enabled)
         {
             Agent.Warp(bossSpawnPoint.position);
         }
@@ -82,6 +122,7 @@ public class BossModel : EnemyBase, ICounterable
     private void OnDisable()
     {
         GameEvent.OnPlayerDie -= ResetBossState;
+        ForceStopCurrentAction();
     }
     private void Update()
     {
@@ -175,14 +216,56 @@ public class BossModel : EnemyBase, ICounterable
     protected override void Die(GameObject source = null)
     {
         if (_isDead) return;
-        _isDead = true;
         ToggleOutline(false);
-        Anim.SetTrigger("Die");
+        _isDead = true;
+        deathSequenceFinished = false;
+        ForceStopCurrentAction();
+        if (Anim != null) Anim.SetTrigger("Die");
 
         GameEvent.OnBossStateChange?.Invoke(null);
-        GameEvent.OnMonsterKill?.Invoke(statSO.enemyID);
+        if (statSO != null) GameEvent.OnMonsterKill?.Invoke(statSO.enemyID);
+        StartCoroutine(DefeatSequence());
+    }
 
-        PoolManager.Instance.Push(this);
+    private IEnumerator DefeatSequence()
+    {
+        if (deathPresentationDelay > 0f) yield return new WaitForSecondsRealtime(deathPresentationDelay);
+        VideoPlayManager video = VideoPlayManager.instance;
+        if (defeatCutsceneClip != null && video != null && !video.isPlaying)
+        {
+            deathVideoManager = video;
+            if (Target != null && !Target.isDie && !Target.IsExternalControlLocked)
+            {
+                deathLockedPlayer = Target;
+                Target.PlayerController?.StopMove();
+                Target.SetControlable(false);
+            }
+            if (deathVideoManager.TryPlayVideo(defeatCutsceneClip, out deathVideoSession))
+                while (deathVideoManager != null && deathVideoManager.IsPlaybackActive(deathVideoSession))
+                    yield return null;
+        }
+        ReleaseDeathPresentation();
+        deathSequenceFinished = true;
+        DeathPresentationCompleted?.Invoke(this);
+        ReturnBossToPool();
+    }
+
+    private void ReleaseDeathPresentation()
+    {
+        if (deathVideoManager != null) deathVideoManager.CancelPlayback(deathVideoSession);
+        deathVideoManager = null; deathVideoSession = 0;
+        if (deathLockedPlayer != null && !deathLockedPlayer.isDie)
+        {
+            deathLockedPlayer.SetControlable(true);
+        }
+        deathLockedPlayer = null;
+    }
+
+    private void ReturnBossToPool()
+    {
+        if (!gameObject.activeSelf) return;
+        if (PoolManager.Instance != null && PoolManager.Instance.TryPush(this)) return;
+        else gameObject.SetActive(false);
     }
 
     #endregion
@@ -195,9 +278,10 @@ public class BossModel : EnemyBase, ICounterable
 
         float curHpPercent = (float)Stat.curHp / Stat.maxHp;
 
+        if (specialPatterns == null) return;
         foreach (var pattern in specialPatterns)
         {
-            if (!pattern.hasDone && curHpPercent <= pattern.hpPercent)
+            if (pattern != null && !pattern.hasDone && curHpPercent <= pattern.hpPercent)
             {
                 pattern.hasDone = true;
                 isDoingSpecial = true;
@@ -278,6 +362,7 @@ public class BossModel : EnemyBase, ICounterable
 
     public void EnableCounter()
     {
+        if (_isDead) return;
         canCounter = true;
 
         if (counterEffectPrefab != null && _currentCounterEffect == null)
@@ -304,7 +389,7 @@ public class BossModel : EnemyBase, ICounterable
     public void OnCounterSuccess(SDamageInfo info)
     {
         // 1. 몬스터가 카운터 가능한 상태가 아니거나, 공격이 카운터 속성이 아니면 즉시 취소!
-        if (!canCounter || !info.isCounterable)
+        if (_isDead || !canCounter || !info.isCounterable)
         {
             return;
         }
@@ -326,6 +411,7 @@ public class BossModel : EnemyBase, ICounterable
 
     public IEnumerator KnockDown(float duration,bool isReset)
     {
+        if (_isDead) yield break;
         isKnockDown = true;
 
         GameEvent.OnBossStateChange?.Invoke(this);
@@ -350,6 +436,8 @@ public class BossModel : EnemyBase, ICounterable
     {
         // 1. 진행 중인 모든 코루틴 정지
         StopAllCoroutines();
+        ReleaseDeathPresentation();
+        OnActionsStopped();
 
         // 2. 상태 초기화
         currentPattern = null;
@@ -380,6 +468,8 @@ public class BossModel : EnemyBase, ICounterable
         }
     }
 
+    protected virtual void OnActionsStopped() { }
+
     public void SetImmunity(bool immunity)
     {
         isImmunity = immunity;
@@ -391,8 +481,18 @@ public class BossModel : EnemyBase, ICounterable
     {
         Debug.Log("플레이어 사망. 대청소 시작");
 
-        // 1. 모든 행동과 찌꺼기 싹 정리
-        ForceStopCurrentAction();
+        if (_isDead)
+        {
+            ForceStopCurrentAction();
+            if (!deathSequenceFinished)
+            {
+                deathSequenceFinished = true;
+                DeathPresentationCompleted?.Invoke(this);
+            }
+            ReturnBossToPool();
+            return;
+        }
+        Reset();
 
         if (Anim != null)
         {
@@ -400,9 +500,9 @@ public class BossModel : EnemyBase, ICounterable
         }
 
         // 2. 특수 패턴(기믹) 발동 여부 리셋
-        for (int i = 0; i < specialPatterns.Count; i++)
+        for (int i = 0; specialPatterns != null && i < specialPatterns.Count; i++)
         {
-            specialPatterns[i].hasDone = false;
+            if (specialPatterns[i] != null) specialPatterns[i].hasDone = false;
         }
 
         // 3. 체력 초기화 (Stat 시스템에 맞게 호출, 보통은 최대 체력으로 복구)
@@ -433,7 +533,7 @@ public class BossModel : EnemyBase, ICounterable
         }
         else
         {
-            PoolManager.Instance.Push(this);
+            ReturnBossToPool();
 
         }
     }

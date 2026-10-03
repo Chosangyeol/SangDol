@@ -157,7 +157,7 @@ public class CharacterStat
         }
 
         // 받는 피해 비율 체크
-        finalDamage = Mathf.RoundToInt(finalDamage * damageTakeMultiplier.FinalValue);
+        finalDamage = Mathf.RoundToInt(finalDamage * Mathf.Max(0f, damageTakeMultiplier.FinalValue));
 
         curHp -= finalDamage;
 
@@ -304,6 +304,8 @@ public class CharacterStat
             maxHp.RemovePercent(value);
         else
             maxHp.RemoveFlat(value);
+
+        curHp = Mathf.Clamp(curHp, 0f, Mathf.Max(0f, maxHp.FinalValue));
 
     }
 

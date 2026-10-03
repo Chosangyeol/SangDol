@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.Playables;
 using UnityEngine;
+using UnityEngine.Video;
 
 [System.Serializable]
 public class D1_Final_Normal1Data
@@ -76,7 +77,14 @@ public class D1_Final_Special2Data
 [System.Serializable]
 public class D1_Final_Special3Data
 {
+    [Tooltip("D1_MiddleBoss 컴포넌트를 포함한 중간 보스 프리팹")]
     public GameObject prefab;
+    public VideoClip cutsceneClip;
+    [Tooltip("중앙 이동과 동영상 종료 후 재생할 Cinemachine Timeline")]
+    public PlayableDirector cutsceneDirector;
+    public Transform waitingArea;
+    public Transform middleBossSpawnPoint;
+    public Transform returnPoint;
 }
 
 [System.Serializable]
@@ -133,6 +141,17 @@ public class D1_FinalBoss : BossModel
         playerStartPos = GameObject.FindGameObjectWithTag("PlayerStart").transform;
         bossSpawnPoint = GameObject.FindGameObjectWithTag("BossSpawnPos").transform;
 
+        // Temporary in-scene anchors for exercising Special3 before the production arena is authored.
+        if (Special3 != null)
+        {
+            if (Special3.waitingArea == null)
+                Special3.waitingArea = GameObject.Find("TEST_Special3_WaitingArea")?.transform;
+            if (Special3.middleBossSpawnPoint == null)
+                Special3.middleBossSpawnPoint = GameObject.Find("TEST_Special3_MiddleBossSpawn")?.transform;
+            if (Special3.returnPoint == null)
+                Special3.returnPoint = GameObject.Find("TEST_Special3_ReturnPoint")?.transform;
+        }
+
         pattern5.hat = GameObject.FindGameObjectWithTag("D1_Final_N5");
 
         Special5.prefab = GameObject.FindGameObjectWithTag("D1_Final_S5").GetComponent<D1_Chess>();
@@ -155,8 +174,11 @@ public class D1_FinalBoss : BossModel
     public override void Reset()
     {
         base.Reset();
-        AudioManager.instance.PlayBGM(C_Enums.BGM_List.D1_Final_BGM2);
-        AudioManager.instance.PlaySFX(C_Enums.SFX_List.D1_Final_Enter);
+        if (AudioManager.instance != null)
+        {
+            AudioManager.instance.PlayBGM(C_Enums.BGM_List.D1_Final_BGM2);
+            AudioManager.instance.PlaySFX(C_Enums.SFX_List.D1_Final_Enter);
+        }
     }
 
     protected override void StartSpecialPattern(BossSpecialPattern pattern)
@@ -167,8 +189,8 @@ public class D1_FinalBoss : BossModel
             StartCoroutine(Special_ShowTime());
         else if (pattern.patternName == "운명의 점")
             StartCoroutine(Special_Aracna());
-        else if (pattern.patternName == "칩막기")
-            StartCoroutine(Special_Chip());
+        else if (pattern.patternName == "중간 보스")
+            StartCoroutine(Special_MiddleBoss());
         else if (pattern.patternName == "야바위")
             StartCoroutine(Special_Mix());
         else if (pattern.patternName == "체크메이트")
@@ -179,7 +201,7 @@ public class D1_FinalBoss : BossModel
 
     IEnumerator ReadyForSpecial()
     {
-        Agent.enabled = false;
+        if (Agent != null) Agent.enabled = false;
 
         Vector3 playerPos = Target.transform.position;
 
@@ -209,7 +231,7 @@ public class D1_FinalBoss : BossModel
 
         float time = 0f;
 
-        Anim.SetTrigger("Jump");
+        if (Anim != null) Anim.SetTrigger("Jump");
 
         while (time < 1.5f)
         {
@@ -233,6 +255,8 @@ public class D1_FinalBoss : BossModel
 
             yield return null;
         }
+
+        transform.position = targetPos;
 
         yield return new WaitForSeconds(0.5f);
 
@@ -258,7 +282,7 @@ public class D1_FinalBoss : BossModel
         StartCoroutine(EndSpecial());
     }
 
-    IEnumerator EndSpecial()
+    IEnumerator EndSpecial(bool completePattern = true)
     {
         foreach (SkinnedMeshRenderer mesh in bossMeshs)
         {
@@ -295,11 +319,10 @@ public class D1_FinalBoss : BossModel
 
         Vector3 startPos = transform.position;
         Vector3 targetPos = center.transform.position;
-        targetPos.y = 0;
 
         float time = 0f;
 
-        Anim.SetTrigger("Jump");
+        if (Anim != null) Anim.SetTrigger("Jump");
 
         while (time < 1.5f)
         {
@@ -324,11 +347,15 @@ public class D1_FinalBoss : BossModel
             yield return null;
         }
 
+        transform.position = targetPos;
+
         yield return new WaitForSeconds(0.5f);
 
-        Agent.enabled = true;
-
-        isDoingSpecial = false;
+        if (completePattern)
+        {
+            if (Agent != null) Agent.enabled = true;
+            isDoingSpecial = false;
+        }
 
         while (swing.transform.position.y < 20)
         {
@@ -336,7 +363,7 @@ public class D1_FinalBoss : BossModel
             yield return null;
         }
 
-        SetImmunity(false);
+        if (completePattern) SetImmunity(false);
 
         Destroy(swing);
 
@@ -424,14 +451,256 @@ public class D1_FinalBoss : BossModel
         AudioManager.instance.PlaySFX(C_Enums.SFX_List.D1_Final_S2);
     }
 
-    IEnumerator Special_Chip()
+    private D1_MiddleBoss _special3MiddleBoss;
+    private bool special3ControlsLocked;
+    private VideoPlayManager special3Video;
+    private int special3VideoSession;
+    private PlayableDirector special3Director;
+    private bool special3DirectorWasActive;
+    private DirectorWrapMode special3DirectorWrapMode;
+    private bool special3Moving;
+    private bool special3AgentWasEnabled;
+
+    private IEnumerator WaitForNormalPatternEnd()
     {
-        yield return StartCoroutine(ReadyForSpecial());
+        while (currentPattern != null) yield return null;
 
-        yield return new WaitForSeconds(1f);
+        // Let the Animator consume the normal pattern's end trigger before checking Idle.
+        if (Anim != null && Anim.runtimeAnimatorController != null) Anim.SetBool("Move", false);
+        yield return null;
+        int idleState = Animator.StringToHash("Base Layer.Idle");
+        while (Anim != null && Anim.isActiveAndEnabled && Anim.runtimeAnimatorController != null
+            && Anim.HasState(0, idleState)
+            && (Anim.IsInTransition(0) || !Anim.GetCurrentAnimatorStateInfo(0).IsName("Idle")))
+            yield return null;
+    }
 
-        yield return StartCoroutine(EndSpecial());
+    private bool IsSpecial3Configured()
+    {
+        D1_MiddleBoss middleBossPrefab = Special3 != null && Special3.prefab != null
+            ? Special3.prefab.GetComponentInChildren<D1_MiddleBoss>(true)
+            : null;
 
+        return Special3 != null
+            && Special3.prefab != null
+            && middleBossPrefab != null
+            && middleBossPrefab.statSO != null
+            && Special3.waitingArea != null
+            && Special3.middleBossSpawnPoint != null
+            && center != null
+            && playerStartPos != null
+            && Target != null && !Target.isDie && !Target.IsExternalControlLocked;
+    }
+
+    private IEnumerator MoveBossToCenter()
+    {
+        if (pattern3 == null || pattern3.swingPrefab == null || pattern3.jumpCurve == null)
+        {
+            Debug.LogWarning("[D1_FinalBoss] Special3 swing presentation unavailable; moving to center directly.");
+            if (Agent != null) Agent.enabled = false;
+            transform.position = center.position;
+            yield return null;
+            yield break;
+        }
+
+        yield return ReadyForSpecial();
+        yield return EndSpecial(false);
+    }
+
+    private IEnumerator PlaySpecial3Timeline()
+    {
+        PlayableDirector director = Special3.cutsceneDirector;
+        if (director == null || director.playableAsset == null)
+        {
+            Debug.LogWarning("[D1_FinalBoss] Special3 Cinemachine Timeline unavailable; continuing the middle boss encounter.");
+            yield break;
+        }
+
+        special3Director = director;
+        special3DirectorWasActive = director.gameObject.activeSelf;
+        special3DirectorWrapMode = director.extrapolationMode;
+        director.extrapolationMode = DirectorWrapMode.None;
+        GameEvent.OnUIInvisable?.Invoke();
+        director.gameObject.SetActive(true);
+        director.time = 0d;
+        director.Play();
+
+        while (director != null && director.isActiveAndEnabled && director.state == PlayState.Playing
+            && Target != null && !Target.isDie) yield return null;
+
+        StopSpecial3Timeline();
+    }
+
+    private void StopSpecial3Timeline()
+    {
+        if (special3Director != null)
+        {
+            special3Director.Stop();
+            special3Director.extrapolationMode = special3DirectorWrapMode;
+            special3Director.gameObject.SetActive(special3DirectorWasActive);
+            if (Target != null && !Target.isDie)
+            {
+                if (Target.cams != null && Target.cams.Length > 0 && Target.cams[0] != null)
+                    Target.ChangeCam(0, true);
+                GameEvent.OnMainUIviable?.Invoke();
+            }
+        }
+        special3Director = null;
+    }
+
+    private void RestoreSpecial3Movement()
+    {
+        if (!special3Moving) return;
+        if (Agent != null) Agent.enabled = false;
+        if (center != null) transform.position = center.position;
+        if (Agent != null)
+        {
+            Agent.enabled = special3AgentWasEnabled;
+            if (Agent.enabled && Agent.isOnNavMesh)
+            {
+                Agent.Warp(transform.position);
+                Agent.ResetPath();
+                Agent.isStopped = true;
+                Agent.velocity = Vector3.zero;
+            }
+        }
+        special3Moving = false;
+    }
+
+    private void WarpPlayerTo(Transform destination)
+    {
+        if (Target == null || destination == null) return;
+
+        Target.PlayerController?.StopMove();
+        Target.SetControlable(false);
+        Target.transform.SetPositionAndRotation(destination.position, destination.rotation);
+        special3ControlsLocked = true;
+
+        if (Target.Navmesh != null)
+        {
+            Target.Navmesh.enabled = true;
+            if (!Target.Navmesh.Warp(destination.position))
+                Debug.LogWarning("[D1_FinalBoss] 플레이어 위치가 NavMesh에 없어 Transform 기준으로 이동했습니다.");
+            if (Target.Navmesh.isOnNavMesh)
+                Target.Navmesh.ResetPath();
+        }
+
+        for (int i = 0; Target.cams != null && i < Target.cams.Length; i++)
+        {
+            if (Target.cams[i] != null)
+                Target.cams[i].PreviousStateIsValid = false;
+        }
+    }
+
+    private IEnumerator Special_MiddleBoss()
+    {
+        yield return WaitForNormalPatternEnd();
+
+        if (!IsSpecial3Configured())
+        {
+            Debug.LogWarning("[D1_FinalBoss] Special3 설정이 부족합니다. 영상, 중간 보스 프리팹(D1_MiddleBoss), 대기 위치와 스폰 위치를 설정한 뒤 사용할 수 있습니다.");
+            SetImmunity(false);
+            isDoingSpecial = false;
+            yield break;
+        }
+
+        SetImmunity(true);
+        Target.PlayerController?.StopMove();
+        Target.SetControlable(false);
+        special3ControlsLocked = true;
+
+        special3AgentWasEnabled = Agent != null && Agent.enabled;
+        special3Moving = true;
+        yield return MoveBossToCenter();
+        special3Video = VideoPlayManager.instance;
+        if (special3Video != null && special3Video.TryPlayVideo(Special3.cutsceneClip, out special3VideoSession))
+        {
+            while (special3Video != null && special3Video.IsPlaybackActive(special3VideoSession) &&
+                Target != null && !Target.isDie) yield return null;
+        }
+        else Debug.LogWarning("[D1_FinalBoss] Special3 cutscene unavailable; continuing the middle boss encounter.");
+        if (special3Video != null) special3Video.CancelPlayback(special3VideoSession);
+        special3Video = null; special3VideoSession = 0;
+
+        if (Target == null || Target.isDie) yield break;
+
+        yield return PlaySpecial3Timeline();
+        if (Target == null || Target.isDie) yield break;
+
+        GameObject spawnedMiddleBoss = null;
+        if (_special3MiddleBoss == null || _special3MiddleBoss.IsDead || !_special3MiddleBoss.gameObject.activeInHierarchy)
+        {
+            if (_special3MiddleBoss != null && _special3MiddleBoss.IsDead && _special3MiddleBoss.gameObject.activeInHierarchy)
+                Destroy(_special3MiddleBoss.gameObject);
+
+            spawnedMiddleBoss = Instantiate(
+                Special3.prefab,
+                Special3.middleBossSpawnPoint.position,
+                Special3.middleBossSpawnPoint.rotation);
+
+            _special3MiddleBoss = spawnedMiddleBoss.GetComponentInChildren<D1_MiddleBoss>(true);
+        }
+        else
+        {
+            _special3MiddleBoss.ResetBossState();
+        }
+
+        if (_special3MiddleBoss == null || _special3MiddleBoss.Stat == null)
+        {
+            Debug.LogError("[D1_FinalBoss] Special3 프리팹에서 D1_MiddleBoss를 찾지 못했습니다.");
+            if (spawnedMiddleBoss != null) Destroy(spawnedMiddleBoss);
+            Target.SetControlable(true);
+            special3ControlsLocked = false;
+            RestoreSpecial3Movement();
+            SetImmunity(false);
+            isDoingSpecial = false;
+            yield break;
+        }
+
+        _special3MiddleBoss.isInField = true;
+        _special3MiddleBoss.isCombatStarted = false;
+        _special3MiddleBoss.bossSpawnPoint = Special3.middleBossSpawnPoint;
+
+        WarpPlayerTo(Special3.waitingArea);
+        Target.SetControlable(true);
+        special3ControlsLocked = false;
+
+        while (Target != null && !Target.isDie && _special3MiddleBoss != null && !_special3MiddleBoss.IsDead)
+        {
+            Vector3 playerPosition = Target.transform.position;
+            Vector3 bossPosition = _special3MiddleBoss.transform.position;
+            playerPosition.y = 0f;
+            bossPosition.y = 0f;
+
+            if (!_special3MiddleBoss.isCombatStarted
+                && (playerPosition - bossPosition).sqrMagnitude <= Mathf.Pow(_special3MiddleBoss.Stat.attackRange, 2f))
+            {
+                _special3MiddleBoss.isCombatStarted = true;
+                Debug.Log("[D1_FinalBoss] 플레이어가 중간 보스 공격 범위에 진입해 전투를 시작합니다.");
+            }
+
+            yield return null;
+        }
+
+        // 플레이어 사망 시 BossModel의 기존 OnPlayerDie 초기화/부활 흐름을 그대로 둡니다.
+        if (Target == null || Target.isDie) yield break;
+
+        while (_special3MiddleBoss != null && _special3MiddleBoss.IsDead && !_special3MiddleBoss.IsDeathSequenceFinished && Target != null && !Target.isDie) yield return null;
+        if (Target == null || Target.isDie) yield break;
+
+        if (_special3MiddleBoss != null && _special3MiddleBoss.IsDead)
+        {
+            Destroy(_special3MiddleBoss.gameObject);
+            _special3MiddleBoss = null;
+        }
+
+        Transform returnPoint = Special3.returnPoint != null ? Special3.returnPoint : playerStartPos;
+        WarpPlayerTo(returnPoint);
+        Target.SetControlable(true);
+        special3ControlsLocked = false;
+
+        RestoreSpecial3Movement();
+        SetImmunity(false);
         isDoingSpecial = false;
     }
 
@@ -485,6 +754,7 @@ public class D1_FinalBoss : BossModel
         for (int i = 0; i < spawnPoints.Length; i++)
         {
             GameObject crown = Instantiate(Special4.crownPrefab, spawnPoints[i].position, Quaternion.identity);
+            patternObjects.Add(crown);
             crown.GetComponent<D1_Crown>().Init(Special4.bulletPrefab, Special4.bulletSpeed, Special4.panicBuffSO, Special4.stunBuffSO, Target);
             yield return new WaitForSeconds(1f);
         }
@@ -663,29 +933,53 @@ public class D1_FinalBoss : BossModel
         Special5.prefab.StartCheckmate(this);
     }
 
-    public override void ResetBossState()
+    protected override void OnActionsStopped()
     {
+        StopSpecial3Timeline();
+        RestoreSpecial3Movement();
+        if (special3Video != null) special3Video.CancelPlayback(special3VideoSession);
+        special3Video = null; special3VideoSession = 0;
+        if (special3ControlsLocked && Target != null && !Target.isDie) Target.SetControlable(true);
+        special3ControlsLocked = false;
         // 1. 자식 클래스만의 특수한 찌꺼기 제거
         // 보스가 하늘로 올라갔다가(메시 끄기) 안 내려온 상태로 끝날 수 있으니 메시 다시 켜주기
-        foreach (SkinnedMeshRenderer mesh in bossMeshs)
+        foreach (SkinnedMeshRenderer mesh in bossMeshs ?? new SkinnedMeshRenderer[0])
         {
             if (mesh != null) mesh.enabled = true;
         }
 
         // 체스 컷씬이 도중에 멈췄다면 끄기
-        if (Special5.cutSceneObj != null)
+        if (Special5 != null && Special5.cutSceneObj != null)
         {
+            if (Special5.cutSceneObj.activeSelf)
+            {
+                var director = Special5.cutSceneObj.GetComponent<PlayableDirector>();
+                if (director != null) director.Stop();
+                if (Target != null && !Target.isDie)
+                {
+                    Target.SetCanMove();
+                    if (Target.cams != null && Target.cams.Length > 0 && Target.cams[0] != null)
+                        Target.ChangeCam(0, true);
+                    GameEvent.OnMainUIviable?.Invoke();
+                }
+            }
             Special5.cutSceneObj.SetActive(false);
         }
 
-        if (Special5.prefab != null)
+        if (Special5 != null && Special5.prefab != null && Special5.prefab.gameObject.scene.IsValid())
         {
             Special5.prefab.ResetChess();
         }
 
-        // 2. 부모(BossModel)의 완벽 초기화 및 풀 반환 로직 실행
-        base.ResetBossState();
+        if (_special3MiddleBoss != null)
+        {
+            _special3MiddleBoss.ForceStopCurrentAction();
+            Destroy(_special3MiddleBoss.gameObject);
+            _special3MiddleBoss = null;
+        }
     }
+
+    public override void ResetBossState() => base.ResetBossState();
 
     #endregion
 

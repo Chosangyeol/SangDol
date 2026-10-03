@@ -53,14 +53,35 @@ public class C_Inventory
     /// 인벤토리에 아이템을 추가하는 함수
     /// </summary>
     /// <param name="item">인벤토리에 추가할 아이템</param>
-    public void AddItem(ItemBase item)
+    public void AddItem(ItemBase item) => AddItemWithResult(item);
+
+    internal int AddItemWithResult(ItemBase item)
+    {
+        if (item == null || item.itemBaseSO == null || item.currentStack <= 0 || item.maxStack <= 0 ||
+            items.Contains(item) || (_model != null && _model.Equipment != null &&
+            item is EquipItemBase equipped && _model.Equipment.equipItems.ContainsValue(equipped))) return 0;
+        int before = item.currentStack;
+        var added = new List<ItemBase>();
+        AddItemCore(item, added);
+        int received = before - item.currentStack;
+        if (received > 0)
+        {
+            foreach (var entry in added) { entry.OnAddInventory(); OnAddItemInventory?.Invoke(entry); }
+            // A full stack merge has no new-slot hook, but is still an acquisition.
+            if (added.Count == 0) GameEvent.OnGetItem?.Invoke(item.itemBaseSO.itemID);
+            OnInventoryUpdated?.Invoke();
+        }
+        return received;
+    }
+
+    private void AddItemCore(ItemBase item, List<ItemBase> added)
     {
 
         if (item == null) return;
         if (item.currentStack < 1) return;
 
         // 1. 스택 가능한 아이템이면 먼저 기존 스택에 채움
-        if (item.itemBaseSO.stackable)
+        if (item.itemBaseSO.stackable && !(item is EquipItemBase))
         {
             for (int i = 0; i < items.Count; i++)
             {
@@ -90,18 +111,72 @@ public class C_Inventory
                 return;
             }
 
-            int addStack = item.itemBaseSO.stackable
+            int addStack = item.itemBaseSO.stackable && !(item is EquipItemBase)
                 ? Mathf.Min(item.maxStack, item.currentStack)
                 : 1;
 
             ItemBase newItem = item.Clone(addStack);
             items[emptyIndex] = newItem;
 
-            newItem.OnAddInventory();
-            OnAddItemInventory?.Invoke(newItem);
+            added.Add(newItem);
 
             item.currentStack -= addStack;
         }
+    }
+
+    // All placements are planned without mutating existing references or quantities.
+    // commitBeforeNotifications must commit owner state; failures in external subscribers
+    // after commit are not a retryable inventory-capacity failure.
+    internal bool TryAddRewards(IReadOnlyList<KeyValuePair<ItemBaseSO, int>> rewards, Action commitBeforeNotifications)
+    {
+        if (rewards == null || commitBeforeNotifications == null) return false;
+        var planned = new List<ItemBase>(items);
+        var counts = new long[items.Count];
+        for (int i = 0; i < items.Count; i++) counts[i] = items[i]?.currentStack ?? 0;
+        var added = new List<ItemBase>();
+        var mergedIDs = new HashSet<string>();
+        var newIDs = new HashSet<string>();
+        foreach (var reward in rewards)
+        {
+            var data = reward.Key;
+            if (data == null || string.IsNullOrWhiteSpace(data.itemID) || reward.Value <= 0) return false;
+            bool stackable = data.stackable && !(data is EquipItemSO);
+            int perSlot = stackable ? data.maxStack : 1;
+            if (perSlot <= 0) return false;
+            long remaining = reward.Value;
+            if (stackable)
+            {
+                for (int i = 0; i < planned.Count && remaining > 0; i++)
+                {
+                    var entry = planned[i];
+                    if (entry == null || entry is EquipItemBase || entry.itemBaseSO == null ||
+                        entry.itemBaseSO.itemID != data.itemID) continue;
+                    long amount = Math.Min(remaining, Math.Max(0L, (long)entry.maxStack - counts[i]));
+                    counts[i] += amount; remaining -= amount;
+                    if (amount > 0) mergedIDs.Add(data.itemID);
+                }
+            }
+            for (int i = 0; i < planned.Count && remaining > 0; i++)
+            {
+                if (planned[i] != null) continue;
+                int amount = (int)Math.Min(remaining, perSlot);
+                var entry = data.CreateItem(amount);
+                if (entry == null || entry.itemBaseSO == null || entry.currentStack != amount || entry.maxStack < amount) return false;
+                planned[i] = entry; counts[i] = amount; remaining -= amount;
+                added.Add(entry); newIDs.Add(data.itemID);
+            }
+            if (remaining > 0) return false;
+        }
+        for (int i = 0; i < items.Count; i++)
+        {
+            items[i] = planned[i];
+            if (items[i] != null) items[i].currentStack = (int)counts[i];
+        }
+        commitBeforeNotifications();
+        foreach (var entry in added) { entry.OnAddInventory(); OnAddItemInventory?.Invoke(entry); }
+        foreach (var id in mergedIDs) if (!newIDs.Contains(id)) GameEvent.OnGetItem?.Invoke(id);
+        if (rewards.Count > 0) OnInventoryUpdated?.Invoke();
+        return true;
     }
 
     public int FindEmptySlot()
@@ -130,23 +205,17 @@ public class C_Inventory
     public bool HasEnoughSpace(ItemBaseSO item, int buyAmount)
     {
         if (item == null || buyAmount <= 0) return item != null;
-        if (item.maxStack <= 0) return false;
-
-        int availableCapacity = 0;
+        bool stackable = item.stackable && !(item is EquipItemSO);
+        int perSlot = stackable ? item.maxStack : 1;
+        if (perSlot <= 0) return false;
+        long availableCapacity = 0;
         foreach (ItemBase inventoryItem in items)
         {
-            if (inventoryItem == null)
-            {
-                availableCapacity += item.maxStack;
-            }
-            else if (inventoryItem.itemBaseSO.itemID == item.itemID)
-            {
+            if (inventoryItem == null) availableCapacity += perSlot;
+            else if (stackable && inventoryItem.itemBaseSO != null && inventoryItem.itemBaseSO.itemID == item.itemID)
                 availableCapacity += Mathf.Max(0, inventoryItem.maxStack - inventoryItem.currentStack);
-            }
-
             if (availableCapacity >= buyAmount) return true;
         }
-
         return false;
     }
 
@@ -169,39 +238,58 @@ public class C_Inventory
     /// <param name="item">인벤토리에서 제거할 아이템</param>
     public void RemoveItem(ItemBase item)
     {
+        if (item == null) return;
         int index = items.IndexOf(item);
         if (index < 0) return;
-
         items[index] = null;
         item.OnRemoveInventory();
         OnRemoveItemInventory?.Invoke(item);
+        OnInventoryUpdated?.Invoke();
     }
 
     public void RemoveItemAt(int index)
     {
-        if (index < 0 || index >= items.Count) return;
-        if (items[index] == null) return;
-
-        ItemBase item = items[index];
-        items[index] = null;
-
+        if (index < 0 || index >= items.Count || items[index] == null) return;
+        ItemBase item = items[index]; items[index] = null;
         item.OnRemoveInventory();
         OnRemoveItemInventory?.Invoke(item);
+        OnInventoryUpdated?.Invoke();
     }
 
     public void SetItemAt(int index, ItemBase item)
     {
-        if (index < 0 || index >= items.Count) return;
-        items[index] = item;
+        if (item is EquipItemBase equipped && _model != null && _model.Equipment != null &&
+            _model.Equipment.equipItems.ContainsValue(equipped)) return;
+        if (item != null && TryReplaceTransferredItem(index, null, item)) NotifyTransfer(null, item);
     }
 
-    public void Swap(int from, int to)
+    internal bool TryReplaceTransferredItem(int index, ItemBase expected, ItemBase replacement)
     {
-        if (from < 0 || to < 0) return;
-        if (from >= items.Count || to >= items.Count) return;
-        if (from == to) return;
+        if (index < 0 || index >= items.Count || !ReferenceEquals(items[index], expected)) return false;
+        if (ReferenceEquals(expected, replacement)) return false;
+        if (replacement != null && (replacement.itemBaseSO == null || replacement.currentStack <= 0 ||
+            replacement.maxStack <= 0 || replacement.currentStack > replacement.maxStack || items.Contains(replacement))) return false;
+        items[index] = replacement;
+        return true;
+    }
 
+    internal void NotifyTransfer(ItemBase removed, ItemBase added)
+    {
+        if (removed != null) { removed.OnRemoveInventory(); OnRemoveItemInventory?.Invoke(removed); }
+        // Transfers are not new acquisitions; do not repeat OnAddInventory / OnGetItem.
+        if (added != null) OnAddItemInventory?.Invoke(added);
+        OnInventoryUpdated?.Invoke();
+    }
+
+    public void Swap(int from, int to) => TrySwap(from, to);
+
+    internal bool TrySwap(int from, int to)
+    {
+        if (from < 0 || to < 0 || from >= items.Count || to >= items.Count || from == to) return false;
+        if (items[from] == null && items[to] == null) return false;
         (items[from], items[to]) = (items[to], items[from]);
+        OnInventoryUpdated?.Invoke();
+        return true;
     }
 
     public void UseItem(C_Enums.UseSlot slot)
@@ -246,32 +334,18 @@ public class C_Inventory
 
     public void RemoveTargetItem(string targetItemID, int amount)
     {
-        int currentTotal = GetTotalItemCount(targetItemID);
-        if (currentTotal < amount)
-            return;
-
-        int remainToRemove = amount;
-
-        for (int i = 0; i < items.Count; i++)
+        if (string.IsNullOrEmpty(targetItemID) || amount <= 0 || GetTotalItemCount(targetItemID) < amount) return;
+        int remaining = amount;
+        var removed = new List<ItemBase>();
+        for (int i = 0; i < items.Count && remaining > 0; i++)
         {
-            ItemBase item = items[i];
-            if (item == null || item.itemBaseSO.itemID != targetItemID) continue;
-
-            if (item.currentStack > remainToRemove)
-            {
-                item.currentStack -= remainToRemove;
-                remainToRemove = 0;
-                break;
-            }
-            else
-            {
-                remainToRemove -= item.currentStack;
-                RemoveItem(item);
-
-                if (remainToRemove <= 0)
-                    break;
-            }
-            
+            var entry = items[i];
+            if (entry == null || entry.itemBaseSO == null || entry.itemBaseSO.itemID != targetItemID) continue;
+            int count = Mathf.Min(entry.currentStack, remaining);
+            entry.currentStack -= count; remaining -= count;
+            if (entry.currentStack <= 0) { items[i] = null; removed.Add(entry); }
         }
+        foreach (var entry in removed) { entry.OnRemoveInventory(); OnRemoveItemInventory?.Invoke(entry); }
+        OnInventoryUpdated?.Invoke();
     }
 }

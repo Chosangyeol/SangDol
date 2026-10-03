@@ -23,13 +23,16 @@ public class EquipmentSlot : MonoBehaviour,
     private ItemTooltip tooltip;
 
     private bool droppedOnSlot;
+    private EquipItemBase draggedItem;
 
     private C_Equipment _equipment;
 
     private EquipItemBase equipItem =>
-        _equipment.equipItems.ContainsKey(equipType) ? _equipment.equipItems[equipType] : null;
+        _equipment != null && _equipment.equipItems.ContainsKey(equipType) ? _equipment.equipItems[equipType] : null;
 
     public EquipItemBase EquipItem => equipItem;
+    internal C_Equipment Equipment => _equipment;
+    internal bool HasValidDrag => dragIcon != null && draggedItem != null && ReferenceEquals(draggedItem, equipItem);
 
     private Canvas rootCanvas;
     private Image dragIcon;
@@ -73,7 +76,7 @@ public class EquipmentSlot : MonoBehaviour,
         if (eventData.clickCount == 2)
         {
             _equipment.UnequipItem(equipType);
-            tooltip.ToggleTooltip(false,null,(ItemBase)null);
+            if (tooltip != null) tooltip.ToggleTooltip(false,null,(ItemBase)null);
             return;
         }
 
@@ -91,9 +94,10 @@ public class EquipmentSlot : MonoBehaviour,
     #region 드래그 & 드랍
     public void OnBeginDrag(PointerEventData eventData)
     {
-        if (equipItem == null) return;
+        if (equipItem == null || rootCanvas == null) return;
 
         droppedOnSlot = false;
+        draggedItem = equipItem;
 
         dragIcon = new GameObject("DragIcon").AddComponent<Image>();
         dragIcon.transform.SetParent(rootCanvas.transform, false);
@@ -104,6 +108,19 @@ public class EquipmentSlot : MonoBehaviour,
         dragIconRect.sizeDelta = iconImage.rectTransform.sizeDelta;
         dragIconRect.position = eventData.position;
         iconImage.enabled = false;
+    }
+
+    private void OnEnable()
+    {
+        if (_equipment != null && iconImage != null) Refresh();
+    }
+
+    private void OnDisable()
+    {
+        if (dragIcon != null) Destroy(dragIcon.gameObject);
+        dragIcon = null;
+        dragIconRect = null;
+        draggedItem = null;
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -120,26 +137,19 @@ public class EquipmentSlot : MonoBehaviour,
 
         dragIcon = null;
         dragIconRect = null;
+        draggedItem = null;
         Refresh();
     }
 
     public void OnDrop(PointerEventData eventData)
     {
-        InventorySlot fromSlot =
-            eventData.pointerDrag?.GetComponent<InventorySlot>();
-
-        if (fromSlot == null) return;
-
-        if (fromSlot.CurrentItem is not EquipItemBase draggedEquipItem)
-            return;
-
-        if (draggedEquipItem.itemBaseSO.equipItemType != equipType)
-            return;
-
+        if (eventData == null || _equipment == null) return;
+        InventorySlot fromSlot = eventData.pointerDrag?.GetComponent<InventorySlot>();
+        if (fromSlot == null || fromSlot.Inventory != _equipment.owner.Inventory || !fromSlot.HasValidDrag) return;
+        if (fromSlot.CurrentItem is not EquipItemBase draggedEquipItem || draggedEquipItem.itemBaseSO == null ||
+            draggedEquipItem.itemBaseSO.equipItemType != equipType) return;
+        if (!_equipment.TryEquipItem(draggedEquipItem)) return;
         fromSlot.SetDropped(true);
-
-        _equipment.EquipItem(draggedEquipItem);
-
         fromSlot.Refresh();
         Refresh();
     }
@@ -153,7 +163,7 @@ public class EquipmentSlot : MonoBehaviour,
     #region 아이템 툴팁 출력
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (equipItem == null) return;
+        if (equipItem == null || rootCanvas == null) return;
         if (tooltip == null) return;
 
         // tooltip 위치 지정
@@ -165,7 +175,7 @@ public class EquipmentSlot : MonoBehaviour,
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (equipItem == null) return;
+        if (equipItem == null || rootCanvas == null) return;
         if (tooltip == null) return;
 
         tooltip.ToggleTooltip(false,null, (ItemBase)null);

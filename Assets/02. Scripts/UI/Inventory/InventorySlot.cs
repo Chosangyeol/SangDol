@@ -27,14 +27,17 @@ public class InventorySlot : MonoBehaviour,
     private ItemTooltip tooltip;
 
     private bool droppedOnSlot;
+    private ItemBase draggedItem;
 
     private C_Inventory _inventory;
     private C_Equipment _equipment;
 
     private ItemBase currentItem =>
-        slotIndex < _inventory.Items.Count ? _inventory.Items[slotIndex] : null;
+        _inventory != null && slotIndex >= 0 && slotIndex < _inventory.Items.Count ? _inventory.Items[slotIndex] : null;
 
     public ItemBase CurrentItem => currentItem;
+    internal C_Inventory Inventory => _inventory;
+    internal bool HasValidDrag => dragIcon != null && draggedItem != null && ReferenceEquals(draggedItem, currentItem);
 
     #region 생성 및 새로고침
     public void Init(C_Inventory inventory, C_Equipment equipment, int index,ItemTooltip tooltip)
@@ -89,7 +92,7 @@ public class InventorySlot : MonoBehaviour,
             if (item is EquipItemBase)
             {
                 _equipment.EquipItem(item as EquipItemBase);
-                tooltip.ToggleTooltip(false,null,(ItemBase)null);
+                if (tooltip != null) tooltip.ToggleTooltip(false,null,(ItemBase)null);
             }
             return;
         }
@@ -101,9 +104,10 @@ public class InventorySlot : MonoBehaviour,
     #region 드래그 & 드랍
     public void OnBeginDrag(PointerEventData eventData)
     {
-        if (CurrentItem == null) return;
+        if (CurrentItem == null || rootCanvas == null) return;
 
         droppedOnSlot = false;
+        draggedItem = CurrentItem;
 
         dragIcon = new GameObject("DragIcon").AddComponent<Image>();
         dragIcon.transform.SetParent(rootCanvas.transform, false);
@@ -114,6 +118,19 @@ public class InventorySlot : MonoBehaviour,
         dragIconRect.sizeDelta = iconImage.rectTransform.sizeDelta;
         dragIconRect.position = eventData.position;
         iconImage.enabled = false;
+    }
+
+    private void OnEnable()
+    {
+        if (_inventory != null && iconImage != null && stackText != null) Refresh();
+    }
+
+    private void OnDisable()
+    {
+        if (dragIcon != null) Destroy(dragIcon.gameObject);
+        dragIcon = null;
+        dragIconRect = null;
+        draggedItem = null;
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -133,44 +150,31 @@ public class InventorySlot : MonoBehaviour,
 
         dragIcon = null;
         dragIconRect = null;
+        draggedItem = null;
         Refresh();
     }
 
     public void OnDrop(PointerEventData eventData)
     {
-        InventorySlot fromInventorySlot =
-            eventData.pointerDrag?.GetComponent<InventorySlot>();
-
+        if (eventData == null || _inventory == null || _equipment == null) return;
+        InventorySlot fromInventorySlot = eventData.pointerDrag?.GetComponent<InventorySlot>();
         if (fromInventorySlot != null)
         {
-            if (fromInventorySlot == this) return;
-
+            if (fromInventorySlot == this || fromInventorySlot.Inventory != _inventory ||
+                !fromInventorySlot.HasValidDrag) return;
+            if (!_inventory.TrySwap(fromInventorySlot.slotIndex, slotIndex)) return;
             fromInventorySlot.SetDropped(true);
-
-            _inventory.Swap(fromInventorySlot.slotIndex, slotIndex);
             fromInventorySlot.Refresh();
             Refresh();
             return;
         }
-
-        EquipmentSlot fromEquipmentSlot =
-            eventData.pointerDrag?.GetComponent<EquipmentSlot>();
-
-        if (fromEquipmentSlot != null)
-        {
-            EquipItemBase equipItem = fromEquipmentSlot.EquipItem;
-            if (equipItem == null) return;
-
-            fromEquipmentSlot.SetDropped(true);
-
-            // 여기서 장비 해제 처리
-            _equipment.UnequipItem(fromEquipmentSlot.equipType, this.slotIndex);
-
-            fromEquipmentSlot.Refresh();
-            Refresh();
-            return;
-        }
-
+        EquipmentSlot fromEquipmentSlot = eventData.pointerDrag?.GetComponent<EquipmentSlot>();
+        if (fromEquipmentSlot == null || fromEquipmentSlot.Equipment != _equipment ||
+            !fromEquipmentSlot.HasValidDrag) return;
+        if (!_equipment.TryUnequipItem(fromEquipmentSlot.equipType, slotIndex)) return;
+        fromEquipmentSlot.SetDropped(true);
+        fromEquipmentSlot.Refresh();
+        Refresh();
     }
 
     public void SetDropped(bool value)
@@ -197,7 +201,7 @@ public class InventorySlot : MonoBehaviour,
         if (currentItem == null) return;
         if (tooltip == null) return;
 
-        tooltip.ToggleTooltip(false,null,(ItemBase)null);
+        if (tooltip != null) tooltip.ToggleTooltip(false,null,(ItemBase)null);
 
     }
     #endregion

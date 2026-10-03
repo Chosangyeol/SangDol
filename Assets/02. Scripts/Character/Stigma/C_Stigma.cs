@@ -116,6 +116,11 @@ public class C_Stigma
             _model.AddStat(C_Enums.CharacterStat.DodgeCooldownReduction, false, -3);
         }
 
+        if (type == EStigmaType.Lv10_B)
+        {
+            _model.AddStat(C_Enums.CharacterStat.DodgeCooldownReduction, false, 2);
+        }
+
         Debug.Log($"성흔 장착 완료 : {type}");
     }
 
@@ -178,10 +183,10 @@ public class C_Stigma
                 (
                     model.gameObject,
                     model.gameObject,
-                    new StatBuff(model, lv5ABuffSO, 10f, C_Enums.CharacterStat.AttackDamage, false, 0.1f)
+                    new StatBuff(model, lv5ABuffSO, 10f, C_Enums.CharacterStat.AttackDamage, true, 0.1f)
                 );
             model.Buff.AddBuff(buff);
-            lv5ACooldown = 25f;
+            lv5ACooldown = 15f;
         }
 
         if (HasStigma(EStigmaType.Lv5_B))

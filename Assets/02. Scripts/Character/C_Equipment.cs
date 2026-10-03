@@ -20,6 +20,8 @@ public class C_Equipment
         { ItemEnums.EquipItemType.Weapon, null }
     };
 
+    private bool changingEquipment;
+
     public event Action<EquipItemBase> OnEquipItem;
     public event Action<EquipItemBase> OnUnequipItem;
 
@@ -33,27 +35,31 @@ public class C_Equipment
     /// 아이템을 착용할 때 호출하는 메서드
     /// </summary>
     /// <param name="item">착용할 아이템</param>
-    public void EquipItem(EquipItemBase item)
+    public void EquipItem(EquipItemBase item) => TryEquipItem(item);
+
+    internal bool TryEquipItem(EquipItemBase item)
     {
-        // 1. 아이템이 없는 경우
-        if (item == null)
+        if (changingEquipment || owner == null || owner.Inventory == null || owner.Stat == null ||
+            item == null || item.itemBaseSO == null || item.currentStack != 1 ||
+            !equipItems.TryGetValue(item.itemBaseSO.equipItemType, out EquipItemBase previous)) return false;
+        int index = owner.Inventory.Items.IndexOf(item);
+        if (index < 0 || equipItems.ContainsValue(item)) return false;
+        if (previous != null && (previous.itemBaseSO == null || previous.currentStack != 1)) return false;
+        changingEquipment = true;
+        try
         {
-            Debug.LogWarning("EquipItem: item is null");
-            return;
+            if (!owner.Inventory.TryReplaceTransferredItem(index, item, previous)) return false;
+            equipItems[item.itemBaseSO.equipItemType] = item;
+            if (previous != null)
+                owner.RemoveStat(previous.itemBaseSO.statToIncrease, previous.itemBaseSO.isPercent, previous.GetFinalStat());
+            owner.AddStat(item.itemBaseSO.statToIncrease, item.itemBaseSO.isPercent, item.GetFinalStat());
+            owner.Inventory.NotifyTransfer(item, previous);
+            if (previous != null) OnUnequipItem?.Invoke(previous);
+            OnEquipItem?.Invoke(item);
+            if (UIManager.Instance != null) UIManager.Instance.RefreshAll();
+            return true;
         }
-
-        // 2. 이미 장착된 아이템이 있는 경우
-        if (equipItems[item.itemBaseSO.equipItemType] != null)
-        {
-            UnequipItem(item.itemBaseSO.equipItemType);
-        }
-
-        // 3. 아이템 장착 로직
-        equipItems[item.itemBaseSO.equipItemType] = item;
-        owner.Inventory.RemoveItem(item);
-        owner.AddStat(item.itemBaseSO.statToIncrease, item.itemBaseSO.isPercent, item.GetFinalStat());
-    
-        UIManager.Instance.RefreshAll();
+        finally { changingEquipment = false; }
     }
 
     /// <summary>
@@ -61,23 +67,30 @@ public class C_Equipment
     /// </summary>
     /// <param name="equipItemType">착용 해체 할 아이템 부위</param>
     public void UnequipItem(ItemEnums.EquipItemType equipItemType, int inventoryIndex = 99)
+        => TryUnequipItem(equipItemType, inventoryIndex);
+
+    internal bool TryUnequipItem(ItemEnums.EquipItemType equipItemType, int inventoryIndex = 99)
     {
-        // 1. 해당 부위에 장착된 아이템이 없는 경우
-        if (equipItems[equipItemType] == null)
+        if (changingEquipment || owner == null || owner.Inventory == null || owner.Stat == null ||
+            !equipItems.TryGetValue(equipItemType, out EquipItemBase item) || item == null ||
+            item.itemBaseSO == null || item.currentStack != 1) return false;
+        int index = inventoryIndex == 99 ? owner.Inventory.FindEmptySlot() : inventoryIndex;
+        if (index < 0 || index >= owner.Inventory.Items.Count) return false;
+        ItemBase occupant = owner.Inventory.Items[index];
+        if (occupant != null)
+            return occupant is EquipItemBase replacement && replacement.itemBaseSO != null &&
+                replacement.itemBaseSO.equipItemType == equipItemType && TryEquipItem(replacement);
+        changingEquipment = true;
+        try
         {
-            Debug.LogWarning("UnequipItem: no item equipped in this slot");
-            return;
+            if (!owner.Inventory.TryReplaceTransferredItem(index, null, item)) return false;
+            equipItems[equipItemType] = null;
+            owner.RemoveStat(item.itemBaseSO.statToIncrease, item.itemBaseSO.isPercent, item.GetFinalStat());
+            owner.Inventory.NotifyTransfer(null, item);
+            OnUnequipItem?.Invoke(item);
+            if (UIManager.Instance != null) UIManager.Instance.RefreshAll();
+            return true;
         }
-
-        // 2. 아이템 제거 로직
-        if (inventoryIndex == 99)
-            owner.Inventory.AddItem(equipItems[equipItemType]);
-        else
-            owner.Inventory.SetItemAt(inventoryIndex, equipItems[equipItemType]);
-
-        owner.RemoveStat(equipItems[equipItemType].itemBaseSO.statToIncrease, equipItems[equipItemType].itemBaseSO.isPercent, equipItems[equipItemType].GetFinalStat());
-        equipItems[equipItemType] = null;
-
-        UIManager.Instance.RefreshAll();
+        finally { changingEquipment = false; }
     }
 }

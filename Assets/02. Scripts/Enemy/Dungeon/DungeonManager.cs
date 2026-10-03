@@ -55,6 +55,11 @@ public class DungeonManager : MonoBehaviour
     public TMP_Text sectorName;
     public TMP_Text sectorGoal;
 
+    // Optional scene components can own the departure after the final sector.
+    internal event System.Func<DungeonManager, bool> CompletionRequested;
+    private bool dungeonCompleted;
+    private Coroutine dungeonOutRoutine;
+
     private void Awake()
     {
         if (instance == null) instance = this;
@@ -92,7 +97,9 @@ public class DungeonManager : MonoBehaviour
 
     public void OnSectorCleared(SectorController sector)
     {
+        if (dungeonCompleted || sector == null || allSectors == null || allSectors.Count == 0) return;
         int clearedIndex = allSectors.IndexOf(sector);
+        if (clearedIndex < 0) return;
 
         // 던전의 마지막 섹터를 클리어했는지 검사
         if (clearedIndex >= allSectors.Count - 1)
@@ -127,64 +134,121 @@ public class DungeonManager : MonoBehaviour
 
     private void OnDungeonComplete()
     {
+        if (dungeonCompleted) return;
+        dungeonCompleted = true;
         Debug.Log("★ 던전의 모든 위협을 제거했습니다! ★");
-        // 결과창 UI 출력, 클리어 포탈 생성 등 기획 추가 구간
+        var handlers = CompletionRequested;
+        if (handlers != null)
+            foreach (System.Func<DungeonManager, bool> handler in handlers.GetInvocationList())
+                if (handler(this)) return;
 
+        ResumeDefaultDeparture();
+    }
 
-        StartCoroutine(DungeonOut());
+    internal void ResumeDefaultDeparture()
+    {
+        if (!dungeonCompleted || dungeonOutRoutine != null || !isActiveAndEnabled || !gameObject.activeInHierarchy) return;
+        dungeonOutRoutine = StartCoroutine(DungeonOut());
     }
 
     IEnumerator DungeonOut()
     {
         yield return new WaitForSeconds(5f);
+        dungeonOutRoutine = null;
         SceneChanger.instance.LoadScene("Map1-Forest", outSpawnPointName, dungeonOutLoadingImage);
     }
 
     #region 워프
-    public void WarpPlayer(int index)
+    private bool warpInProgress;
+    private bool warpControlsLocked;
+    private Coroutine warpRoutine;
+    private VideoPlayManager warpVideo;
+    private int warpVideoSession;
+    [SerializeField, Min(0f)] private float warpCountdownDuration = 2f;
+    [SerializeField, Min(0f)] private float warpTransitionDelay = 1f;
+
+    private void OnEnable() => GameEvent.OnPlayerDie += CancelWarp;
+    private void OnDisable()
     {
-        StartCoroutine(WarpSequence(index));
+        GameEvent.OnPlayerDie -= CancelWarp;
+        CancelWarp();
+    }
+    private void OnDestroy()
+    {
+        CancelWarp();
+        if (instance == this) instance = null;
     }
 
+    public void WarpPlayer(int index)
+    {
+        if (warpInProgress || !isActiveAndEnabled || _model == null || _model.isDie ||
+            _model.IsExternalControlLocked || warpDatas == null || index < 0 || index >= warpDatas.Count ||
+            warpDatas[index] == null || warpDatas[index].targetPos == null) return;
+        warpInProgress = true;
+        warpRoutine = StartCoroutine(WarpSequence(index));
+    }
+
+    private void CancelWarp()
+    {
+        if (warpRoutine != null) StopCoroutine(warpRoutine);
+        warpRoutine = null;
+        ReleaseWarp();
+    }
+    private void ReleaseWarp()
+    {
+        if (warpVideo != null) warpVideo.CancelPlayback(warpVideoSession);
+        warpVideo = null; warpVideoSession = 0;
+        bool hadWarp = warpInProgress;
+        warpInProgress = false;
+        if (warpControlsLocked && _model != null && !_model.isDie) _model.SetControlable(true);
+        warpControlsLocked = false;
+        if (hadWarp) GameEvent.OnBossRoomEnterCount?.Invoke(false, 0f);
+    }
     private IEnumerator WarpSequence(int index)
     {
         WarpData data = warpDatas[index];
         dungeonStepIndex = index;
-
-        _model.PlayerController.StopMove();
+        warpControlsLocked = true;
+        _model.PlayerController?.StopMove();
         _model.SetControlable(false);
-
-        if (warpDatas[index].playerRespawn != null)
-            _playerRevivePos = warpDatas[index].playerRespawn;
-
-        GameEvent.OnBossRoomEnterCount?.Invoke(true, 0f);
-        yield return new WaitForSeconds(2f);
-        GameEvent.OnBossRoomEnterCount?.Invoke(false, 0f);
-        yield return new WaitForSeconds(1f);
-
-        if (warpDatas[index].hasAudio)
-            AudioManager.instance.PlayBGM(warpDatas[index].bgm);
-
-        if (warpDatas[index].hasVideo && !warpDatas[index].hasPlayed)
+        try
         {
-            VideoPlayManager.instance.PlayVideo(warpDatas[index].clip);
-            yield return new WaitUntil(() => !VideoPlayManager.instance.isPlaying);
-            warpDatas[index].hasPlayed = true;
+            if (data.playerRespawn != null) _playerRevivePos = data.playerRespawn;
+            GameEvent.OnBossRoomEnterCount?.Invoke(true, 0f);
+            yield return new WaitForSecondsRealtime(warpCountdownDuration);
+            GameEvent.OnBossRoomEnterCount?.Invoke(false, 0f);
+            yield return new WaitForSecondsRealtime(warpTransitionDelay);
+            if (_model == null || _model.isDie || data.targetPos == null) yield break;
+            if (data.hasAudio && AudioManager.instance != null) AudioManager.instance.PlayBGM(data.bgm);
+            if (data.hasVideo && !data.hasPlayed)
+            {
+                warpVideo = VideoPlayManager.instance;
+                if (warpVideo != null && warpVideo.TryPlayVideo(data.clip, out warpVideoSession))
+                {
+                    while (warpVideo != null && warpVideo.IsPlaybackActive(warpVideoSession) &&
+                        _model != null && !_model.isDie) yield return null;
+                    if (warpVideo != null)
+                    {
+                        var completion = warpVideo.GetResult(warpVideoSession);
+                        data.hasPlayed = completion == VideoPlaybackResult.Completed || completion == VideoPlaybackResult.Skipped;
+                    }
+                }
+                else Debug.LogWarning("[DungeonManager] Cutscene unavailable; continuing the warp.");
+            }
+            if (_model == null || _model.isDie || data.targetPos == null) yield break;
+            var agent = _model.Navmesh;
+            if (agent != null && agent.enabled && agent.isOnNavMesh) agent.Warp(data.targetPos.position);
+            else _model.transform.position = data.targetPos.position;
+            if (_model.cams != null && _model.cams.Length > 0 && _model.cams[0] != null)
+                _model.cams[0].PreviousStateIsValid = false;
+            ReleaseWarp();
+            if (data.nextSector != null) data.nextSector.ActivateSector();
         }
-
-        _model.transform.position = warpDatas[index].targetPos.position;
-        _model.cams[0].PreviousStateIsValid = false;
-        _model.SetControlable(true);
-
-        if (data.nextSector != null)
-        {
-            // 🌟 여기서 섹터가 켜지면서 RegisterActiveSector를 타고 currentSector가 안전하게 매핑됩니다.
-            data.nextSector.ActivateSector();
-        }
+        finally { warpRoutine = null; ReleaseWarp(); }
     }
-
     public void ReplacePlayer()
     {
+        CancelWarp();
         StartCoroutine(ReplaceSequence());
     }
 

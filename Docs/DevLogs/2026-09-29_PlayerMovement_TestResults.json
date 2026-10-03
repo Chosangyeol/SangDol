@@ -1,0 +1,113 @@
+{
+  "EditMode": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 20,
+      "PassedTests": 10,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:00.6140279"
+    },
+    "Results": [
+      {
+        "Name": "PlayerMovementEditModeTests.BufferedChargePreservesReleaseBeforeActivation",
+        "Status": "Passed",
+        "Duration": "00:00:00.0220000"
+      },
+      {
+        "Name": "PlayerMovementEditModeTests.BufferedSkillExpiresInsteadOfFiringLate",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      },
+      {
+        "Name": "PlayerMovementEditModeTests.DeathOrStunDiscardsBufferedSkill(True)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      },
+      {
+        "Name": "PlayerMovementEditModeTests.DeathOrStunDiscardsBufferedSkill(False)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      },
+      {
+        "Name": "PlayerMovementEditModeTests.DodgeRejectsInactiveAgentWithoutConsumingCooldown",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      },
+      {
+        "Name": "PlayerMovementEditModeTests.InactiveAgentRejectsMovementWithoutChangingRotation",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      },
+      {
+        "Name": "PlayerMovementEditModeTests.NewestBufferedInputWins",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      },
+      {
+        "Name": "PlayerMovementEditModeTests.SkillReleaseWithoutCameraStillEndsCharge",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      },
+      {
+        "Name": "PlayerMovementEditModeTests.SkillWaitsForSkillPermissionEvenWhenMovementIsAllowed",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      },
+      {
+        "Name": "PlayerMovementEditModeTests.SlotReplacementDoesNotExecuteOldBufferedSkill",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      }
+    ],
+    "Logs": []
+  },
+  "PlayMode": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 7,
+      "PassedTests": 7,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:03.2276163"
+    },
+    "Results": [
+      {
+        "Name": "PlayerMovementPlayModeTests.BufferedSkillExpiresWhileModelIsNotUpdating",
+        "Status": "Passed",
+        "Duration": "00:00:00.3000000"
+      },
+      {
+        "Name": "PlayerMovementPlayModeTests.DodgeDeathDoesNotRestoreControls",
+        "Status": "Passed",
+        "Duration": "00:00:00.4800000"
+      },
+      {
+        "Name": "PlayerMovementPlayModeTests.DodgeRecoversWithoutAnimationEvent",
+        "Status": "Passed",
+        "Duration": "00:00:00.4830000"
+      },
+      {
+        "Name": "PlayerMovementPlayModeTests.DodgeStopsOnStun",
+        "Status": "Passed",
+        "Duration": "00:00:00.2160000"
+      },
+      {
+        "Name": "PlayerMovementPlayModeTests.JumpLandsAndResumesMovement",
+        "Status": "Passed",
+        "Duration": "00:00:01.0830000"
+      },
+      {
+        "Name": "PlayerMovementPlayModeTests.JumpRejectsInvalidLandingAndRecoversOnInterruption",
+        "Status": "Passed",
+        "Duration": "00:00:00.1000000"
+      },
+      {
+        "Name": "PlayerMovementPlayModeTests.MoveResumeAndTurn",
+        "Status": "Passed",
+        "Duration": "00:00:00.4180000"
+      }
+    ],
+    "Logs": []
+  }
+}
