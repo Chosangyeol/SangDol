@@ -7,4 +7,7 @@ private static IEnumerator Run(string n) { var t=Type.GetType("VideoRecoveryRunt
 [UnityTest] public IEnumerator ErrorAndCompletionHidePresentation()=>Run(nameof(ErrorAndCompletionHidePresentation));
 [UnityTest] public IEnumerator MissingVideoWarpCompletesAndRestoresControls()=>Run(nameof(MissingVideoWarpCompletesAndRestoresControls));
 [UnityTest] public IEnumerator DisabledManagerCancelsWarpWithoutMoving()=>Run(nameof(DisabledManagerCancelsWarpWithoutMoving));
+[UnityTest] public IEnumerator TransitionFrameIsOwnedAndReleasedOnCancelDisableOrFailure()=>Run(nameof(TransitionFrameIsOwnedAndReleasedOnCancelDisableOrFailure));
+[UnityTest] public IEnumerator DungeonObjectivesStayHiddenUntilVideoFrameIsReleased()=>Run(nameof(DungeonObjectivesStayHiddenUntilVideoFrameIsReleased));
+[UnityTest] public IEnumerator OverlappingTimelinesPauseAndCancellationRestoreObjectives()=>Run(nameof(OverlappingTimelinesPauseAndCancellationRestoreObjectives));
 }

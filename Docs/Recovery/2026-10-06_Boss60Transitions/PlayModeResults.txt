@@ -1,0 +1,86 @@
+Status=Passed
+TotalTests=79
+PassedTests=79
+FailedTests=0
+SkippedTests=0
+Duration=00:05:10.6023954
+Name=Boss60CorrectionsPlayModeTests.ActualBatCastsOncePerTargetAndStopsOnDeath | Status=Passed | Duration=00:00:04.8640000 | Message= | StackTrace= | 
+Name=Boss60CorrectionsPlayModeTests.MusicCancellationPreservesOriginalPlaybackAndMute | Status=Passed | Duration=00:00:00.1310000 | Message= | StackTrace= | 
+Name=Boss60CorrectionsPlayModeTests.MusicResumesOnlyAfterMiddleBossDeathAndReturn | Status=Passed | Duration=00:00:26.3500000 | Message= | StackTrace= | 
+Name=Boss60CorrectionsPlayModeTests.RealJumpInteractionEndsLoopOnlyAtLanding | Status=Passed | Duration=00:00:02.5510000 | Message= | StackTrace= | 
+Name=Boss60CorrectionsPlayModeTests.SwingAllowsMovementAndBossIgnoresDamage | Status=Passed | Duration=00:00:00.6180000 | Message= | StackTrace= | 
+Name=BossLifecyclePlayModeTests.DeathStopsAttacksAndWaitsBeforeReturn | Status=Passed | Duration=00:00:00.1540000 | Message= | StackTrace= | 
+Name=BossLifecyclePlayModeTests.PlayerDeathDuringDefeatCompletesOnce | Status=Passed | Duration=00:00:00.1470000 | Message= | StackTrace= | 
+Name=BossLifecyclePlayModeTests.PoolReuseResetsDeathAndSpecialState | Status=Passed | Duration=00:00:00.1490000 | Message= | StackTrace= | 
+Name=BossLifecyclePlayModeTests.SectorWaitsForPresentationAndRetainsCompletionAfterReuse | Status=Passed | Duration=00:00:00.2520000 | Message= | StackTrace= | 
+Name=DungeonDeparturePlayModeTests.DisabledOrRemovedEndpointRestoresDefaultDeparture | Status=Passed | Duration=00:00:00.1320000 | Message= | StackTrace= | 
+Name=DungeonDeparturePlayModeTests.MissingEndpointAndInvalidMenuUseDefaultDeparture | Status=Passed | Duration=00:00:00.1000000 | Message= | StackTrace= | 
+Name=DungeonDeparturePlayModeTests.MovingAndReenablingEndpointKeepsOneSubscription | Status=Passed | Duration=00:00:00.0840000 | Message= | StackTrace= | 
+Name=DungeonDeparturePlayModeTests.ReturnsToActualTitleAndCanStartFreshGame | Status=Passed | Duration=00:00:08.6010000 | Message= | StackTrace= | 
+Name=FinalBossTransitionPlayModeTests.CancellationRestoresAirborneBossAndControls | Status=Passed | Duration=00:00:04.6490000 | Message= | StackTrace= | 
+Name=FinalBossTransitionPlayModeTests.CancellationStopsTimelineWithoutStartingEncounter | Status=Passed | Duration=00:00:00.0490000 | Message= | StackTrace= | 
+Name=FinalBossTransitionPlayModeTests.NormalAnimationFinishesBeforeSwingStarts | Status=Passed | Duration=00:00:00.3340000 | Message= | StackTrace= | 
+Name=FinalBossTransitionPlayModeTests.SwingLandsAtCenterBeforeTimelineAndEncounter | Status=Passed | Duration=00:00:08.7660000 | Message= | StackTrace= | 
+Name=FinalBossTransitionPlayModeTests.VideoFinishesBeforeTimelineAndEncounter | Status=Passed | Duration=00:00:08.7160000 | Message= | StackTrace= | 
+Name=GameFlowPlayModeTests.TitleForestQuestsDungeonBossAndReturn | Status=Passed | Duration=00:02:41.3890000 | Message= | StackTrace= | 
+Name=GameFlowRegressionPlayModeTests.BoxPatternYieldsAndEndsWhenGroundIsMissing | Status=Passed | Duration=00:00:02.4500000 | Message= | StackTrace= | 
+Name=GameFlowRegressionPlayModeTests.JumpReleasesOnlyLivingPlayersAndHandlesCancellation | Status=Passed | Duration=00:00:00.7850000 | Message= | StackTrace= | 
+Name=GameFlowRegressionPlayModeTests.MissingGameplayCameraDoesNotBreakHover | Status=Passed | Duration=00:00:00.1580000 | Message= | StackTrace= | 
+Name=GameFlowRegressionPlayModeTests.ProjectileResolvesOnlyOnePlayerHit | Status=Passed | Duration=00:00:00.1670000 | Message= | StackTrace= | 
+Name=GameFlowRegressionPlayModeTests.SwingLastFrameCannotReviveDeadOrDestroyedEnemy | Status=Passed | Duration=00:00:00.1900000 | Message= | StackTrace= | 
+Name=GameplayAuditPlayModeTests.BasicAttackDamagesAndCountersEachEnemyOnce | Status=Passed | Duration=00:00:00.1670000 | Message= | StackTrace= | 
+Name=GameplayAuditPlayModeTests.PumpkinAttackHitsOnceAndRejectsInvalidTargets | Status=Passed | Duration=00:00:00.1650000 | Message= | StackTrace= | 
+Name=GameplayAuditPlayModeTests.ReopeningNpcUiDoesNotDuplicateTalkButtons | Status=Passed | Duration=00:00:00.2380000 | Message= | StackTrace= | 
+Name=InventoryTransferPlayModeTests.ClosingUIInvalidatesDrag | Status=Passed | Duration=00:00:00.1350000 | Message= | StackTrace= | 
+Name=InventoryTransferPlayModeTests.ForeignInventoryDragIsRejected | Status=Passed | Duration=00:00:00.0640000 | Message= | StackTrace= | 
+Name=InventoryTransferPlayModeTests.GearDropSwapsAndUpdatesIcons | Status=Passed | Duration=00:00:00.0660000 | Message= | StackTrace= | 
+Name=InventoryTransferPlayModeTests.GroundDropKeepsRemainderAndReturnsOnlyWhenCollected | Status=Passed | Duration=00:00:00.0670000 | Message= | StackTrace= | 
+Name=InventoryTransferPlayModeTests.RejectedEquipmentDropRestoresDragIcon | Status=Passed | Duration=00:00:00.0660000 | Message= | StackTrace= | 
+Name=InventoryTransferPlayModeTests.StaleInventoryDragCannotEquipReplacement | Status=Passed | Duration=00:00:00.0670000 | Message= | StackTrace= | 
+Name=Jester60IntroductionPlayModeTests.DisablingBinderDuringPlaybackRestoresOwnedState | Status=Passed | Duration=00:00:00.8170000 | Message= | StackTrace= | 
+Name=Jester60IntroductionPlayModeTests.FadesUseRealtimeAndCancellationReleasesHeldVideo | Status=Passed | Duration=00:00:09.0580000 | Message= | StackTrace= | 
+Name=Jester60IntroductionPlayModeTests.IntroductionFinishesBeforeMiddleBossStarts | Status=Passed | Duration=00:00:10.6880000 | Message= | StackTrace= | 
+Name=Jester60IntroductionPlayModeTests.MissingTimelineStillUsesNavigableSharedArenaAndDoesNotCancelOtherPatterns | Status=Passed | Duration=00:00:09.3630000 | Message= | StackTrace= | 
+Name=Jester60IntroductionPlayModeTests.PooledBossBindsAndCancellationRestoresCameraAndMusic | Status=Passed | Duration=00:00:00.2630000 | Message= | StackTrace= | 
+Name=Jester60IntroductionPlayModeTests.SharedActorSurvivesCancellationRetryAndBinderDisable | Status=Passed | Duration=00:00:23.6450000 | Message= | StackTrace= | 
+Name=PlayerMovementPlayModeTests.BufferedSkillExpiresWhileModelIsNotUpdating | Status=Passed | Duration=00:00:00.3490000 | Message= | StackTrace= | 
+Name=PlayerMovementPlayModeTests.DodgeDeathDoesNotRestoreControls | Status=Passed | Duration=00:00:00.5710000 | Message= | StackTrace= | 
+Name=PlayerMovementPlayModeTests.DodgeRecoversWithoutAnimationEvent | Status=Passed | Duration=00:00:00.5370000 | Message= | StackTrace= | 
+Name=PlayerMovementPlayModeTests.DodgeStopsOnStun | Status=Passed | Duration=00:00:00.3250000 | Message= | StackTrace= | 
+Name=PlayerMovementPlayModeTests.IdenFinisherInterruptedByStunResumesBasicAttack | Status=Passed | Duration=00:00:00.3360000 | Message= | StackTrace= | 
+Name=PlayerMovementPlayModeTests.IdenFinisherResumesHeldBasicAttack | Status=Passed | Duration=00:00:00.7350000 | Message= | StackTrace= | 
+Name=PlayerMovementPlayModeTests.IdenFinisherResumesReleasedBasicAttack | Status=Passed | Duration=00:00:00.7530000 | Message= | StackTrace= | 
+Name=PlayerMovementPlayModeTests.JumpLandsAndResumesMovement | Status=Passed | Duration=00:00:01.1260000 | Message= | StackTrace= | 
+Name=PlayerMovementPlayModeTests.JumpRejectsInvalidLandingAndRecoversOnInterruption | Status=Passed | Duration=00:00:00.1920000 | Message= | StackTrace= | 
+Name=PlayerMovementPlayModeTests.MoveClickDuringAttackLockStartsAfterAttackRecovers | Status=Passed | Duration=00:00:00.1650000 | Message= | StackTrace= | 
+Name=PlayerMovementPlayModeTests.MoveResumeAndTurn | Status=Passed | Duration=00:00:00.4450000 | Message= | StackTrace= | 
+Name=PlayerMovementPlayModeTests.OldSkillAnimationCannotUnlockNewCast | Status=Passed | Duration=00:00:00.4600000 | Message= | StackTrace= | 
+Name=PlayerMovementPlayModeTests.Skill1NormalRecoveryStillWorks | Status=Passed | Duration=00:00:00.4260000 | Message= | StackTrace= | 
+Name=PlayerMovementPlayModeTests.Skill1StunStopsDashAndRecovers | Status=Passed | Duration=00:00:01.2290000 | Message= | StackTrace= | 
+Name=PlayerMovementPlayModeTests.Skill3NormalRecoveryStillDealsDamage | Status=Passed | Duration=00:00:00.4280000 | Message= | StackTrace= | 
+Name=PlayerMovementPlayModeTests.Skill3ReleasedCastCanStillBeInterrupted | Status=Passed | Duration=00:00:00.5470000 | Message= | StackTrace= | 
+Name=PlayerMovementPlayModeTests.Skill3StunCancelsChargeAndLateRelease | Status=Passed | Duration=00:00:01.1950000 | Message= | StackTrace= | 
+Name=PlayerMovementPlayModeTests.Skill4DeathAfterRecoveryCancelsDelayedEffect | Status=Passed | Duration=00:00:02.4100000 | Message= | StackTrace= | 
+Name=PlayerMovementPlayModeTests.Skill4NormalRecoveryStillWorks | Status=Passed | Duration=00:00:00.6440000 | Message= | StackTrace= | 
+Name=PlayerMovementPlayModeTests.Skill4ReturnedEffectDoesNotTouchNewOwner | Status=Passed | Duration=00:00:03.2470000 | Message= | StackTrace= | 
+Name=PlayerMovementPlayModeTests.Skill4StunStopsHoldingAndReturnsEffectOnce | Status=Passed | Duration=00:00:03.5510000 | Message= | StackTrace= | 
+Name=PlayerMovementPlayModeTests.SkillControlLockSurvivesStunAndLateEvents | Status=Passed | Duration=00:00:00.4530000 | Message= | StackTrace= | 
+Name=PlayerMovementPlayModeTests.SkillDeathUsesExistingCooldownResetPolicy | Status=Passed | Duration=00:00:00.2380000 | Message= | StackTrace= | 
+Name=PlayerMovementPlayModeTests.SkillExternalLockExitsChargeAnimation | Status=Passed | Duration=00:00:00.6070000 | Message= | StackTrace= | 
+Name=PoolOwnershipPlayModeTests.ClearDestroysActiveAndInactiveAndRejectsLateReturn | Status=Passed | Duration=00:00:00.0960000 | Message= | StackTrace= | 
+Name=PoolOwnershipPlayModeTests.ReentrantDisableReturn | Status=Passed | Duration=00:00:00.0950000 | Message= | StackTrace= | 
+Name=PoolOwnershipPlayModeTests.ReturnRestoresPoolParentAndSupportsOverflow | Status=Passed | Duration=00:00:00.0950000 | Message= | StackTrace= | 
+Name=QuestRewardPlayModeTests.QuestLifecycleRefreshesOnEnableAndUnsubscribesOnDestroy | Status=Passed | Duration=00:00:00.1480000 | Message= | StackTrace= | 
+Name=QuestRewardPlayModeTests.RewardNotificationsObserveFullCommitAndCannotReenter | Status=Passed | Duration=00:00:00.1400000 | Message= | StackTrace= | 
+Name=QuestRewardPlayModeTests.StackMergeAndRemovalUpdateQuestState | Status=Passed | Duration=00:00:00.1400000 | Message= | StackTrace= | 
+Name=SkillSlotCooldownPlayModeTests.DragOutsideClearsCooldownAndDragIcon | Status=Passed | Duration=00:00:00.1300000 | Message= | StackTrace= | 
+Name=SkillSlotCooldownPlayModeTests.FrameUpdateClearsEmptySlotWithoutRefresh | Status=Passed | Duration=00:00:00.1260000 | Message= | StackTrace= | 
+Name=SkillSlotCooldownPlayModeTests.MovingToEmptySlotTransfersCooldownDisplay | Status=Passed | Duration=00:00:00.1280000 | Message= | StackTrace= | 
+Name=SkillSlotCooldownPlayModeTests.RightClickClearsAndReequipRetainsActualCooldown | Status=Passed | Duration=00:00:00.1250000 | Message= | StackTrace= | 
+Name=VideoRecoveryPlayModeTests.DisabledManagerCancelsWarpWithoutMoving | Status=Passed | Duration=00:00:00.2610000 | Message= | StackTrace= | 
+Name=VideoRecoveryPlayModeTests.ErrorAndCompletionHidePresentation | Status=Passed | Duration=00:00:00.1270000 | Message= | StackTrace= | 
+Name=VideoRecoveryPlayModeTests.MissingVideoWarpCompletesAndRestoresControls | Status=Passed | Duration=00:00:00.2550000 | Message= | StackTrace= | 
+Name=VideoRecoveryPlayModeTests.SkipDisableAndStaleSessionAreSafe | Status=Passed | Duration=00:00:00.1240000 | Message= | StackTrace= | 
+Name=VideoRecoveryPlayModeTests.TransitionFrameIsOwnedAndReleasedOnCancelDisableOrFailure | Status=Passed | Duration=00:00:00.1890000 | Message= | StackTrace= | 
+Name=VideoRecoveryPlayModeTests.WatchdogUsesRealtimeAndUnlocksFailedPlayback | Status=Passed | Duration=00:00:00.2550000 | Message= | StackTrace= | 
+RecordedCases=79

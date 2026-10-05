@@ -19,9 +19,11 @@ public class EnemySpawner : MonoBehaviour
 
     private List<EnemyModel> spawnedEnemy = new List<EnemyModel>();
 
+    private void OnDisable() => DeactiveSpawner();
+
     public void ActiveSpawner()
     {
-        if (isActive) return;
+        if (isActive || !isActiveAndEnabled) return;
         isActive = true;
 
         Debug.Log($"{gameObject.name} 스포너 활성화: 몬스터 생성");
@@ -82,7 +84,8 @@ public class EnemySpawner : MonoBehaviour
             if (enemy != null && enemy.gameObject.activeSelf)
             {
                 enemy.OnReturnToPool = null;
-                PoolManager.Instance.Push(enemy);
+                var pool = PoolManager.Instance;
+                if (pool == null || !pool.TryPush(enemy)) enemy.gameObject.SetActive(false);
             }
         }
 

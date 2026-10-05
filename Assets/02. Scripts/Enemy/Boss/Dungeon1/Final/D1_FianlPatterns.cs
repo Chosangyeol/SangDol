@@ -48,10 +48,12 @@ public class D1_Final_Normal1 : BossPatternBase
 
         yield return new WaitForSeconds(delay);
 
-        Vector3 mapCenter = center.position;
-
         int index = 0;
-        while (index < 3)
+        int requested = Mathf.Max(0, count);
+        int attempts = 0;
+        int attemptLimit = (int)System.Math.Min(3000L, System.Math.Max(30L, (long)requested * 20L));
+        Vector3 mapCenter = center != null ? center.position : boss.transform.position;
+        while (box != null && index < requested && attempts++ < attemptLimit)
         {
             Vector2 randomCircle = Random.insideUnitCircle * radius;
 
@@ -73,9 +75,13 @@ public class D1_Final_Normal1 : BossPatternBase
             }
             else
             {
-                continue;
+                // Missing ground must never block the main thread or the next pattern.
+                yield return null;
             }
         }
+
+        if (index < requested)
+            Debug.LogWarning("[D1_Final_Normal1] Could not place all boxes on the ground; ending the pattern.");
 
         boss.Anim.SetTrigger("Normal1End");
 

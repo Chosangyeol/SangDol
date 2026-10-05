@@ -17,7 +17,14 @@ public class CameraRay : MonoBehaviour
     private void HandleMouseHover()
     {
         // 1. 마우스 위치로부터 3D 공간으로 레이저(Ray)를 생성
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        Camera gameplayCamera = Camera.main;
+        if (gameplayCamera == null)
+        {
+            if (_lastHoveredEnemy != null) _lastHoveredEnemy.ToggleOutline(false);
+            _lastHoveredEnemy = null;
+            return;
+        }
+        Ray ray = gameplayCamera.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
         // 2. 레이저에 몬스터가 맞았는지 검사

@@ -5,4 +5,6 @@ private static void Run(string n) { var t=Type.GetType("VideoRecoveryCases, Asse
 [Test] public void BusyPlaybackDoesNotLoseOwnership()=>Run(nameof(BusyPlaybackDoesNotLoseOwnership));
 [Test] public void Special3GameplayConfigurationAllowsMissingVideo()=>Run(nameof(Special3GameplayConfigurationAllowsMissingVideo));
 [Test] public void InvalidWarpDoesNotTakeControls()=>Run(nameof(InvalidWarpDoesNotTakeControls));
+[Test] public void ObjectivesRestoreOnlyAfterLastOwnerAndPreserveHiddenState()=>Run(nameof(ObjectivesRestoreOnlyAfterLastOwnerAndPreserveHiddenState));
+[Test] public void ObjectiveProgressUpdatesWithoutReappearingDuringPresentation()=>Run(nameof(ObjectiveProgressUpdatesWithoutReappearingDuringPresentation));
 }

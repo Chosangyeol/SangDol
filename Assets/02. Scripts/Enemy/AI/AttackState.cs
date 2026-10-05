@@ -73,7 +73,7 @@ public class AttackState : State
 
     public override void ExitState()
     {
-        _owner.Agent.isStopped = false;
+        if (_owner.Agent != null && _owner.Agent.enabled && _owner.Agent.isOnNavMesh) _owner.Agent.isStopped = false;
         Debug.Log("공격 상태에서 벗어남");
     }
 

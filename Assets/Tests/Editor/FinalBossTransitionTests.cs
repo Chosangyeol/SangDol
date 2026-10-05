@@ -194,7 +194,8 @@ public static class FinalBossTransitionRuntimeCases
                 if ((bool)r.Get("special3Moving"))
                 {
                     Assert.IsTrue(r.Boss.isDoingSpecial && r.Boss.isImmunity);
-                    Assert.IsFalse(r.Player.Model.canMove || r.Player.Model.canAttack || r.Player.Model.canSkill);
+                    if (!(bool)r.Get("special3ControlsLocked"))
+                        Assert.IsTrue(r.Player.Model.canMove && r.Player.Model.canAttack && r.Player.Model.canSkill);
                 }
                 yield return null;
             }

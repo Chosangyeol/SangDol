@@ -9,7 +9,8 @@ public class HealBuff : BuffBase
     public float value;
     public float interval = 1f;
 
-    private float timer = 1f;
+    private float timer;
+    private int completedTicks;
 
     public HealBuff(CharacterModel model, BuffSO buffSO, float remainSecond
         , bool isPercent, float value, float inverval) : base(buffSO, remainSecond)
@@ -31,12 +32,20 @@ public class HealBuff : BuffBase
     {
         if (isActive)
         {
-            timer += delta;
-            if (timer >= interval)
+            float step = Mathf.Max(.001f, interval);
+            int tickLimit = isInfinite ? int.MaxValue : Mathf.Max(1, Mathf.CeilToInt(duration / step));
+            float elapsed = Mathf.Max(0f, delta);
+            if (!isInfinite) elapsed = Mathf.Min(elapsed, Mathf.Max(0f, remainSecond));
+            timer += elapsed;
+            while (timer >= step && completedTicks < tickLimit)
             {
                 ApplyHeal();
-                timer -= interval;
+                completedTicks++;
+                timer -= step;
             }
+            // A finite potion also pays its final partial interval once.
+            if (!isInfinite && delta >= remainSecond && timer > 0f && completedTicks < tickLimit)
+            { ApplyHeal(); completedTicks++; timer = 0f; }
         }
 
         return base.OnUpdate(delta);

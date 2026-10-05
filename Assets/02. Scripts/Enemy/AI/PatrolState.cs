@@ -38,7 +38,7 @@ public class PatrolState : State
 
     public override void ExitState()
     {
-        _owner.Agent.isStopped = false;
+        if (_owner.Agent != null && _owner.Agent.enabled && _owner.Agent.isOnNavMesh) _owner.Agent.isStopped = false;
     }
 
     private bool SetRandomPatrolPoint(out Vector3 target)

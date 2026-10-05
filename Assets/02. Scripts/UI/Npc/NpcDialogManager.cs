@@ -102,7 +102,7 @@ public class NpcDialogManager : MonoBehaviour
                 bool showButton = false;
                 string prefix = "[시작 가능]";
 
-                if (state == QuestState.NotStart)
+                if (state == QuestState.NotStart && !string.IsNullOrWhiteSpace(q.startDialogID))
                 {
                     showButton = true;
                 }

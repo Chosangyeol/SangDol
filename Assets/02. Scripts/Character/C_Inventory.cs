@@ -9,6 +9,7 @@ public class C_Inventory
     public CharacterModel Model => _model;
 
     private List<ItemBase> items;
+    private readonly Dictionary<string, float> useItemReadyTimes = new Dictionary<string, float>();
     public List<ItemBase> Items => items;
 
     public int slotSize = 30;
@@ -298,16 +299,19 @@ public class C_Inventory
 
         if (slot == C_Enums.UseSlot.None) return;
 
-        int index = useSlots[slot];
+        if (useSlots == null || !useSlots.TryGetValue(slot, out int index)) return;
 
-        if (index == 99) return;
+        if (index < 0 || index >= Items.Count) return;
 
         UseItemBase useItem = Items[index] as UseItemBase;
 
-        if (useItem == null) return;
+        if (useItem == null || useItem.itemBaseSO == null || useItem.currentStack <= 0) return;
+        string itemID = useItem.itemBaseSO.itemID;
+        if (string.IsNullOrEmpty(itemID) || (useItemReadyTimes.TryGetValue(itemID, out float readyAt) && Time.time < readyAt)) return;
 
         if (useItem.UseItem(_model))
         {
+            useItemReadyTimes[itemID] = Time.time + Mathf.Max(0f, useItem.itemBaseSO.coolDownTime);
             Items[index].currentStack--;
             Debug.Log(Items[index].currentStack);
             if (Items[index].currentStack <= 0)

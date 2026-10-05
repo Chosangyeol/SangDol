@@ -161,7 +161,8 @@ public class SectorController : MonoBehaviour
 
     private IEnumerator PlayCutsceneSequence()
     {
-        cutsceneDirector.Play();
+        if (DungeonManager.instance != null) DungeonManager.instance.PlayCutscene(cutsceneDirector);
+        else cutsceneDirector.Play();
 
         yield return new WaitUntil(() => cutsceneDirector.state != PlayState.Playing);
 

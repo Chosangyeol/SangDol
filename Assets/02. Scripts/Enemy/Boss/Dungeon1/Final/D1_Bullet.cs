@@ -10,6 +10,7 @@ public class D1_Bullet : MonoBehaviour
     private CharacterModel _model;
 
     private bool isActive = true;
+    private bool resolved;
 
     public void Init(float damage,float speed, CharacterModel model, bool isActive)
     {
@@ -17,6 +18,7 @@ public class D1_Bullet : MonoBehaviour
         this.speed = speed;
         _model = model;
         this.isActive = isActive;
+        resolved = false;
     }
 
     private void Start()
@@ -38,12 +40,13 @@ public class D1_Bullet : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        if (resolved) return;
         if (other.gameObject.CompareTag("Player"))
         {
             if (!isActive) return;
 
             if (_model == null) return;
-
+            resolved = true;
             _model.Damaged(damage, true);
 
             Destroy(this.gameObject);
@@ -53,8 +56,10 @@ public class D1_Bullet : MonoBehaviour
         {
             if (other.gameObject.CompareTag("Boss"))
             {
-                BossModel _boss = other.GetComponent<D1_FinalBoss>();
-                _boss.StartCoroutine(_boss.KnockDown(5f,false));
+                BossModel _boss = other.GetComponentInParent<D1_FinalBoss>();
+                if (_boss == null) return;
+                resolved = true;
+                if (!_boss.isImmunity) _boss.StartCoroutine(_boss.KnockDown(5f,false));
                 Destroy(this.gameObject);
             }
         }  

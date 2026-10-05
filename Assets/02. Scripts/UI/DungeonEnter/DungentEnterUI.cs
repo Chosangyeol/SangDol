@@ -36,7 +36,9 @@ public class DungentEnterUI : MonoBehaviour
         dungeonBackGroundImage.sprite = data.dungeonBackGroundImage;
         dungeonDescText.text = data.dungeonDescription;
         dungeonNameText.text = data.dungeonName;
-        dungeonRewardGoldText.text = $"{data.dungeonRewardGold}Gold";
+        // Some scene variants omit the optional gold label.
+        if (dungeonRewardGoldText != null)
+            dungeonRewardGoldText.text = $"{data.dungeonRewardGold}Gold";
 
         int index = 0;
 

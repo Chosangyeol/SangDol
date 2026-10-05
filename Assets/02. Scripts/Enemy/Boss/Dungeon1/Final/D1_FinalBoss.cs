@@ -80,6 +80,8 @@ public class D1_Final_Special3Data
     [Tooltip("D1_MiddleBoss 컴포넌트를 포함한 중간 보스 프리팹")]
     public GameObject prefab;
     public VideoClip cutsceneClip;
+    [Tooltip("컷씬과 전투에서 함께 사용하는 씬의 중간 보스. 비어 있으면 prefab을 생성합니다.")]
+    public D1_MiddleBoss sceneMiddleBoss;
     [Tooltip("중앙 이동과 동영상 종료 후 재생할 Cinemachine Timeline")]
     public PlayableDirector cutsceneDirector;
     public Transform waitingArea;
@@ -452,6 +454,10 @@ public class D1_FinalBoss : BossModel
     }
 
     private D1_MiddleBoss _special3MiddleBoss;
+    private bool special3UsesSceneBoss;
+    private bool special3InEncounter;
+    [SerializeField, Min(0f)] private float special3ReturnDelay = 3f;
+    internal bool IsSpecial3Active => special3Moving || special3ControlsLocked || special3InEncounter;
     private bool special3ControlsLocked;
     private VideoPlayManager special3Video;
     private int special3VideoSession;
@@ -460,6 +466,36 @@ public class D1_FinalBoss : BossModel
     private DirectorWrapMode special3DirectorWrapMode;
     private bool special3Moving;
     private bool special3AgentWasEnabled;
+    private AudioSource special3Bgm;
+    private AudioClip special3BgmClip;
+    private bool special3BgmWasMuted;
+    private bool special3BgmWasPlaying;
+
+    private void PauseSpecial3Bgm()
+    {
+        if (special3Bgm != null || AudioManager.instance == null) return;
+        var source = AudioManager.instance.transform.Find("BGM_Player")?.GetComponent<AudioSource>();
+        if (source == null) return;
+        special3Bgm = source;
+        special3BgmClip = source.clip;
+        special3BgmWasMuted = source.mute;
+        special3BgmWasPlaying = source.isPlaying;
+        source.mute = true;
+        if (special3BgmWasPlaying) source.Pause();
+    }
+
+    private void RestoreSpecial3Bgm()
+    {
+        if (special3Bgm != null)
+        {
+            special3Bgm.mute = special3BgmWasMuted;
+            if (special3BgmWasPlaying && special3Bgm.isActiveAndEnabled && special3Bgm.clip == special3BgmClip)
+                special3Bgm.UnPause();
+        }
+        special3Bgm = null;
+        special3BgmClip = null;
+        special3BgmWasPlaying = false;
+    }
 
     private IEnumerator WaitForNormalPatternEnd()
     {
@@ -477,12 +513,11 @@ public class D1_FinalBoss : BossModel
 
     private bool IsSpecial3Configured()
     {
-        D1_MiddleBoss middleBossPrefab = Special3 != null && Special3.prefab != null
-            ? Special3.prefab.GetComponentInChildren<D1_MiddleBoss>(true)
-            : null;
+        D1_MiddleBoss middleBossPrefab = Special3 != null && Special3.sceneMiddleBoss != null
+            ? Special3.sceneMiddleBoss
+            : Special3 != null && Special3.prefab != null ? Special3.prefab.GetComponentInChildren<D1_MiddleBoss>(true) : null;
 
         return Special3 != null
-            && Special3.prefab != null
             && middleBossPrefab != null
             && middleBossPrefab.statSO != null
             && Special3.waitingArea != null
@@ -519,15 +554,30 @@ public class D1_FinalBoss : BossModel
         special3Director = director;
         special3DirectorWasActive = director.gameObject.activeSelf;
         special3DirectorWrapMode = director.extrapolationMode;
-        director.extrapolationMode = DirectorWrapMode.None;
+        var presentation = GetSpecial3Presentation();
+        bool useFade = presentation != null && IsSpecial3Active;
+        if (useFade) yield return presentation.FadeTo(1f);
+        director.extrapolationMode = useFade ? DirectorWrapMode.Hold : DirectorWrapMode.None;
         GameEvent.OnUIInvisable?.Invoke();
         director.gameObject.SetActive(true);
         director.time = 0d;
-        director.Play();
+        if (DungeonManager.instance != null) DungeonManager.instance.PlayCutscene(director);
+        else director.Play();
+        if (useFade) yield return presentation.FadeTo(0f);
 
         while (director != null && director.isActiveAndEnabled && director.state == PlayState.Playing
-            && Target != null && !Target.isDie) yield return null;
+            && Target != null && !Target.isDie)
+        {
+            if (useFade && director.duration - director.time <= presentation.FadeDuration)
+            {
+                director.Pause();
+                yield return presentation.FadeTo(1f);
+                break;
+            }
+            yield return null;
+        }
 
+        if (useFade && Target != null && !Target.isDie) yield return presentation.FadeTo(1f);
         StopSpecial3Timeline();
     }
 
@@ -537,7 +587,8 @@ public class D1_FinalBoss : BossModel
         {
             special3Director.Stop();
             special3Director.extrapolationMode = special3DirectorWrapMode;
-            special3Director.gameObject.SetActive(special3DirectorWasActive);
+            bool keepArena = isDoingSpecial && Special3 != null && Special3.sceneMiddleBoss != null && Target != null && !Target.isDie;
+            special3Director.gameObject.SetActive(keepArena || special3DirectorWasActive);
             if (Target != null && !Target.isDie)
             {
                 if (Target.cams != null && Target.cams.Length > 0 && Target.cams[0] != null)
@@ -595,6 +646,7 @@ public class D1_FinalBoss : BossModel
     private IEnumerator Special_MiddleBoss()
     {
         yield return WaitForNormalPatternEnd();
+        while (Target != null && !Target.isDie && Target.IsExternalControlLocked) yield return null;
 
         if (!IsSpecial3Configured())
         {
@@ -605,20 +657,27 @@ public class D1_FinalBoss : BossModel
         }
 
         SetImmunity(true);
-        Target.PlayerController?.StopMove();
-        Target.SetControlable(false);
-        special3ControlsLocked = true;
+        DisableCounter();
 
         special3AgentWasEnabled = Agent != null && Agent.enabled;
         special3Moving = true;
         yield return MoveBossToCenter();
+        while (Target != null && !Target.isDie && Target.IsExternalControlLocked) yield return null;
+        if (Target == null || Target.isDie) yield break;
+        Target.PlayerController?.StopMove();
+        Target.SetControlable(false);
+        special3ControlsLocked = true;
+        PauseSpecial3Bgm();
         special3Video = VideoPlayManager.instance;
         if (special3Video != null && special3Video.TryPlayVideo(Special3.cutsceneClip, out special3VideoSession))
         {
+            if (GetSpecial3Presentation() != null) special3Video.HoldFrameForTransition(special3VideoSession);
             while (special3Video != null && special3Video.IsPlaybackActive(special3VideoSession) &&
                 Target != null && !Target.isDie) yield return null;
         }
         else Debug.LogWarning("[D1_FinalBoss] Special3 cutscene unavailable; continuing the middle boss encounter.");
+        var transitionPresentation = GetSpecial3Presentation();
+        if (transitionPresentation != null && Target != null && !Target.isDie) yield return transitionPresentation.FadeTo(1f);
         if (special3Video != null) special3Video.CancelPlayback(special3VideoSession);
         special3Video = null; special3VideoSession = 0;
 
@@ -628,7 +687,15 @@ public class D1_FinalBoss : BossModel
         if (Target == null || Target.isDie) yield break;
 
         GameObject spawnedMiddleBoss = null;
-        if (_special3MiddleBoss == null || _special3MiddleBoss.IsDead || !_special3MiddleBoss.gameObject.activeInHierarchy)
+        special3UsesSceneBoss = Special3.sceneMiddleBoss != null;
+        if (special3UsesSceneBoss)
+        {
+            var presentation = Special3.cutsceneDirector != null ? Special3.cutsceneDirector.GetComponentInParent<D1_FinalBoss60Presentation>() : null;
+            if (presentation != null) presentation.BeginEncounter();
+            _special3MiddleBoss = Special3.sceneMiddleBoss;
+            _special3MiddleBoss.BeginCombat(Special3.middleBossSpawnPoint);
+        }
+        else if (_special3MiddleBoss == null || _special3MiddleBoss.IsDead || !_special3MiddleBoss.gameObject.activeInHierarchy)
         {
             if (_special3MiddleBoss != null && _special3MiddleBoss.IsDead && _special3MiddleBoss.gameObject.activeInHierarchy)
                 Destroy(_special3MiddleBoss.gameObject);
@@ -652,6 +719,9 @@ public class D1_FinalBoss : BossModel
             Target.SetControlable(true);
             special3ControlsLocked = false;
             RestoreSpecial3Movement();
+            RestoreSpecial3Bgm();
+            FinishSpecial3Arena();
+            special3UsesSceneBoss = false;
             SetImmunity(false);
             isDoingSpecial = false;
             yield break;
@@ -662,9 +732,12 @@ public class D1_FinalBoss : BossModel
         _special3MiddleBoss.bossSpawnPoint = Special3.middleBossSpawnPoint;
 
         WarpPlayerTo(Special3.waitingArea);
+        special3InEncounter = true;
+        if (transitionPresentation != null) yield return transitionPresentation.FadeTo(0f);
         Target.SetControlable(true);
         special3ControlsLocked = false;
 
+        GameEvent.OnBossStateChange?.Invoke(_special3MiddleBoss);
         while (Target != null && !Target.isDie && _special3MiddleBoss != null && !_special3MiddleBoss.IsDead)
         {
             Vector3 playerPosition = Target.transform.position;
@@ -690,7 +763,7 @@ public class D1_FinalBoss : BossModel
 
         if (_special3MiddleBoss != null && _special3MiddleBoss.IsDead)
         {
-            Destroy(_special3MiddleBoss.gameObject);
+            if (!special3UsesSceneBoss) Destroy(_special3MiddleBoss.gameObject);
             _special3MiddleBoss = null;
         }
 
@@ -698,10 +771,21 @@ public class D1_FinalBoss : BossModel
         WarpPlayerTo(returnPoint);
         Target.SetControlable(true);
         special3ControlsLocked = false;
+        special3InEncounter = false;
+        FinishSpecial3Arena();
+        special3UsesSceneBoss = false;
 
         RestoreSpecial3Movement();
+        RestoreSpecial3Bgm();
         SetImmunity(false);
+        if (special3ReturnDelay > 0f) yield return new WaitForSeconds(special3ReturnDelay);
         isDoingSpecial = false;
+    }
+
+    private D1_FinalBoss60Presentation GetSpecial3Presentation()
+    {
+        return Special3 != null && Special3.cutsceneDirector != null
+            ? Special3.cutsceneDirector.GetComponentInParent<D1_FinalBoss60Presentation>() : null;
     }
 
     IEnumerator Special_Mix()
@@ -902,7 +986,8 @@ public class D1_FinalBoss : BossModel
 
         Special5.cutSceneObj.SetActive(true);
         PlayableDirector director = Special5.cutSceneObj.GetComponent<PlayableDirector>();
-        director.Play();
+        if (DungeonManager.instance != null) DungeonManager.instance.PlayCutscene(director);
+        else director.Play();
 
         yield return new WaitForSeconds(0.5f);
 
@@ -936,6 +1021,11 @@ public class D1_FinalBoss : BossModel
     protected override void OnActionsStopped()
     {
         StopSpecial3Timeline();
+        if (special3InEncounter && Target != null && !Target.isDie)
+            WarpPlayerTo(Special3.returnPoint != null ? Special3.returnPoint : playerStartPos);
+        special3InEncounter = false;
+        FinishSpecial3Arena();
+        RestoreSpecial3Bgm();
         RestoreSpecial3Movement();
         if (special3Video != null) special3Video.CancelPlayback(special3VideoSession);
         special3Video = null; special3VideoSession = 0;
@@ -974,9 +1064,17 @@ public class D1_FinalBoss : BossModel
         if (_special3MiddleBoss != null)
         {
             _special3MiddleBoss.ForceStopCurrentAction();
-            Destroy(_special3MiddleBoss.gameObject);
+            if (!special3UsesSceneBoss) Destroy(_special3MiddleBoss.gameObject);
             _special3MiddleBoss = null;
         }
+        special3UsesSceneBoss = false;
+    }
+
+    private void FinishSpecial3Arena()
+    {
+        if (Special3 == null || Special3.cutsceneDirector == null) return;
+        var presentation = Special3.cutsceneDirector.GetComponentInParent<D1_FinalBoss60Presentation>();
+        if (presentation != null) presentation.FinishEncounter();
     }
 
     public override void ResetBossState() => base.ResetBossState();

@@ -15,6 +15,9 @@ public class VideoPlayManager : MonoBehaviour
     private int playbackSession;
     private VideoPlaybackResult result = VideoPlaybackResult.Cancelled;
     private Coroutine watchdog;
+    private bool holdFrameOnCompletion;
+    private int heldFrameSession;
+    private DungeonManager objectiveDungeon;
 
     private void Awake()
     {
@@ -33,6 +36,7 @@ public class VideoPlayManager : MonoBehaviour
     public void PlayVideo(VideoClip clip)
     {
         if (isPlaying) SkipVideo();
+        if (heldFrameSession != 0) CancelPlayback(heldFrameSession);
         TryPlayVideo(clip, out _);
     }
 
@@ -40,7 +44,8 @@ public class VideoPlayManager : MonoBehaviour
     {
         session = 0;
         // Other callers must not take over an owned playback.
-        if (isPlaying) return false;
+        if (isPlaying || heldFrameSession != 0) return false;
+        holdFrameOnCompletion = false;
         playbackSession++;
         result = VideoPlaybackResult.Failed;
         if (clip == null || vp == null || !vp.isActiveAndEnabled || !isActiveAndEnabled)
@@ -56,6 +61,8 @@ public class VideoPlayManager : MonoBehaviour
             vp.Stop();
             if (vp.targetTexture != null) vp.targetTexture.Release();
             vp.clip = clip; vp.isLooping = false;
+            objectiveDungeon = DungeonManager.instance;
+            if (objectiveDungeon != null) objectiveDungeon.SuppressObjectives(this);
             if (textureImage != null) textureImage.enabled = true;
             vp.Play();
             watchdog = StartCoroutine(WatchPlayback(session, clip.length));
@@ -71,9 +78,14 @@ public class VideoPlayManager : MonoBehaviour
 
     internal bool IsPlaybackActive(int session) => session != 0 && session == playbackSession && isPlaying;
     internal VideoPlaybackResult GetResult(int session) => session == playbackSession ? result : VideoPlaybackResult.Cancelled;
+    internal void HoldFrameForTransition(int session)
+    {
+        if (IsPlaybackActive(session)) holdFrameOnCompletion = true;
+    }
     internal void CancelPlayback(int session)
     {
         if (IsPlaybackActive(session)) Finish(session, VideoPlaybackResult.Cancelled);
+        else if (session != 0 && session == heldFrameSession && session == playbackSession) ReleaseFrame();
     }
 
     private IEnumerator WatchPlayback(int session, double length)
@@ -107,8 +119,21 @@ public class VideoPlayManager : MonoBehaviour
         isPlaying = false; result = completion;
         if (watchdog != null) StopCoroutine(watchdog);
         watchdog = null;
+        if (holdFrameOnCompletion && (completion == VideoPlaybackResult.Completed || completion == VideoPlaybackResult.Skipped))
+        {
+            heldFrameSession = session;
+            if (vp != null) vp.Pause();
+        }
+        else ReleaseFrame();
+    }
+    private void ReleaseFrame()
+    {
+        holdFrameOnCompletion = false;
+        heldFrameSession = 0;
         if (vp != null) { vp.Stop(); vp.clip = null; }
         if (textureImage != null) textureImage.enabled = false;
+        if (objectiveDungeon != null) objectiveDungeon.RestoreObjectives(this);
+        objectiveDungeon = null;
     }
     public void ClearClip()
     {

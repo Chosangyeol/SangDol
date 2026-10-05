@@ -77,7 +77,7 @@ public class DungeonManager : MonoBehaviour
         currentSector = 0;
         _model = GameObject.FindObjectOfType<CharacterModel>();
 
-        dungeonUI.SetActive(false);
+        SetObjectivesVisible(false);
 
         if (isEnterStart)
             StartCoroutine(StartDungeon());
@@ -172,6 +172,7 @@ public class DungeonManager : MonoBehaviour
     {
         GameEvent.OnPlayerDie -= CancelWarp;
         CancelWarp();
+        ClearObjectiveSuppression();
     }
     private void OnDestroy()
     {
@@ -293,11 +294,81 @@ public class DungeonManager : MonoBehaviour
     #endregion
 
     #region 던전 UI
+    private readonly HashSet<UnityEngine.Object> objectiveSuppressors = new HashSet<UnityEngine.Object>();
+    private readonly HashSet<PlayableDirector> objectiveCutscenes = new HashSet<PlayableDirector>();
+    private readonly List<UnityEngine.Object> inactiveObjectiveSuppressors = new List<UnityEngine.Object>();
+    private bool objectivesWereVisible;
+
+    internal void SuppressObjectives(UnityEngine.Object owner)
+    {
+        if (!isActiveAndEnabled || owner == null || dungeonUI == null || !objectiveSuppressors.Add(owner)) return;
+        if (objectiveSuppressors.Count == 1) objectivesWereVisible = dungeonUI.activeSelf;
+        dungeonUI.SetActive(false);
+    }
+
+    internal void RestoreObjectives(UnityEngine.Object owner)
+    {
+        if (!objectiveSuppressors.Remove(owner) || objectiveSuppressors.Count != 0) return;
+        if (dungeonUI != null) dungeonUI.SetActive(objectivesWereVisible);
+    }
+
+    internal void PlayCutscene(PlayableDirector director)
+    {
+        if (director == null) return;
+        if (!isActiveAndEnabled || !director.isActiveAndEnabled || director.playableAsset == null)
+        {
+            director.Play();
+            return;
+        }
+        if (objectiveCutscenes.Add(director))
+        {
+            director.played += SuppressCutsceneObjectives;
+            director.stopped += RestoreCutsceneObjectives;
+        }
+        SuppressObjectives(director);
+        try { director.Play(); }
+        catch { RestoreObjectives(director); throw; }
+    }
+
+    private void SuppressCutsceneObjectives(PlayableDirector director) => SuppressObjectives(director);
+    private void RestoreCutsceneObjectives(PlayableDirector director) => RestoreObjectives(director);
+
+    private void LateUpdate()
+    {
+        // Paused Timelines still own their last camera frame until Stop is called.
+        inactiveObjectiveSuppressors.Clear();
+        foreach (var owner in objectiveSuppressors)
+            if (owner == null || owner is Behaviour behaviour && !behaviour.isActiveAndEnabled)
+                inactiveObjectiveSuppressors.Add(owner);
+        foreach (var owner in inactiveObjectiveSuppressors) RestoreObjectives(owner);
+    }
+
+    private void ClearObjectiveSuppression()
+    {
+        foreach (var director in objectiveCutscenes)
+        {
+            if (director == null) continue;
+            director.played -= SuppressCutsceneObjectives;
+            director.stopped -= RestoreCutsceneObjectives;
+        }
+        objectiveCutscenes.Clear();
+        bool wasSuppressed = objectiveSuppressors.Count != 0;
+        objectiveSuppressors.Clear();
+        inactiveObjectiveSuppressors.Clear();
+        if (wasSuppressed && dungeonUI != null) dungeonUI.SetActive(objectivesWereVisible);
+    }
+
+    private void SetObjectivesVisible(bool visible)
+    {
+        if (objectiveSuppressors.Count != 0) objectivesWereVisible = visible;
+        if (dungeonUI != null) dungeonUI.SetActive(visible && objectiveSuppressors.Count == 0);
+    }
+
     public void UpdateDungeonUI()
     {
         if (allSectors == null || allSectors.Count <= currentSector || allSectors[currentSector] == null) return;
 
-        dungeonUI.SetActive(true);
+        SetObjectivesVisible(true);
 
         SectorController nowSector = allSectors[currentSector];
 

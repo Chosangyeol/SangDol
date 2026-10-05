@@ -86,6 +86,8 @@ public class EnemyModel : EnemyBase
             return;
         }
 
+        if (_agent == null || !_agent.enabled || !_agent.isOnNavMesh) return;
+
         float dist = Vector3.Distance(transform.position, _target.transform.position);
 
         bool canChase = dist <= _stat.detactRange;
@@ -205,10 +207,12 @@ public class EnemyModel : EnemyBase
         {
             _agent.speed = Stat.moveSpeed;
             _agent.enabled = true;
-            _agent.isStopped = false;
-            _agent.velocity = Vector3.zero;
-
-            if (_agent.isOnNavMesh) _agent.ResetPath();
+            if (_agent.isOnNavMesh)
+            {
+                _agent.isStopped = false;
+                _agent.velocity = Vector3.zero;
+                _agent.ResetPath();
+            }
         }
 
         

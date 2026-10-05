@@ -83,6 +83,7 @@ public class EnemySector : MonoBehaviour, ISectorCondition
         EnemyBase enemy = PoolManager.Instance.Pop(data.enemyPrefab.name) as EnemyBase;
         if (enemy != null)
         {
+            if (enemy is EnemyModel model) model.SetSpawnPoint(data.spawnPoint);
             _spawnedEnemies.Add(enemy);
             DungeonManager.instance.UpdateDungeonUI();
 
@@ -97,7 +98,8 @@ public class EnemySector : MonoBehaviour, ISectorCondition
                 enemy.Reset();
             }
 
-            InitializeEnemyModel(enemy, data.spawnPoint);
+            if (enemy != null && !enemy.IsDead && enemy.gameObject.activeInHierarchy)
+                InitializeEnemyModel(enemy, data.spawnPoint);
         }
     }
 
@@ -125,6 +127,11 @@ public class EnemySector : MonoBehaviour, ISectorCondition
         float t = 0f;
         while (t < swingDuration)
         {
+            if (enemy == null || enemy.IsDead || !enemy.gameObject.activeInHierarchy)
+            {
+                if (ropeInstance != null) Destroy(ropeInstance);
+                yield break;
+            }
             t += Time.deltaTime;
             float progress = Mathf.Clamp01(t / swingDuration);
             float acceleratedProgress = progress * progress;
@@ -146,9 +153,13 @@ public class EnemySector : MonoBehaviour, ISectorCondition
         }
 
         // 몬스터 바닥에 강제 안착 및 복구
+        if (enemy == null || enemy.IsDead || !enemy.gameObject.activeInHierarchy)
+        {
+            if (ropeInstance != null) Destroy(ropeInstance);
+            yield break;
+        }
         enemy.transform.position = targetLandPos;
         enemy.transform.rotation = targetLandRot;
-        enemy.Reset();
         if (enemy is EnemyModel model)
             model.isAggressive = true;
 

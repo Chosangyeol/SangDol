@@ -83,7 +83,8 @@ public class EnemyBase : PoolableMono
 
         if (DamageTextManager.Instance != null)
         {
-            DamageTextManager.Instance.SpawnDamageText(textSpawnPos.position, info.damage, info.isCritical);
+            Vector3 textPosition = textSpawnPos != null ? textSpawnPos.position : transform.position + Vector3.up;
+            DamageTextManager.Instance.SpawnDamageText(textPosition, info.damage, info.isCritical);
         }
 
         _stat.Damaged(info); 

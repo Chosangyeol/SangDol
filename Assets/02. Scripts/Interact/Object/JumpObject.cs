@@ -9,6 +9,7 @@ public class JumpObject : InteractableObject
     public Transform apexPos; // ⭐️ 사용자가 직접 지정할 포물선의 최고점(경유지)
     public AnimationCurve jumpCurve;
     public float jumpDuration = 1f; // 점프에 걸리는 시간
+    private CharacterModel jumpingPlayer;
 
     protected override void Start()
     {
@@ -18,11 +19,13 @@ public class JumpObject : InteractableObject
 
     public override bool Interact(Transform target)
     {
+        CharacterModel model = target != null ? target.GetComponent<CharacterModel>() : null;
+        if (jumpingPlayer != null || model == null || model.isDie || model.IsExternalControlLocked) return false;
         if (!base.Interact(target)) return false;
 
         UpdateUIState();
 
-        CharacterModel model = target.GetComponent<CharacterModel>();
+        jumpingPlayer = model;
 
         model.Navmesh.enabled = false;
 
@@ -40,17 +43,20 @@ public class JumpObject : InteractableObject
 
     IEnumerator JumpSequence(CharacterModel model)
     {
-        bool isEnd = false;
-
         Vector3 p0 = model.transform.position; // 시작점 (P0)
         Vector3 p1 = apexPos.position;         // 제어점/최고점 (P1)
         Vector3 p2 = targetPos.position;       // 도착점 (P2)
 
+        // TryInteract sends the Jump trigger after Interact returns, even for an instant jump.
+        yield return null;
+        if (model == null || model.isDie) { jumpingPlayer = null; yield break; }
+
         float time = 0f;
         while (time < jumpDuration)
         {
+            if (model == null || model.isDie) { jumpingPlayer = null; yield break; }
             time += Time.deltaTime;
-            float t = time / jumpDuration;
+            float t = Mathf.Clamp01(time / jumpDuration);
 
             // 커브를 통해 점프의 가감속(Easing)을 제어합니다.
             float curveT = jumpCurve.Evaluate(t);
@@ -62,18 +68,40 @@ public class JumpObject : InteractableObject
 
             model.transform.position = position;
 
-            if (time < jumpDuration * 0.7f && !isEnd)
-            {
-                model.Anim.SetTrigger("JumpEnd");
-                isEnd = true;
-            }
-
-            yield return null;
+            if (time < jumpDuration) yield return null;
         }
 
         // 루프가 끝난 후 정확한 도착 지점에 맞춥니다.
         model.transform.position = p2;
-        model.EndJump();
+        ReleaseJumpControls();
+    }
+
+    private void OnDisable()
+    {
+        StopAllCoroutines();
+        ReleaseJumpControls();
+    }
+
+    private void ReleaseJumpControls()
+    {
+        var model = jumpingPlayer;
+        jumpingPlayer = null;
+        if (model != null && !model.isDie)
+        {
+            var animator = model.Anim;
+            int idle = Animator.StringToHash("Base Layer.Idle");
+            if (animator != null && animator.runtimeAnimatorController != null && animator.HasState(0, idle))
+            {
+                foreach (var parameter in animator.parameters)
+                    if (parameter.type == AnimatorControllerParameterType.Trigger &&
+                        (parameter.name == "Jump" || parameter.name == "JumpEnd"))
+                        animator.ResetTrigger(parameter.nameHash);
+                animator.Play(idle, 0, 0f);
+                animator.Update(0f);
+            }
+            model.EndJump();
+            model.ControlEnable();
+        }
     }
 
 #if UNITY_EDITOR

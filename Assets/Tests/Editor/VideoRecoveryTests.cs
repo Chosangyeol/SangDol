@@ -6,6 +6,50 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.Video;
 using UnityEngine.UI;
+using UnityEngine.Playables;
+using UnityEngine.Timeline;
+using TMPro;
+
+public sealed class DungeonObjectiveVisibilityRig : IDisposable
+{
+    public readonly GameObject Root;
+    public readonly DungeonManager Manager;
+    public readonly GameObject UI;
+    private readonly DungeonManager previous = DungeonManager.instance;
+    public DungeonObjectiveVisibilityRig()
+    {
+        DungeonManager.instance = null;
+        Root = new GameObject("ObjectiveVisibilityTest"); Root.SetActive(false);
+        Manager = Root.AddComponent<DungeonManager>(); Manager.isEnterStart = false;
+        UI = new GameObject("ObjectiveVisibilityUI"); UI.transform.SetParent(Root.transform);
+        Manager.dungeonUI = UI;
+        var sectorRoot = new GameObject("ObjectiveVisibilitySector"); sectorRoot.SetActive(false); sectorRoot.transform.SetParent(Root.transform);
+        var sector = sectorRoot.AddComponent<SectorController>(); sector.sectorName = "Updated sector"; sector.sectorObjects = new List<GameObject>();
+        typeof(SectorController).GetField("_conditions", BindingFlags.Instance | BindingFlags.NonPublic)
+            .SetValue(sector, new List<ISectorCondition> { new Goal() });
+        Manager.allSectors = new List<SectorController> { sector };
+        Manager.sectorName = Text("SectorName"); Manager.sectorGoal = Text("SectorGoal");
+        Root.SetActive(true);
+        if (!Application.isPlaying) DungeonManager.instance = Manager;
+    }
+    private TMP_Text Text(string name)
+    {
+        var go = new GameObject(name, typeof(RectTransform)); go.transform.SetParent(UI.transform);
+        return go.AddComponent<TextMeshProUGUI>();
+    }
+    private sealed class Goal : ISectorCondition
+    {
+        public string SectorGoal => "Test goal";
+        public bool IsSatisfied => false;
+        public string GetProgressString() => "Updated progress 1/2";
+        public void OnConditionStart() { }
+    }
+    public object Call(string name, params object[] args) => typeof(DungeonManager).GetMethod(name, BindingFlags.Instance | BindingFlags.NonPublic).Invoke(Manager, args);
+    public void Dispose()
+    {
+        UnityEngine.Object.DestroyImmediate(Root); DungeonManager.instance = previous;
+    }
+}
 
 public sealed class VideoRecoveryRig : IDisposable
 {
@@ -36,6 +80,37 @@ public sealed class VideoRecoveryRig : IDisposable
 }
 public static class VideoRecoveryCases
 {
+    public static void ObjectivesRestoreOnlyAfterLastOwnerAndPreserveHiddenState()
+    {
+        using (var d = new DungeonObjectiveVisibilityRig())
+        using (var video = new VideoRecoveryRig())
+        {
+            foreach (bool visible in new[] { false, true })
+            {
+                d.UI.SetActive(visible);
+                d.Call("SuppressObjectives", video.Manager); d.Call("SuppressObjectives", video.Manager);
+                d.Call("SuppressObjectives", video.Player);
+                Assert.IsFalse(d.UI.activeSelf);
+                d.Call("RestoreObjectives", video.Manager); d.Call("RestoreObjectives", video.Manager);
+                Assert.IsFalse(d.UI.activeSelf);
+                d.Call("RestoreObjectives", video.Player); Assert.AreEqual(visible, d.UI.activeSelf);
+            }
+        }
+    }
+
+    public static void ObjectiveProgressUpdatesWithoutReappearingDuringPresentation()
+    {
+        using (var d = new DungeonObjectiveVisibilityRig())
+        using (var video = new VideoRecoveryRig())
+        {
+            d.UI.SetActive(false); d.Call("SuppressObjectives", video.Manager);
+            d.Manager.UpdateDungeonUI();
+            Assert.IsFalse(d.UI.activeSelf);
+            Assert.AreEqual("Updated sector", d.Manager.sectorName.text);
+            Assert.AreEqual("Updated progress 1/2", d.Manager.sectorGoal.text);
+            d.Call("RestoreObjectives", video.Manager); Assert.IsTrue(d.UI.activeSelf);
+        }
+    }
     public static void MissingPlayerAndClipAreSafe()
     {
         using (var r = new VideoRecoveryRig(false))
@@ -103,6 +178,112 @@ public static class VideoRecoveryCases
 }
 public static class VideoRecoveryRuntimeCases
 {
+    public static IEnumerator DungeonObjectivesStayHiddenUntilVideoFrameIsReleased()
+    {
+        using (var d = new DungeonObjectiveVisibilityRig())
+        using (var video = new VideoRecoveryRig())
+        {
+            yield return null;
+            video.Player.audioOutputMode = VideoAudioOutputMode.None;
+            var clip = UnityEditor.AssetDatabase.LoadAssetAtPath<VideoClip>("Assets/08. Sound/Jester60Intro.mp4"); Assert.IsNotNull(clip);
+            foreach (bool visible in new[] { false, true })
+            foreach (string completion in new[] { "Completed", "Skipped", "Failed", "Cancelled" })
+            {
+                d.UI.SetActive(visible);
+                object[] args = { clip, 0 }; Assert.IsTrue((bool)video.Call("TryPlayVideo", args));
+                int session = (int)args[1]; Assert.IsFalse(d.UI.activeSelf);
+                video.Call("HoldFrameForTransition", session);
+                video.Call("CancelPlayback", session - 1); Assert.IsFalse(d.UI.activeSelf);
+                if (completion == "Completed") video.Manager.OnVideoFinished(video.Player);
+                else if (completion == "Skipped") video.Manager.SkipVideo();
+                else if (completion == "Failed") video.Call("OnVideoError", video.Player, "objective visibility test decode failure");
+                else video.Call("CancelPlayback", session);
+                bool held = completion == "Completed" || completion == "Skipped";
+                Assert.AreEqual(held, video.Image.enabled);
+                Assert.AreEqual(held ? false : visible, d.UI.activeSelf);
+                if (held)
+                {
+                    video.Call("CancelPlayback", session - 1); Assert.IsFalse(d.UI.activeSelf);
+                    video.Call("CancelPlayback", session); Assert.AreEqual(visible, d.UI.activeSelf);
+                }
+            }
+            d.UI.SetActive(true);
+            object[] finalArgs = { clip, 0 }; Assert.IsTrue((bool)video.Call("TryPlayVideo", finalArgs));
+            video.Call("HoldFrameForTransition", (int)finalArgs[1]); video.Manager.SkipVideo();
+            video.Root.SetActive(false); Assert.IsTrue(d.UI.activeSelf);
+            Assert.IsFalse(video.Image.enabled);
+        }
+    }
+
+    public static IEnumerator OverlappingTimelinesPauseAndCancellationRestoreObjectives()
+    {
+        using (var d = new DungeonObjectiveVisibilityRig())
+        {
+            yield return null;
+            var aRoot = new GameObject("ObjectiveTimelineA"); var bRoot = new GameObject("ObjectiveTimelineB");
+            var a = aRoot.AddComponent<PlayableDirector>(); var b = bRoot.AddComponent<PlayableDirector>();
+            var timeline = ScriptableObject.CreateInstance<TimelineAsset>(); timeline.durationMode = TimelineAsset.DurationMode.FixedLength;
+            timeline.fixedDuration = 1d; timeline.CreateTrack<ActivationTrack>(null, "Test");
+            a.playableAsset = b.playableAsset = timeline; a.extrapolationMode = b.extrapolationMode = DirectorWrapMode.None;
+            try
+            {
+                foreach (bool visible in new[] { false, true })
+                {
+                    d.UI.SetActive(visible); d.Call("PlayCutscene", a); d.Call("PlayCutscene", b);
+                    Assert.IsFalse(d.UI.activeSelf);
+                    a.Pause(); yield return null; Assert.IsFalse(d.UI.activeSelf, "Pause retains the cinematic frame");
+                    a.Stop(); Assert.IsFalse(d.UI.activeSelf); b.Stop(); Assert.AreEqual(visible, d.UI.activeSelf);
+                }
+                d.UI.SetActive(true); d.Call("PlayCutscene", a);
+                d.Manager.UpdateDungeonUI(); Assert.IsFalse(d.UI.activeSelf);
+                a.enabled = false; yield return null; Assert.IsTrue(d.UI.activeSelf);
+                a.enabled = true; d.Call("PlayCutscene", a); Assert.IsFalse(d.UI.activeSelf);
+                aRoot.SetActive(false); yield return null; Assert.IsTrue(d.UI.activeSelf);
+                aRoot.SetActive(true); d.Call("PlayCutscene", a); Assert.IsFalse(d.UI.activeSelf);
+                UnityEngine.Object.Destroy(aRoot); yield return null; Assert.IsTrue(d.UI.activeSelf);
+                d.Call("PlayCutscene", b); d.Manager.enabled = false; Assert.IsTrue(d.UI.activeSelf);
+                b.Stop(); b.Play(); Assert.IsTrue(d.UI.activeSelf, "Disabled dungeon unsubscribes from Timeline events");
+                b.Stop(); d.Manager.enabled = true;
+                timeline.fixedDuration = .05d; d.Call("PlayCutscene", b);
+                Assert.IsFalse(d.UI.activeSelf); yield return new WaitForSecondsRealtime(.15f); Assert.IsTrue(d.UI.activeSelf);
+                b.playableAsset = null; d.Call("PlayCutscene", b); yield return null;
+                Assert.IsTrue(d.UI.activeSelf, "Missing Timeline never owns a hide request");
+            }
+            finally
+            {
+                if (aRoot != null) UnityEngine.Object.DestroyImmediate(aRoot);
+                UnityEngine.Object.DestroyImmediate(bRoot); UnityEngine.Object.DestroyImmediate(timeline);
+            }
+        }
+    }
+
+    public static IEnumerator TransitionFrameIsOwnedAndReleasedOnCancelDisableOrFailure()
+    {
+        foreach (string completion in new[] { "Completed", "Skipped", "Failed" })
+        using (var r = new VideoRecoveryRig())
+        {
+            r.Seed(20); r.Call("HoldFrameForTransition", 20);
+            if (completion == "Completed") r.Manager.OnVideoFinished(r.Player);
+            else if (completion == "Skipped") r.Manager.SkipVideo();
+            else r.Call("OnVideoError", r.Player, "transition decode failure");
+            Assert.IsFalse(r.Manager.isPlaying);
+            Assert.AreEqual(completion, r.Call("GetResult", 20).ToString());
+            Assert.AreEqual(completion != "Failed", r.Image.enabled);
+            if (completion != "Failed")
+            {
+                r.Call("CancelPlayback", 19); Assert.IsTrue(r.Image.enabled);
+                object[] args = { null, 0 };
+                Assert.IsFalse((bool)r.Call("TryPlayVideo", args));
+                Assert.AreEqual(completion, r.Call("GetResult", 20).ToString());
+                if (completion == "Completed") r.Call("CancelPlayback", 20);
+                else r.Root.SetActive(false);
+            }
+            Assert.IsFalse(r.Image.enabled);
+            Assert.IsNull(r.Player.clip);
+            yield return null;
+        }
+    }
+
     public static IEnumerator WatchdogUsesRealtimeAndUnlocksFailedPlayback()
     {
         using (var r = new VideoRecoveryRig())

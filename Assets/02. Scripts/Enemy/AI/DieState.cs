@@ -17,9 +17,16 @@ public class DieState : State
         timer = 0f;
         isPushed = false;
 
-        _owner.Agent.isStopped = true;
-        _owner.Agent.velocity = Vector3.zero;
-        _owner.Agent.enabled = false;
+        var agent = _owner.Agent;
+        if (agent != null)
+        {
+            if (agent.enabled && agent.isOnNavMesh)
+            {
+                agent.isStopped = true;
+                agent.velocity = Vector3.zero;
+            }
+            agent.enabled = false;
+        }
 
         Debug.Log("사망 애니메이션 실행");
     }

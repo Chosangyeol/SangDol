@@ -18,11 +18,11 @@ MonoBehaviour:
   canDown: 1
   maxHp: 2500
   level: 60
-  attackDamage: 30
+  attackDamage: 100
   moveSpeed: 5
   attackSpeed: 2
   down: 100
-  detactRange: 10
+  detactRange: 20
   attackRange: 2
   expAmount: 0
   goldAmount: 0

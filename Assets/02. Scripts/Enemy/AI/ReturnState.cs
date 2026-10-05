@@ -31,7 +31,7 @@ public class ReturnState : State
 
     public override void ExitState()
     {
-        _owner.Agent.isStopped = false;
+        if (_owner.Agent != null && _owner.Agent.enabled && _owner.Agent.isOnNavMesh) _owner.Agent.isStopped = false;
         _owner.Agent.speed = _owner.Stat.moveSpeed;
         Debug.Log("º¹±Í »óÅÂ¿¡¼­ ¹þ¾î³²");
     }

@@ -16,7 +16,7 @@ public class Heal : UseItemBase
 
     public override bool UseItem(CharacterModel owner)
     {
-        if (owner == null) return false;
+        if (owner == null || owner.isDie || itemBaseSO == null || itemBaseSO.effectAmount <= 0f) return false;
 
         if (itemBaseSO.isImmediately)
         {
@@ -29,8 +29,10 @@ public class Heal : UseItemBase
         }
         else
         {
+            if (itemBaseSO.buffSO == null || itemBaseSO.itemDuration <= 0f) return false;
+            float ticks = Mathf.Max(1f, Mathf.Ceil(itemBaseSO.itemDuration));
             HealBuff buff = new HealBuff(owner, itemBaseSO.buffSO, itemBaseSO.itemDuration,
-                itemBaseSO.isPercent, itemBaseSO.effectAmount,1f);
+                itemBaseSO.isPercent, itemBaseSO.effectAmount / ticks, 1f);
 
             SBuff sBuff = new SBuff
                 (
@@ -41,6 +43,6 @@ public class Heal : UseItemBase
 
             owner.Buff.AddBuff(sBuff);
         }
-        return false;
+        return true;
     }
 }

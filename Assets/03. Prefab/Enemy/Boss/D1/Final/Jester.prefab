@@ -110,6 +110,8 @@ MonoBehaviour:
     hpPercent: 0.2
     hasDone: 0
   patternObjects: []
+  defeatCutsceneClip: {fileID: 0}
+  deathPresentationDelay: 3
   center: {fileID: 0}
   playerStartPos: {fileID: 0}
   pattern1:
@@ -196,9 +198,11 @@ MonoBehaviour:
   Special2:
     prefab: {fileID: 932413519242352343, guid: b394d6319b3aa5246bdf9787d15ac081, type: 3}
   Special3:
-    prefab: {fileID: 2162409769526798646, guid: 5fd09efb592d2654d9001731908100cf,
+    prefab: {fileID: 2556489368684937025, guid: b4b7044b5da72864b8ebb4f214a10143,
       type: 3}
-    cutsceneClip: {fileID: 32900000, guid: 91118005997c0ee44813a892433aef45, type: 3}
+    cutsceneClip: {fileID: 32900000, guid: 8859abe22ea92a14094270fef242b69c, type: 3}
+    sceneMiddleBoss: {fileID: 0}
+    cutsceneDirector: {fileID: 0}
     waitingArea: {fileID: 0}
     middleBossSpawnPoint: {fileID: 0}
     returnPoint: {fileID: 0}

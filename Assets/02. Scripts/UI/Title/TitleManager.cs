@@ -76,6 +76,12 @@ public class TitleManager : MonoBehaviour
 
     private IEnumerator StartGameRoutine()
     {
+        // Main owns gameplay input and audio after the handoff.
+        foreach (var root in gameObject.scene.GetRootGameObjects())
+        {
+            foreach (var listener in root.GetComponentsInChildren<AudioListener>(true)) listener.enabled = false;
+            foreach (var events in root.GetComponentsInChildren<UnityEngine.EventSystems.EventSystem>(true)) events.enabled = false;
+        }
         yield return SceneManager.LoadSceneAsync("Main", LoadSceneMode.Additive);
 
         // 2. Main 씬에 있는 SceneController를 찾습니다.
