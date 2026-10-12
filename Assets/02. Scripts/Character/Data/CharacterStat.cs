@@ -298,6 +298,16 @@ public class CharacterStat
         if (remainSkillPoint < 0) remainSkillPoint = 0;
     }
 
+    private int equipmentUpdateDepth;
+    internal void BeginEquipmentUpdate() => equipmentUpdateDepth++;
+    internal void EndEquipmentUpdate()
+    {
+        if (equipmentUpdateDepth <= 0) return;
+        equipmentUpdateDepth--;
+        if (equipmentUpdateDepth == 0)
+            curHp = Mathf.Clamp(curHp, 0f, Mathf.Max(0f, maxHp.FinalValue));
+    }
+
     public void RemoveMaxHp(bool isPercent, float value)
     {
         if (isPercent)
@@ -305,7 +315,8 @@ public class CharacterStat
         else
             maxHp.RemoveFlat(value);
 
-        curHp = Mathf.Clamp(curHp, 0f, Mathf.Max(0f, maxHp.FinalValue));
+        if (equipmentUpdateDepth == 0)
+            curHp = Mathf.Clamp(curHp, 0f, Mathf.Max(0f, maxHp.FinalValue));
 
     }
 

@@ -798,6 +798,7 @@ public class CharacterModel : MonoBehaviour
     #region 캐릭터 스탯 관리
     public void Damaged(float damage,bool isPercent)
     {
+        if (isDie || (Buff != null && Buff.isInvincibility)) return;
         CancelInteraction();
 
         Stat.Damaged(damage,isPercent);

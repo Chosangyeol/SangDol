@@ -287,7 +287,9 @@ public class C_Controller
     {
         StopMove();
 
-        UIManager.Instance.ToggleUI(ui);
+        if (UIManager.Instance == null) return;
+        if (ui == C_Enums.UIList.Option) UIManager.Instance.CloseTopUI();
+        else UIManager.Instance.ToggleUI(ui);
     }
 
     public void StopMove()

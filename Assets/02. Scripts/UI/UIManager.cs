@@ -44,14 +44,6 @@ public class UIManager : MonoBehaviour
             inGameUIs.SetActive(false);
     }
 
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            CloseTopUI();
-        }
-    }
-
     public void InitGameUIs()
     {
         if (hasInit) return;
@@ -93,6 +85,7 @@ public class UIManager : MonoBehaviour
         questUI.Toggle(true);
         optionUI.Toggle(true);
         dungentEnterUI.Toggle(true);
+        openedUIList.Clear();
     }
 
     private void ShowMainUI()
@@ -127,11 +120,9 @@ public class UIManager : MonoBehaviour
         }
         else if (ui == C_Enums.UIList.Option)
         {
-            if (openedUIList.Count == 0)
-            {
-                optionUI.Toggle();
-                isNowOpen = optionUI.gameObject.activeSelf;
-            }
+            if (optionUI == null) return;
+            optionUI.Toggle();
+            isNowOpen = optionUI.IsOpen;
         }
 
         if (isNowOpen)
@@ -157,16 +148,37 @@ public class UIManager : MonoBehaviour
 
     }
 
-    private void CloseTopUI()
+    private bool IsPanelOpen(C_Enums.UIList ui)
     {
-        if (openedUIList.Count > 0)
+        switch (ui)
         {
-            C_Enums.UIList topUI = openedUIList[openedUIList.Count - 1];
-            ToggleUI(topUI);
+            case C_Enums.UIList.Inventory: return inventoryUI != null && inventoryUI.gameObject.activeSelf;
+            case C_Enums.UIList.SkillTree: return skillTreeUI != null && skillTreeUI.gameObject.activeSelf;
+            case C_Enums.UIList.Status: return statusUI != null && statusUI.gameObject.activeSelf;
+            case C_Enums.UIList.Quest: return questUI != null && questUI.gameObject.activeSelf;
+            case C_Enums.UIList.Option: return optionUI != null && optionUI.IsOpen;
+            default: return false;
         }
-        else
+    }
+
+    internal void CloseTopUI()
+    {
+        while (openedUIList.Count > 0)
         {
-            ToggleUI(C_Enums.UIList.Option);
+            int index = openedUIList.Count - 1;
+            var top = openedUIList[index];
+            openedUIList.RemoveAt(index);
+            if (!IsPanelOpen(top)) continue;
+            switch (top)
+            {
+                case C_Enums.UIList.Inventory: inventoryUI.Toggle(true); break;
+                case C_Enums.UIList.SkillTree: skillTreeUI.Toggle(true); break;
+                case C_Enums.UIList.Status: statusUI.Toggle(true); break;
+                case C_Enums.UIList.Quest: questUI.Toggle(true); break;
+                case C_Enums.UIList.Option: optionUI.Toggle(true); break;
+            }
+            return;
         }
+        ToggleUI(C_Enums.UIList.Option);
     }
 }

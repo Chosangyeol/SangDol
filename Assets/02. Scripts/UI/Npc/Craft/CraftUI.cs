@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -21,89 +20,120 @@ public class CraftUI : MonoBehaviour
     public TMP_Text[] materialCountTexts;
     public GameObject executeButton;
 
+    private CraftRecipe previewRecipe;
+    private CharacterModel previewModel;
+    private C_Inventory previewInventory;
+    private void OnEnable() { BindPreview(); RefreshPreview(); }
+    private void OnDisable() => UnbindPreview();
+    private void OnDestroy() => UnbindPreview();
+
+    private void BindPreview()
+    {
+        UnbindPreview();
+        if (!isActiveAndEnabled || previewRecipe == null || previewModel == null) return;
+        previewInventory = previewModel.Inventory;
+        if (previewInventory != null) previewInventory.OnInventoryUpdated += RefreshPreview;
+        GameEvent.OnStatChange += RefreshStat;
+    }
+    private void UnbindPreview()
+    {
+        if (previewInventory != null) previewInventory.OnInventoryUpdated -= RefreshPreview;
+        previewInventory = null;
+        GameEvent.OnStatChange -= RefreshStat;
+    }
+    private void RefreshStat(CharacterStat stat)
+    {
+        if (previewModel != null && previewModel.Stat != null && previewModel.Stat.Stat == stat) RefreshPreview();
+    }
+
     public void SetCraftRecipeUI(List<CraftRecipe> recipeList)
     {
-        for (int n = 0; n < slots.Count; n++)
-            Destroy(slots[n]);
-
+        foreach (var slot in slots) Destroy(slot);
         slots.Clear();
-
-        for (int i = 0; i < recipeList.Count; i++)
+        if (recipeList == null) return;
+        foreach (var recipe in recipeList)
         {
-            GameObject slot = Instantiate(slotUI, gridLayout.transform);
-            slot.GetComponent<CraftRecipeSlot>().Init(recipeList[i], tooltip);
+            var slot = Instantiate(slotUI, gridLayout.transform);
+            slot.GetComponent<CraftRecipeSlot>().Init(recipe, tooltip);
             slots.Add(slot);
         }
     }
 
     public void SetCraftExecuteUI(CraftRecipe recipe, CharacterModel model)
     {
-        if (recipe == null)
+        previewRecipe = recipe;
+        previewModel = model;
+        BindPreview();
+        RefreshPreview();
+    }
+
+    private void ClearPreview()
+    {
+        if (resultItemIcon != null) resultItemIcon.sprite = null;
+        if (resultItemNameText != null) resultItemNameText.text = "";
+        if (resultItemRarityText != null) resultItemRarityText.text = "";
+        if (requireGoldAmountText != null) requireGoldAmountText.text = "";
+        if (materialImages != null)
+            foreach (var image in materialImages) if (image != null) image.sprite = null;
+        if (materialCountTexts != null)
+            foreach (var text in materialCountTexts) if (text != null) text.text = "";
+        if (executeButton != null) executeButton.SetActive(false);
+    }
+
+    private void RefreshPreview()
+    {
+        ClearPreview();
+        var recipe = previewRecipe;
+        var model = previewModel;
+        if (recipe == null || model == null || model.Inventory == null || model.Stat == null) return;
+        if (ItemManager.Instance == null || recipe.materialItemIds == null || recipe.materialItemAmounts == null ||
+            recipe.materialItemIds.Length != recipe.materialItemAmounts.Length || materialImages == null ||
+            materialCountTexts == null || recipe.materialItemIds.Length > materialImages.Length ||
+            recipe.materialItemIds.Length > materialCountTexts.Length)
         {
-            resultItemIcon.sprite = null;
-            resultItemNameText.text = "";
-            resultItemRarityText.text = "";
-
-            requireGoldAmountText.text = "";
-
-            for(int i = 0; i < 4; i++)
-            {
-                materialCountTexts[i].text = "";
-                materialImages[i].sprite = null;
-            }
-            executeButton.SetActive(false);
-
+            ShowFailure("제작 정보를 확인할 수 없습니다.");
             return;
         }
+        var result = ItemManager.Instance.GetItemBaseSO(recipe.resultItemId);
+        if (result == null) { ShowFailure("제작 결과 정보를 확인할 수 없습니다."); return; }
 
-        C_Inventory inventory = model.Inventory;
-
-        bool canCraft = true;
-
-        ItemBaseSO result = ItemManager.Instance.GetItemBaseSO(recipe.resultItemId);
-        string rarity = ItemManager.Instance.ReturnRarity(result.itemRarity);
-
-        resultItemIcon.sprite = result.itemIcon;
-        resultItemNameText.text = result.itemName;
-        resultItemRarityText.text = $"등급 : {rarity}";
-
-        requireGoldAmountText.text = $"{model.Stat.Stat.gold} / {recipe.requireGoldAmount}";
-
-        if (model.Stat.Stat.gold < recipe.requireGoldAmount)
+        if (resultItemIcon != null) resultItemIcon.sprite = result.itemIcon;
+        if (resultItemNameText != null) resultItemNameText.text = result.itemName;
+        if (resultItemRarityText != null) resultItemRarityText.text = "등급 : " + ItemManager.Instance.ReturnRarity(result.itemRarity);
+        if (requireGoldAmountText != null)
         {
-            canCraft = false;
-            requireGoldAmountText.color = Color.red;
-        }
-        else
+            requireGoldAmountText.text = model.Stat.Stat.gold + " / " + recipe.requireGoldAmount;
             requireGoldAmountText.color = Color.yellow;
+        }
 
-        int index = 0;
-
+        bool valid = true;
         for (int i = 0; i < recipe.materialItemIds.Length; i++)
         {
-            string targetID = recipe.materialItemIds[i];
-            ItemBaseSO target = ItemManager.Instance.GetItemBaseSO(targetID);
-
-            materialImages[i].sprite = target.itemIcon;
-            materialCountTexts[i].text =
-                $"{inventory.GetTotalItemCount(targetID)} / {recipe.materialItemAmounts[i]}";
-        
-            if (inventory.GetTotalItemCount(targetID) < recipe.materialItemAmounts[i])
+            string id = recipe.materialItemIds[i]?.Trim();
+            var target = ItemManager.Instance.GetItemBaseSO(id);
+            if (target == null) valid = false;
+            if (materialImages[i] != null) materialImages[i].sprite = target != null ? target.itemIcon : null;
+            if (materialCountTexts[i] != null)
             {
-                canCraft = false;
-                materialCountTexts[i].color = Color.red;
+                int count = model.Inventory.GetTotalItemCount(id);
+                materialCountTexts[i].text = count + " / " + recipe.materialItemAmounts[i];
+                materialCountTexts[i].color = count >= recipe.materialItemAmounts[i] ? Color.yellow : Color.red;
             }
-            else
-                materialCountTexts[i].color = Color.yellow;
-
-            index++;
         }
 
-        for (int i = index; i < recipe.materialItemIds.Length;i++)
+        string failure = null;
+        bool canCraft = valid && NpcCraftManager.instance != null &&
+            NpcCraftManager.instance.CanCraft(recipe, out failure);
+        if (!canCraft) ShowFailure(failure ?? "제작 정보를 확인할 수 없습니다.");
+        if (executeButton != null) executeButton.SetActive(canCraft);
+    }
+
+    private void ShowFailure(string message)
+    {
+        if (requireGoldAmountText != null)
         {
-            materialCountTexts[i].text = "";
-            materialImages[i].sprite = null;
+            requireGoldAmountText.text = message;
+            requireGoldAmountText.color = Color.red;
         }
-        executeButton.SetActive(canCraft);
     }
 }

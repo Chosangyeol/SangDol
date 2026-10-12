@@ -129,11 +129,41 @@ public class C_Inventory
     // commitBeforeNotifications must commit owner state; failures in external subscribers
     // after commit are not a retryable inventory-capacity failure.
     internal bool TryAddRewards(IReadOnlyList<KeyValuePair<ItemBaseSO, int>> rewards, Action commitBeforeNotifications)
+        => ExchangeItems(null, rewards, commitBeforeNotifications, false);
+
+    internal bool CanExchangeItems(IReadOnlyList<KeyValuePair<string, int>> materials,
+        IReadOnlyList<KeyValuePair<ItemBaseSO, int>> rewards)
+        => ExchangeItems(materials, rewards, null, true);
+
+    internal bool TryExchangeItems(IReadOnlyList<KeyValuePair<string, int>> materials,
+        IReadOnlyList<KeyValuePair<ItemBaseSO, int>> rewards, Action commitBeforeNotifications)
+        => ExchangeItems(materials, rewards, commitBeforeNotifications, false);
+
+    private bool ExchangeItems(IReadOnlyList<KeyValuePair<string, int>> materials,
+        IReadOnlyList<KeyValuePair<ItemBaseSO, int>> rewards, Action commitBeforeNotifications, bool previewOnly)
     {
-        if (rewards == null || commitBeforeNotifications == null) return false;
+        if (rewards == null || (!previewOnly && commitBeforeNotifications == null)) return false;
         var planned = new List<ItemBase>(items);
         var counts = new long[items.Count];
         for (int i = 0; i < items.Count; i++) counts[i] = items[i]?.currentStack ?? 0;
+        var removed = new List<ItemBase>();
+        if (materials != null)
+        {
+            foreach (var material in materials)
+            {
+                if (string.IsNullOrWhiteSpace(material.Key) || material.Value <= 0) return false;
+                long remaining = material.Value;
+                for (int i = 0; i < planned.Count && remaining > 0; i++)
+                {
+                    var entry = planned[i];
+                    if (entry == null || entry.itemBaseSO == null || entry.itemBaseSO.itemID != material.Key) continue;
+                    long count = Math.Min(remaining, counts[i]);
+                    counts[i] -= count; remaining -= count;
+                    if (counts[i] == 0) { planned[i] = null; removed.Add(entry); }
+                }
+                if (remaining > 0) return false;
+            }
+        }
         var added = new List<ItemBase>();
         var mergedIDs = new HashSet<string>();
         var newIDs = new HashSet<string>();
@@ -168,15 +198,18 @@ public class C_Inventory
             }
             if (remaining > 0) return false;
         }
+        if (previewOnly) return true;
+        foreach (var entry in removed) entry.currentStack = 0;
         for (int i = 0; i < items.Count; i++)
         {
             items[i] = planned[i];
             if (items[i] != null) items[i].currentStack = (int)counts[i];
         }
         commitBeforeNotifications();
+        foreach (var entry in removed) { entry.OnRemoveInventory(); OnRemoveItemInventory?.Invoke(entry); }
         foreach (var entry in added) { entry.OnAddInventory(); OnAddItemInventory?.Invoke(entry); }
         foreach (var id in mergedIDs) if (!newIDs.Contains(id)) GameEvent.OnGetItem?.Invoke(id);
-        if (rewards.Count > 0) OnInventoryUpdated?.Invoke();
+        if (rewards.Count > 0 || (materials != null && materials.Count > 0)) OnInventoryUpdated?.Invoke();
         return true;
     }
 

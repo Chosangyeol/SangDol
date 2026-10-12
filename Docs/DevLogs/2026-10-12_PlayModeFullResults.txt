@@ -1,0 +1,32 @@
+Status=Failed
+TotalTests=84
+PassedTests=83
+FailedTests=1
+SkippedTests=0
+Duration=00:05:34.0751515
+CASE GameFlowRegressionPlayModeTests.BoxPatternYieldsAndEndsWhenGroundIsMissing Failed Unhandled log message: '[Exception] Exception: Execution failed. TargetInvocationException: Sharing violation on path C:\Users\User\AppData\Local\Unity\Editor\Editor.log
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.Boolean anonymous, System.IO.FileOptions options) [0x0019e] in <1071a2cb0cb3433aae80a793c277a048>:0 
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.IO.FileOptions options) [0x00000] in <1071a2cb0cb3433aae80a793c277a048>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.FileStream..ctor(string,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,int,System.IO.FileOptions)
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks, System.Int32 bufferSize) [0x00055] in <1071a2cb0cb3433aae80a793c277a048>:0 
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding) [0x00000] in <1071a2cb0cb3433aae80a793c277a048>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.StreamReader..ctor(string,System.Text.Encoding)
+  at System.IO.File.InternalReadAllLines (System.String path, System.Text.Encoding encoding) [0x00006] in <1071a2cb0cb3433aae80a793c277a048>:0 
+  at System.IO.File.ReadAllLines (System.String path) [0x0002c] in <1071a2cb0cb3433aae80a793c277a048>:0 
+  at AuditTestProgressRead.Read () [0x00086] in <4e031949e71242e9a53dd6928c5ef3b1>:0 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <1071a2cb0cb3433aae80a793c277a048>:0 '. Use UnityEngine.TestTools.LogAssert.Expect
+com.IvanMurzak.Unity.MCP.Editor.API.Tool_Script+<>c__DisplayClass6_0.<Execute>b__0 () (at ./Library/PackageCache/com.ivanmurzak.unity.mcp@a33cfce06b/Editor/Scripts/API/Tool/Script.Execute.cs:159)
+com.IvanMurzak.Unity.MCP.Runtime.Utils.UnityMainThread+<>c__DisplayClass6_0`1[T].<Dispatch>g__Execute|0 () (at ./Library/PackageCache/com.ivanmurzak.unity.mcp@a33cfce06b/Runtime/Utils/MainThread.Editor.cs:53)
+Rethrow as AggregateException: One or more errors occurred. (Execution failed. TargetInvocationException: Sharing violation on path C:/Users/User/AppData/Local/Unity/Editor/Editor.log
+System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.Boolean anonymous, System.IO.FileOptions options) (at <1071a2cb0cb3433aae80a793c277a048>:0)
+System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.IO.FileOptions options) (at <1071a2cb0cb3433aae80a793c277a048>:0)
+(wrapper remoting-invoke-with-check) System.IO.FileStream..ctor(string,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,int,System.IO.FileOptions)
+System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks, System.Int32 bufferSize) (at <1071a2cb0cb3433aae80a793c277a048>:0)
+System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding) (at <1071a2cb0cb3433aae80a793c277a048>:0)
+(wrapper remoting-invoke-with-check) System.IO.StreamReader..ctor(string,System.Text.Encoding)
+System.IO.File.InternalReadAllLines (System.String path, System.Text.Encoding encoding) (at <1071a2cb0cb3433aae80a793c277a048>:0)
+System.IO.File.ReadAllLines (System.String path) (at <1071a2cb0cb3433aae80a793c277a048>:0)
+AuditTestProgressRead.Read () (at <4e031949e71242e9a53dd6928c5ef3b1>:0)
+
+RecordedResults=84

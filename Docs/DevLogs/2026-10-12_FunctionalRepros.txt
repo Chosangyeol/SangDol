@@ -1,0 +1,4 @@
+INVINCIBILITY flag=True HP100->90
+HP_EQUIPMENT_SWAP oldMax150 cur150 -> newMax=200 cur=100
+FULL_INVENTORY_CRAFT gold100->80 material10->9 resultPresent=False
+OPTION_CLOSE firstOpen=True afterCloseTopUI=True

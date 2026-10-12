@@ -22,10 +22,32 @@ public class C_Stat
         return;
     }
 
+    private int equipmentUpdateDepth;
+
+    private void NotifyStatChanged()
+    {
+        if (equipmentUpdateDepth == 0) GameEvent.OnStatChange?.Invoke(Stat);
+    }
+
+    internal void UpdateEquipmentStats(Action update)
+    {
+        if (update == null) return;
+        stat.BeginEquipmentUpdate();
+        equipmentUpdateDepth++;
+        try { update(); }
+        finally
+        {
+            stat.EndEquipmentUpdate();
+            equipmentUpdateDepth--;
+            if (equipmentUpdateDepth == 0) GameEvent.OnStatChange?.Invoke(Stat);
+        }
+    }
+
     public void Damaged(float damage,bool isPercent)
     {
+        if (owner != null && (owner.isDie || (owner.Buff != null && owner.Buff.isInvincibility))) return;
         stat.Damaged(damage,isPercent);
-        GameEvent.OnStatChange?.Invoke(Stat);
+        NotifyStatChanged();
     }
 
     public bool GetCritical()
@@ -36,7 +58,7 @@ public class C_Stat
     public void Heal(float amount)
     {
         stat.Heal(amount);
-        GameEvent.OnStatChange?.Invoke(Stat);
+        NotifyStatChanged();
     }
 
     public void GainIden(float amount)
@@ -55,64 +77,64 @@ public class C_Stat
         if (stat.currentExp >= stat.maxExp)
             LevelUp();
 
-        GameEvent.OnStatChange?.Invoke(Stat);
+        NotifyStatChanged();
     }
 
     public void LevelUp()
     {
         stat.LevelUp();
-        GameEvent.OnStatChange?.Invoke(Stat);
+        NotifyStatChanged();
     }
 
     public void GainGold(int amount)
     {
         stat.GainGold(amount);
-        GameEvent.OnStatChange?.Invoke(Stat);
+        NotifyStatChanged();
     }
 
     public void UseGold(int amount)
     {
         stat.UseGold(amount);
-        GameEvent.OnStatChange?.Invoke(Stat);
+        NotifyStatChanged();
     }
 
     #region Add Stat Methods
     public void AddMaxHp(bool isPercent, float value)
     {
         stat.AddMaxHp(isPercent, value);
-        GameEvent.OnStatChange?.Invoke(Stat);
+        NotifyStatChanged();
 
     }
 
     public void AddAttackDamage(bool isPercent, float value)
     {
         stat.AddAttackDamage(isPercent, value);
-        GameEvent.OnStatChange?.Invoke(Stat);
+        NotifyStatChanged();
 
     }
 
     public void AddMoveSpeed(bool isPercent, float value)
     {
         stat.AddMoveSpeed(isPercent, value);
-        GameEvent.OnStatChange?.Invoke(Stat);
+        NotifyStatChanged();
     }
 
     public void AddAttackSpeed(bool isPercent, float value)
     {
         stat.AddAttackSpeed(isPercent, value);
-        GameEvent.OnStatChange?.Invoke(Stat);
+        NotifyStatChanged();
     }
 
     public void AddCirticalChance(float value)
     {
         stat.AddCirticalChance(value);
-        GameEvent.OnStatChange?.Invoke(Stat);
+        NotifyStatChanged();
     }
 
     public void AddCirticalDamage(float value)
     {
         stat.AddCirticalDamage(value);
-        GameEvent.OnStatChange?.Invoke(Stat);
+        NotifyStatChanged();
     }
     #endregion
 
@@ -120,37 +142,37 @@ public class C_Stat
     public void RemoveMaxHp(bool isPercent, float value)
     {
         stat.RemoveMaxHp(isPercent, value);
-        GameEvent.OnStatChange?.Invoke(Stat);
+        NotifyStatChanged();
     }
 
     public void RemoveAttackDamage(bool isPercent, float value)
     {
         stat.RemoveAttackDamage(isPercent, value);
-        GameEvent.OnStatChange?.Invoke(Stat);
+        NotifyStatChanged();
     }
 
     public void RemoveMoveSpeed(bool isPercent, float value)
     {
         stat.RemoveMoveSpeed(isPercent, value);
-        GameEvent.OnStatChange?.Invoke(Stat);
+        NotifyStatChanged();
     }
 
     public void RemoveAttackSpeed(bool isPercent, float value)
     {
         stat.RemoveAttackSpeed(isPercent, value);
-        GameEvent.OnStatChange?.Invoke(Stat);
+        NotifyStatChanged();
     }
 
     public void RemoveCirticalChance(float value)
     {
         stat.RemoveCirticalChance(value);
-        GameEvent.OnStatChange?.Invoke(Stat);
+        NotifyStatChanged();
     }
 
     public void RemoveCirticalDamage(float value)
     {
         stat.RemoveCirticalDamage(value);
-        GameEvent.OnStatChange?.Invoke(Stat);
+        NotifyStatChanged();
     }
     #endregion
 
@@ -159,61 +181,61 @@ public class C_Stat
     public void AddDownPower(float value)
     {
         stat.AddDownPower(value);
-        GameEvent.OnStatChange?.Invoke(Stat);
+        NotifyStatChanged();
     }
 
     public void AddIdenBonus(float value)
     {
         stat.AddIdenBonus(value);
-        GameEvent.OnStatChange?.Invoke(Stat);
+        NotifyStatChanged();
     }
 
     public void AddCooldownReduction(float value)
     {
         stat.AddCooldownReduction(value);
-        GameEvent.OnStatChange?.Invoke(Stat);
+        NotifyStatChanged();
     }
 
     public void AddTakeMultiplier(float value)
     {
         stat.AddTakeMultiplier(value);
-        GameEvent.OnStatChange?.Invoke(Stat);
+        NotifyStatChanged();
     }
 
     public void AddDodgeCooldownReduction(float value)
     {
         stat.AddDodgeCooldownReduction(value);
-        GameEvent.OnStatChange?.Invoke(Stat);
+        NotifyStatChanged();
     }
 
     public void RemoveDownPower(float value)
     {
         stat.RemoveDownPower(value);
-        GameEvent.OnStatChange?.Invoke(Stat);
+        NotifyStatChanged();
     }
 
     public void RemoveIdenBonus(float value)
     {
         stat.RemoveIdenBonus(value);
-        GameEvent.OnStatChange?.Invoke(Stat);
+        NotifyStatChanged();
     }
 
     public void RemoveCooldownReduction(float value)
     {
         stat.RemoveCooldownReduction(value);
-        GameEvent.OnStatChange?.Invoke(Stat);
+        NotifyStatChanged();
     }
 
     public void RemoveTakeMultiplier(float value)
     {
         stat.RemoveTakeMultiplier(value);
-        GameEvent.OnStatChange?.Invoke(Stat);
+        NotifyStatChanged();
     }
 
     public void RemoveDodgeCooldownReduction(float value)
     {
         stat.RemoveDodgeCooldownReduction(value);
-        GameEvent.OnStatChange?.Invoke(Stat);
+        NotifyStatChanged();
     }
     #endregion
 }

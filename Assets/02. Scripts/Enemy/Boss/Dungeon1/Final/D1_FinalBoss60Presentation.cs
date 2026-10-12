@@ -161,6 +161,7 @@ public sealed class D1_FinalBoss60Presentation : MonoBehaviour
         if (middleBoss != null)
         {
             middleBoss.enabled = false;
+            middleBoss.RestorePresentationScale();
             var agent = middleBoss.GetComponent<UnityEngine.AI.NavMeshAgent>();
             if (agent != null) agent.enabled = false;
             foreach (var collider in middleBoss.GetComponentsInChildren<Collider>(true)) collider.enabled = false;

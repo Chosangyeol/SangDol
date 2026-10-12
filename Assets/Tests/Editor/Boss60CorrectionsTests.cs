@@ -23,7 +23,7 @@ public static class Boss60CorrectionsCases
         Assert.AreEqual(1, prefab.GetComponentsInChildren<SkinnedMeshRenderer>(true).Length);
         Assert.IsTrue(prefab.GetComponentsInChildren<Transform>(true).All(t => t.gameObject.layer == LayerMask.NameToLayer("Enemy")));
         Assert.Greater(prefab.GetComponent<CapsuleCollider>().height * prefab.transform.localScale.y, 3f);
-        var clips = animator.runtimeAnimatorController.animationClips;
+        var clips = animator.runtimeAnimatorController.animationClips.Distinct().ToArray();
         Assert.AreEqual(3, clips.Length);
         Assert.IsTrue(clips.Single(c => c.name == "ClockworkBatIdle").isLooping);
         Assert.IsFalse(clips.Single(c => c.name == "ClockworkBatCast").isLooping);
@@ -201,12 +201,16 @@ public static class Boss60CorrectionsRuntimeCases
             var extra = new GameObject("ExtraPlayerCollider"); extra.transform.SetParent(r.Model.transform, false); extra.AddComponent<SphereCollider>();
             var go = UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(Boss60CorrectionsCases.MiddlePrefab), r.Model.transform.position + Vector3.forward * 1.5f, Quaternion.identity);
             var anchor = new GameObject("BatSpawn"); anchor.transform.position = go.transform.position;
-            var boss = go.GetComponent<D1_MiddleBoss>(); boss.bossSpawnPoint = anchor.transform; boss.isInField = false;
+            var boss = go.GetComponent<D1_MiddleBoss>(); boss.bossSpawnPoint = anchor.transform; boss.isInField = true; boss.isCombatStarted = false;
             typeof(EnemyBase).GetField("_target", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(boss, r.Model);
             try
             {
                 r.Model.Stat.Stat.curHp = 100f;
                 float hp = r.Model.Stat.Stat.curHp;
+                yield return null;
+                var registered = (System.Collections.Generic.List<BossPatternBase>)typeof(BossModel).GetField("normalPatterns", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(boss);
+                registered.RemoveAll(p => p.patternName != "Clockwork Bat Spell");
+                boss.isCombatStarted = true;
                 yield return new WaitForSeconds(.3f);
                 Assert.IsTrue(boss.Anim.GetCurrentAnimatorStateInfo(0).IsName("Attack"), "position=" + boss.transform.position + " player=" + r.Model.transform.position + " started=" + boss.isCombatStarted + " enabled=" + boss.enabled + " field=" + boss.isInField + " state=" + boss.Anim.GetCurrentAnimatorStateInfo(0).shortNameHash);
                 Assert.IsTrue(boss.Agent.isOnNavMesh);

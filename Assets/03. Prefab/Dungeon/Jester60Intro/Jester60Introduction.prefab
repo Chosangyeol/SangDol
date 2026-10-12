@@ -11162,6 +11162,7 @@ PlayableDirector:
     - f7599e4162a436442ab43ae75e9aab8f: {fileID: 0}
     - 7673e90e4975a2748ac17c4c0dcd448a: {fileID: 0}
     - e42798acc59b60844a1ecb127cdabcd7: {fileID: 1216338360096809431}
+    - Jester60_VirtualCamera3: {fileID: 1216338360096809431}
     - 81cec4ad1d885564dad78761f181dcb8: {fileID: 998193509116577722}
     - fdcf5b328fdf7f84eba3bc485503a89c: {fileID: 0}
     - 537e56c1d6af5614bbaa89322d5871ce: {fileID: 6863995415378074305}
@@ -22694,6 +22695,11 @@ PrefabInstance:
       propertyPath: bossSpawnPoint
       value: 
       objectReference: {fileID: 14414222841257564}
+    - target: {fileID: 4803476182421260725, guid: b4b7044b5da72864b8ebb4f214a10143,
+        type: 3}
+      propertyPath: combatScaleMultiplier
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 7732427522891438215, guid: b4b7044b5da72864b8ebb4f214a10143,
         type: 3}
       propertyPath: m_Enabled

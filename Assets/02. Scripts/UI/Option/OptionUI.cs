@@ -18,6 +18,7 @@ public class VolumeComponent
 public class OptionUI : MonoBehaviour
 {
     public GameObject optionUI;
+    internal bool IsOpen => optionUI != null && optionUI.activeSelf;
 
     [Header("사운드 UI [0:Master , 1:BGM, 2:SFX]")]
     public VolumeComponent[] volumeComponents;

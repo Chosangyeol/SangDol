@@ -50,9 +50,12 @@ public class C_Equipment
         {
             if (!owner.Inventory.TryReplaceTransferredItem(index, item, previous)) return false;
             equipItems[item.itemBaseSO.equipItemType] = item;
-            if (previous != null)
-                owner.RemoveStat(previous.itemBaseSO.statToIncrease, previous.itemBaseSO.isPercent, previous.GetFinalStat());
-            owner.AddStat(item.itemBaseSO.statToIncrease, item.itemBaseSO.isPercent, item.GetFinalStat());
+            owner.Stat.UpdateEquipmentStats(() =>
+            {
+                if (previous != null)
+                    owner.RemoveStat(previous.itemBaseSO.statToIncrease, previous.itemBaseSO.isPercent, previous.GetFinalStat());
+                owner.AddStat(item.itemBaseSO.statToIncrease, item.itemBaseSO.isPercent, item.GetFinalStat());
+            });
             owner.Inventory.NotifyTransfer(item, previous);
             if (previous != null) OnUnequipItem?.Invoke(previous);
             OnEquipItem?.Invoke(item);

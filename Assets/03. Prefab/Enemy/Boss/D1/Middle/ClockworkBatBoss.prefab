@@ -345,6 +345,16 @@ MonoBehaviour:
   spellRecovery: 1.2
   spellRadius: 8
   spellCooldown: 4
+  combatScaleMultiplier: 0.5
+  swipeRadius: 3
+  swipeWindup: 0.4
+  swipeRecovery: 0.55
+  swipeCooldown: 2.5
+  pulseRadius: 2
+  pulseRange: 7
+  pulseWindup: 0.65
+  pulseInterval: 0.65
+  pulseCooldown: 6
 --- !u!195 &7732427522891438215
 NavMeshAgent:
   m_ObjectHideFlags: 0

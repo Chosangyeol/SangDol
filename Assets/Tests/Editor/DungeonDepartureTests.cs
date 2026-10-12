@@ -154,10 +154,18 @@ public static class DungeonDepartureRuntimeCases
             var source = template.AddComponent<PoolableMono>();
             oldPool.CreatePool(source, 1, false); var sentinel = oldPool.Pop(source.name);
             r.AddEndpoint(); DungeonDepartureRig.Set(r.Endpoint, "returnDelay", .02f);
+            var ending = UnityEngine.Object.Instantiate(UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/03. Prefab/Dungeon/Ending/DungeonEndingCutscene.prefab"));
+            ending.transform.SetParent(r.Endpoint.transform, false);
+            var endingDirector = ending.GetComponent<UnityEngine.Playables.PlayableDirector>();
+            DungeonDepartureRig.Set(r.Endpoint, "endingDirector", endingDirector);
             yield return null; Time.timeScale = 0f; r.Manager.OnSectorCleared(r.Final);
             float deadline = Time.realtimeSinceStartup + 15f;
             while (!(bool)DungeonDepartureRig.Get(r.Endpoint, "sceneLoadStarted") && Time.realtimeSinceStartup < deadline) yield return null;
             Assert.IsTrue((bool)DungeonDepartureRig.Get(r.Endpoint, "sceneLoadStarted"));
+            Assert.GreaterOrEqual(endingDirector.time, 6.99d);
+            Assert.IsTrue(ending.GetComponentInChildren<Camera>(true).gameObject.activeSelf);
+            Assert.IsTrue(ending.GetComponentInChildren<Canvas>(true).gameObject.activeSelf);
+            Assert.Greater(ending.transform.Find("EndingOverlay/Fade").GetComponent<CanvasGroup>().alpha, .99f);
             UnityEngine.Object.DestroyImmediate(r.Endpoint.gameObject);
             while (!SceneManager.GetSceneByName("Title").isLoaded && Time.realtimeSinceStartup < deadline) yield return null;
             Assert.IsTrue(SceneManager.GetSceneByName("Title").isLoaded);

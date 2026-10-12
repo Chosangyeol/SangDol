@@ -15,6 +15,64 @@ public sealed class DungeonCompletionReturnToTitle : MonoBehaviour
     [Tooltip("보스 사망 및 섹터 연출이 끝난 뒤 대기하는 실제 시간(초)입니다.")]
     [SerializeField, Min(0f)] private float returnDelay = 5f;
 
+    [Header("엔딩 연출 (영상 다음 Timeline)")]
+    [SerializeField] private UnityEngine.Video.VideoClip endingVideo;
+    [SerializeField] private UnityEngine.Playables.PlayableDirector endingDirector;
+    private VideoPlayManager endingVideoManager;
+    private int endingVideoSession;
+    private AudioSource pausedMusic;
+    private UnityEngine.Playables.DirectorUpdateMode previousUpdateMode;
+    private bool ownsDirector;
+    private UnityEngine.Playables.DirectorWrapMode previousWrapMode;
+
+    private IEnumerator PlayEnding()
+    {
+        var source = subscribedDungeon;
+        source?.SuppressObjectives(this);
+        var audio = AudioManager.instance;
+        var bgm = audio != null ? audio.transform.Find("BGM_Player")?.GetComponent<AudioSource>() : null;
+        if (bgm != null && bgm.isPlaying) { pausedMusic = bgm; bgm.Pause(); }
+        if (endingVideo != null)
+        {
+            endingVideoManager = VideoPlayManager.instance;
+            float deadline = Time.realtimeSinceStartup + 20f;
+            // Never cancel another caller's active session.
+            while (endingVideoManager != null && endingVideoManager.isPlaying && Time.realtimeSinceStartup < deadline) yield return null;
+            if (endingVideoManager != null && endingVideoManager.TryPlayVideo(endingVideo, out endingVideoSession))
+                while (endingVideoManager != null && endingVideoManager.IsPlaybackActive(endingVideoSession)) yield return null;
+        }
+        if (endingDirector != null && endingDirector.isActiveAndEnabled && endingDirector.playableAsset != null)
+        {
+            ownsDirector = true;
+            previousUpdateMode = endingDirector.timeUpdateMode;
+            previousWrapMode = endingDirector.extrapolationMode;
+            endingDirector.extrapolationMode = UnityEngine.Playables.DirectorWrapMode.Hold;
+            endingDirector.timeUpdateMode = UnityEngine.Playables.DirectorUpdateMode.UnscaledGameTime;
+            endingDirector.time = 0d;
+            if (source != null) source.PlayCutscene(endingDirector); else endingDirector.Play();
+            float deadline = Time.realtimeSinceStartup + Mathf.Clamp((float)endingDirector.duration + 5f, 5f, 300f);
+            while (endingDirector != null && endingDirector.state == UnityEngine.Playables.PlayState.Playing &&
+                endingDirector.time < endingDirector.duration - .001d &&
+                Time.realtimeSinceStartup < deadline) yield return null;
+        }
+    }
+
+    private void ReleaseEnding(DungeonManager source)
+    {
+        if (endingVideoManager != null) endingVideoManager.CancelPlayback(endingVideoSession);
+        endingVideoManager = null; endingVideoSession = 0;
+        if (ownsDirector && endingDirector != null)
+        {
+            endingDirector.Stop();
+            endingDirector.timeUpdateMode = previousUpdateMode;
+            endingDirector.extrapolationMode = previousWrapMode;
+        }
+        ownsDirector = false;
+        source?.RestoreObjectives(this);
+        if (pausedMusic != null && pausedMusic.isActiveAndEnabled) pausedMusic.UnPause();
+        pausedMusic = null;
+    }
+
     private DungeonManager subscribedDungeon;
     private CharacterModel lockedPlayer;
     private Coroutine returnRoutine;
@@ -65,6 +123,7 @@ public sealed class DungeonCompletionReturnToTitle : MonoBehaviour
     private IEnumerator ReturnToTitle(string sceneName)
     {
         yield return new WaitForSecondsRealtime(Mathf.Max(0f, returnDelay));
+        yield return PlayEnding();
         sceneLoadStarted = true;
         returnRoutine = null;
         // Once departure commits, moving/removing this optional object must not
@@ -89,6 +148,7 @@ public sealed class DungeonCompletionReturnToTitle : MonoBehaviour
     {
         var source = subscribedDungeon;
         if (source != null) source.CompletionRequested -= TryHandleCompletion;
+        ReleaseEnding(source);
         subscribedDungeon = null;
         if (returnRoutine != null) StopCoroutine(returnRoutine);
         returnRoutine = null;
