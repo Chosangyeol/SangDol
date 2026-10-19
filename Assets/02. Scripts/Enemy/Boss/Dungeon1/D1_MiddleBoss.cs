@@ -20,6 +20,13 @@ public class D1_MiddleBoss : BossModel
     [SerializeField, Min(0f)] private float pulseWindup = .65f;
     [SerializeField, Min(0f)] private float pulseInterval = .65f;
     [SerializeField, Min(0f)] private float pulseCooldown = 6f;
+    [Header("급강하")]
+    [SerializeField, Min(.1f)] private float swoopRange = 12f;
+    [SerializeField, Min(.1f)] private float swoopRadius = 2.2f;
+    [SerializeField, Min(0f)] private float swoopWindup = .85f;
+    [SerializeField, Min(.1f)] private float swoopDuration = .45f;
+    [SerializeField, Min(0f)] private float swoopRecovery = .8f;
+    [SerializeField, Min(0f)] private float swoopCooldown = 8f;
 
     private Vector3 presentationScale;
     private bool presentationScaleCaptured;
@@ -34,10 +41,31 @@ public class D1_MiddleBoss : BossModel
     {
         base.Start();
         ApplyCombatScale();
+        ConfigureChase();
         Stat.attackRange = Mathf.Max(Stat.attackRange, spellRadius);
         normalPatterns.Add(new SpellPattern(this));
         normalPatterns.Add(new SwipePattern(this));
         normalPatterns.Add(new PulsePattern(this));
+        normalPatterns.Add(new SwoopPattern(this));
+    }
+
+    private void ConfigureChase()
+    {
+        if (Agent == null || Stat == null) return;
+        Agent.speed = Stat.moveSpeed;
+        Agent.stoppingDistance = Mathf.Min(spellRadius, swipeRadius) * .8f;
+    }
+
+    private void LateUpdate()
+    {
+        if (IsDead || isImmunity || !isInField || isCombatStarted || Stat == null ||
+            Target == null || Target.isDie || !Target.gameObject.activeInHierarchy || Target.IsExternalControlLocked ||
+            Agent == null || !Agent.enabled || !Agent.isOnNavMesh) return;
+        Vector3 offset = Target.transform.position - transform.position;
+        // The elevated entrance belongs to the introduction, not the combat floor.
+        if (Mathf.Abs(offset.y) > 3f || offset.sqrMagnitude > Stat.detactRange * Stat.detactRange) return;
+        isCombatStarted = true;
+        GameEvent.OnBossStateChange?.Invoke(this);
     }
 
     private void CapturePresentationScale()
@@ -82,6 +110,7 @@ public class D1_MiddleBoss : BossModel
         gameObject.SetActive(true);
         Reset();
         ApplyCombatScale();
+        ConfigureChase();
         isInField = true;
         isCombatStarted = false;
         isImmunity = false;
@@ -97,7 +126,8 @@ public class D1_MiddleBoss : BossModel
         enabled = true;
     }
 
-    private bool CanHit => !IsDead && Target != null && !Target.isDie;
+    private bool CanHit => !IsDead && Target != null && !Target.isDie &&
+        Target.gameObject.activeInHierarchy && !Target.IsExternalControlLocked;
     private void HitArea(Vector3 center, float radius, bool frontal, float damageMultiplier, Vector3 facing = default(Vector3))
     {
         if (!CanHit || Mathf.Abs(Target.transform.position.y - center.y) > 3f) return;
@@ -193,6 +223,40 @@ public class D1_MiddleBoss : BossModel
         OnPatternEnd();
     }
 
+    private bool TryGetSwoopDestination(out Vector3 destination)
+    {
+        destination = transform.position;
+        if (!CanHit || Agent == null || !Agent.enabled || !Agent.isOnNavMesh ||
+            Mathf.Abs(Target.transform.position.y - transform.position.y) > 3f) return false;
+        if (!NavMesh.SamplePosition(Target.transform.position, out var hit, 1f, Agent.areaMask) ||
+            Agent.Raycast(hit.position, out _)) return false;
+        destination = hit.position;
+        return true;
+    }
+
+    private IEnumerator Swoop()
+    {
+        if (!TryGetSwoopDestination(out var destination)) { OnPatternEnd(); yield break; }
+        PlayShortAttack("Attack");
+        var line = Telegraph(destination, swoopRadius, 360f);
+        yield return new WaitForSeconds(swoopWindup);
+        // Commit to the warning point; dodging after the windup avoids the strike.
+        Vector3 start = transform.position;
+        float elapsed = 0f;
+        float duration = Mathf.Max(.01f, swoopDuration);
+        while (elapsed < duration && CanHit && Agent != null && Agent.enabled && Agent.isOnNavMesh)
+        {
+            elapsed += Time.deltaTime;
+            Agent.Move(Vector3.Lerp(start, destination, elapsed / duration) - transform.position);
+            yield return null;
+        }
+        if (elapsed >= duration && Agent != null && Agent.enabled && Agent.isOnNavMesh)
+            HitArea(transform.position, swoopRadius, false, 1.2f);
+        RemoveTelegraph(line);
+        yield return new WaitForSeconds(swoopRecovery);
+        OnPatternEnd();
+    }
+
     private void OnDestroy()
     {
         if (telegraphMaterial != null) Destroy(telegraphMaterial);
@@ -237,6 +301,26 @@ public class D1_MiddleBoss : BossModel
         public override void Execute(BossModel boss)
         {
             base.Execute(boss); owner.StartCoroutine(owner.DoublePulse());
+        }
+    }
+
+    private sealed class SwoopPattern : BossPatternBase
+    {
+        private readonly D1_MiddleBoss owner;
+        public SwoopPattern(D1_MiddleBoss owner)
+        {
+            this.owner = owner; patternName = "Clockwork Bat Swoop";
+            cooldown = owner.swoopCooldown; weight = 1f; range = owner.swoopRange;
+        }
+        public override bool IsReady(BossModel boss, Transform player)
+        {
+            return player != null && base.IsReady(boss, player) &&
+                Vector3.Distance(owner.transform.position, player.position) > owner.swipeRadius &&
+                owner.TryGetSwoopDestination(out _);
+        }
+        public override void Execute(BossModel boss)
+        {
+            base.Execute(boss); owner.StartCoroutine(owner.Swoop());
         }
     }
 }

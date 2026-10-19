@@ -34,8 +34,9 @@ public abstract class BossPatternBase
         Quaternion startRot = boss.transform.rotation;
 
         // 타겟 방향 계산 (Y축 높낮이는 무시하여 땅을 쳐다보거나 하늘을 보지 않게 함)
-        Vector3 dir = (targetPos - boss.transform.position).normalized;
+        Vector3 dir = targetPos - boss.transform.position;
         dir.y = 0;
+        if (dir.sqrMagnitude < .000001f) yield break;
 
         // 목표로 하는 최종 회전값
         Quaternion targetRot = Quaternion.LookRotation(dir);

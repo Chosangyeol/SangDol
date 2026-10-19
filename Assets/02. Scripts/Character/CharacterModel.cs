@@ -194,17 +194,26 @@ public class CharacterModel : MonoBehaviour
 
     public void ChangeCam(int index, bool isCut = false)
     {
+        if (cams == null || index < 0 || index >= cams.Length || cams[index] == null) return;
         for (int i = 0; i < cams.Length; i++)
         {
-            cams[i].Priority = 0;
-            if (i == index)
-                cams[i].Priority = 99;
+            if (cams[i] == null) continue;
+            cams[i].Priority = i == index ? 99 : 0;
         }
 
         if (isCut)
         {
-            cams[index].gameObject.SetActive(false);
-            cams[index].gameObject.SetActive(true);
+            if (!cams[index].gameObject.activeSelf) cams[index].gameObject.SetActive(true);
+            // Clear both virtual camera damping and the output Brain blend on a cut.
+            cams[index].CancelDamping(true);
+            var output = mainCam != null ? mainCam : Camera.main;
+            var brain = output != null ? output.GetComponent<CinemachineBrain>() : null;
+            if (brain != null && brain.isActiveAndEnabled)
+            {
+                brain.ManualUpdate();
+                brain.ActiveBlend = null;
+                brain.ManualUpdate();
+            }
         }
     }
 

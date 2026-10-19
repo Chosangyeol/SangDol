@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Cinemachine;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Video;
@@ -102,7 +103,15 @@ public sealed class D1_FinalBoss60Presentation : MonoBehaviour
             middleBoss.transform.SetPositionAndRotation(middleBossIntroductionPoint.position, middleBossIntroductionPoint.rotation);
         if (cameraRig != null) cameraRig.SetActive(true);
         if (cinematicPlayerStandIn != null) cinematicPlayerStandIn.SetActive(true);
-        if (presentationCamera != null) presentationCamera.enabled = true;
+        if (presentationCamera != null)
+        {
+            var brain = presentationCamera.GetComponent<CinemachineBrain>();
+            if (brain != null) { brain.enabled = false; brain.enabled = true; }
+            if (cameraRig != null)
+                foreach (var vcam in cameraRig.GetComponentsInChildren<CinemachineVirtualCameraBase>(true))
+                    vcam.PreviousStateIsValid = false;
+            presentationCamera.enabled = true;
+        }
         var camera = Camera.main;
         if (camera != null && camera != presentationCamera && camera.enabled)
         {
@@ -128,6 +137,13 @@ public sealed class D1_FinalBoss60Presentation : MonoBehaviour
             source.gameObject.SetActive(false);
     }
 
+    internal void PrepareCameraFrame()
+    {
+        if (presentationCamera == null) return;
+        var brain = presentationCamera.GetComponent<CinemachineBrain>();
+        if (brain != null && brain.isActiveAndEnabled) brain.ManualUpdate();
+    }
+
     private void RestorePresentation()
     {
         if (presentationCamera != null) presentationCamera.enabled = false;
@@ -135,6 +151,11 @@ public sealed class D1_FinalBoss60Presentation : MonoBehaviour
         if (director != null)
             foreach (var child in director.GetComponentsInChildren<PlayableDirector>(true))
                 if (child != director) child.Stop();
+        if (presentationCamera != null)
+        {
+            var brain = presentationCamera.GetComponent<CinemachineBrain>();
+            if (brain != null) brain.enabled = false;
+        }
         if (musicSource != null) musicSource.Stop();
         if (voiceSource != null) voiceSource.Stop();
         if (gameplayCamera != null) gameplayCamera.enabled = true;

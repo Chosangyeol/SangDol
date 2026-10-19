@@ -86,6 +86,64 @@ public static class DungeonDepartureCases
 
 public static class DungeonDepartureRuntimeCases
 {
+    public static IEnumerator AssignedEndingVideoCompletesSkipsAndCancelsCleanly()
+    {
+        var prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/03. Prefab/Dungeon/DungeonEnd_ReturnToTitle.prefab");
+        var config = new UnityEditor.SerializedObject(prefab.GetComponent<DungeonCompletionReturnToTitle>());
+        var clip = config.FindProperty("endingVideo").objectReferenceValue as UnityEngine.Video.VideoClip;
+        Assert.IsNotNull(clip, "The final dungeon endpoint must have its ending video assigned.");
+        float previousScale = Time.timeScale;
+        try
+        {
+            foreach (string outcome in new[] { "Completed", "Skipped", "Cancelled" })
+            using (var player = new MovementRig(true))
+            using (var video = new VideoRecoveryRig())
+            using (var r = new DungeonDepartureRig(true))
+            {
+                r.AddEndpoint();
+                DungeonDepartureRig.Set(r.Endpoint, "returnDelay", 0f);
+                DungeonDepartureRig.Set(r.Endpoint, "endingVideo", clip);
+                var ending = UnityEngine.Object.Instantiate(UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/03. Prefab/Dungeon/Ending/DungeonEndingCutscene.prefab"), r.Endpoint.transform);
+                var director = ending.GetComponent<UnityEngine.Playables.PlayableDirector>();
+                DungeonDepartureRig.Set(r.Endpoint, "endingDirector", director);
+                yield return null;
+                r.Manager.dungeonUI.SetActive(true);
+                Time.timeScale = 0f;
+                r.Manager.OnSectorCleared(r.Final);
+                float deadline = Time.realtimeSinceStartup + 18f;
+                while (!video.Player.isPlaying && Time.realtimeSinceStartup < deadline) yield return null;
+                Assert.IsTrue(video.Player.isPlaying, "The configured ending video must decode and play.");
+                Assert.AreSame(clip, video.Player.clip);
+                Assert.IsTrue(video.Image.enabled);
+                Assert.IsFalse(player.Model.canMove);
+                Assert.IsFalse(r.Manager.dungeonUI.activeSelf);
+                int session = (int)DungeonDepartureRig.Get(video.Manager, "playbackSession");
+                r.Manager.OnSectorCleared(r.Final);
+                Assert.AreEqual(session, DungeonDepartureRig.Get(video.Manager, "playbackSession"), "Repeated completion must not restart the video.");
+                if (outcome == "Cancelled") r.Endpoint.enabled = false;
+                else
+                {
+                    if (outcome == "Skipped") video.Manager.SkipVideo();
+                    deadline = Time.realtimeSinceStartup + (float)clip.length + 5f;
+                    while (director.state != UnityEngine.Playables.PlayState.Playing && Time.realtimeSinceStartup < deadline) yield return null;
+                    Assert.AreEqual(UnityEngine.Playables.PlayState.Playing, director.state, "The ending Timeline must follow the video.");
+                    Assert.IsFalse(video.Image.enabled);
+                    Assert.IsFalse(player.Model.canMove);
+                    Assert.IsFalse(r.Manager.dungeonUI.activeSelf);
+                    r.Endpoint.enabled = false;
+                }
+                Assert.AreEqual(outcome, video.Call("GetResult", session).ToString());
+                Assert.IsFalse(video.Manager.isPlaying);
+                Assert.IsFalse(video.Image.enabled);
+                Assert.IsTrue(player.Model.canMove);
+                Assert.IsTrue(r.Manager.dungeonUI.activeSelf);
+                Assert.AreNotEqual(UnityEngine.Playables.PlayState.Playing, director.state);
+                Assert.IsNotNull(DungeonDepartureRig.Get(r.Manager, "dungeonOutRoutine"));
+            }
+        }
+        finally { Time.timeScale = previousScale; }
+    }
+
     public static IEnumerator DisabledOrRemovedEndpointRestoresDefaultDeparture()
     {
         using (var player = new MovementRig(true))

@@ -22,6 +22,14 @@ namespace BossFourFixes { public class BossFourIssuesPlayModeTests
 
  static IEnumerator Run(string name)=>(IEnumerator)Type.GetType("BossFourIssuesCases, Assembly-CSharp-Editor").GetMethod(name).Invoke(null,null);
  [UnityTest] public IEnumerator ScaleAndCameraRecoverAcrossRetries()=>Run(nameof(ScaleAndCameraRecoverAcrossRetries));
+ [UnityTest] public IEnumerator OverlappingPatternTargetsKeepFacingDuringPlayback()=>Run(nameof(OverlappingPatternTargetsKeepFacingDuringPlayback));
+ [UnityTest] public IEnumerator ChessCutsceneLocksControlsAndWarpsBeforeCameraCut()=>Run(nameof(ChessCutsceneLocksControlsAndWarpsBeforeCameraCut));
+ [UnityTest] public IEnumerator ChessCancellationRestoresOnlyOwnedControls()=>Run(nameof(ChessCancellationRestoresOnlyOwnedControls));
+ [UnityTest] public IEnumerator ChessWaitsForExistingControlLock()=>Run(nameof(ChessWaitsForExistingControlLock));
+ [UnityTest] public IEnumerator BatRecognizesPlayerAndChasesIntoMeleeRange()=>Run(nameof(BatRecognizesPlayerAndChasesIntoMeleeRange));
+ [UnityTest] public IEnumerator BatSwoopHitsOnceCanBeDodgedAndCancelsCleanly()=>Run(nameof(BatSwoopHitsOnceCanBeDodgedAndCancelsCleanly));
+ [UnityTest] public IEnumerator CameraCutClearsBlendAndSnapsToWarpedPlayer()=>Run(nameof(CameraCutClearsBlendAndSnapsToWarpedPlayer));
+ [UnityTest] public IEnumerator CutsceneFirstFrameAndRetryUseTimelineCamera()=>Run(nameof(CutsceneFirstFrameAndRetryUseTimelineCamera));
  [UnityTest] public IEnumerator ShortAttacksHitOnceAndCancelCleanly()=>Run(nameof(ShortAttacksHitOnceAndCancelCleanly));
  [UnityTest] public IEnumerator EndingPlaysBeforeDepartureAndCancellationRestoresUI()=>Run(nameof(EndingPlaysBeforeDepartureAndCancellationRestoresUI));
 }

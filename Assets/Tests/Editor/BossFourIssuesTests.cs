@@ -7,12 +7,264 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
+using Cinemachine;
+using UnityEngine.AI;
 
 public static class BossFourIssuesCases
 {
     const string EndPrefab = "Assets/03. Prefab/Dungeon/Ending/DungeonEndingCutscene.prefab";
     static readonly BindingFlags Flags = BindingFlags.Instance | BindingFlags.NonPublic;
     static void Call(object target, string name, params object[] args) => target.GetType().GetMethod(name, Flags).Invoke(target,args);
+
+    public static void CoincidentPatternTargetsKeepFacing()
+    {
+        using (var r = new BossLifecycleRig(false))
+        {
+            var method = typeof(BossPatternBase).GetMethod("SmoothLookAtRoutine", Flags);
+            foreach (float duration in new[] { 0f, .2f })
+            foreach (var offset in new[] { Vector3.zero, Vector3.up * 10f, Vector3.right * .00001f })
+            {
+                var facing = Quaternion.Euler(0, 90, 0); r.Boss.transform.rotation = facing;
+                var routine = (IEnumerator)method.Invoke(r.Pattern, new object[] { r.Boss, r.Boss.transform.position + offset, duration });
+                Assert.IsFalse(routine.MoveNext(), "No horizontal direction must finish without a rotation or a wait");
+                Assert.Less(Quaternion.Angle(facing, r.Boss.transform.rotation), .001f);
+            }
+            var normal = (IEnumerator)method.Invoke(r.Pattern, new object[] { r.Boss, r.Boss.transform.position + Vector3.left, 0f });
+            Assert.IsFalse(normal.MoveNext());
+            Assert.Less(Quaternion.Angle(Quaternion.LookRotation(Vector3.left), r.Boss.transform.rotation), .001f);
+        }
+    }
+
+    public static IEnumerator OverlappingPatternTargetsKeepFacingDuringPlayback()
+    {
+        using (var r = new BossLifecycleRig(true))
+        {
+            var facing = Quaternion.Euler(0, 90, 0); r.Boss.transform.rotation = facing;
+            var method = typeof(BossPatternBase).GetMethod("SmoothLookAtRoutine", Flags);
+            r.Boss.StartCoroutine((IEnumerator)method.Invoke(r.Pattern, new object[] { r.Boss, r.Boss.transform.position, .2f }));
+            yield return new WaitForSeconds(.25f);
+            Assert.Less(Quaternion.Angle(facing, r.Boss.transform.rotation), .001f);
+            r.Boss.StartCoroutine((IEnumerator)method.Invoke(r.Pattern, new object[] { r.Boss, r.Boss.transform.position + Vector3.left + Vector3.up * 10f, .2f }));
+            yield return new WaitForSeconds(.25f);
+            Assert.Less(Quaternion.Angle(Quaternion.LookRotation(Vector3.left), r.Boss.transform.rotation), .001f);
+        }
+    }
+
+    public static IEnumerator ChessCutsceneLocksControlsAndWarpsBeforeCameraCut()
+    {
+        using (var r = new ChessRegressionRig())
+        {
+            r.Start(); yield return r.WaitFor(() => r.OwnsLock, "Chess acquires its player control lock");
+            var model = r.Transition.Player.Model;
+            Assert.IsFalse(r.Transition.Director.gameObject.activeSelf, "Lock precedes cutscene activation");
+            model.SetCanMove(); model.SetCanAttack(); model.SetCanSkill();
+            Assert.IsFalse(model.canMove || model.canAttack || model.canSkill || model.canUse);
+            Assert.IsFalse(r.Transition.Player.Agent.enabled);
+            r.Transition.Player.Controller.RequestMove(model.transform.position + Vector3.forward * 3f);
+            Assert.IsFalse(model.canMove);
+            yield return r.WaitFor(() => r.Transition.Director.state == PlayState.Playing, "Chess Timeline plays");
+            Assert.IsFalse(model.canMove || model.canAttack || model.canSkill || model.canUse);
+            model.ChangeCam(1, true);
+            Assert.AreSame(r.OtherCamera, r.Brain.ActiveVirtualCamera);
+            yield return r.WaitFor(() => Vector3.Distance(model.transform.position, r.StartPoint.position) < .15f, "Player reaches the chess start");
+            Assert.AreSame(r.FollowCamera, r.Brain.ActiveVirtualCamera);
+            Assert.IsFalse(r.Brain.IsBlending);
+            Assert.Less(Vector3.Distance(r.Output.transform.position, model.transform.position + r.FollowOffset), .15f, "First post-warp output must use the destination");
+            yield return r.WaitFor(() => model.canMove, "Normal completion restores controls", 2f);
+            Assert.IsTrue(model.canAttack && model.canSkill && model.canUse && r.Transition.Player.Agent.isOnNavMesh);
+            Assert.IsFalse(r.OwnsLock);
+            r.Transition.Boss.ForceStopCurrentAction(); // Stop before the full chess board starts.
+        }
+    }
+
+    public static IEnumerator ChessCancellationRestoresOnlyOwnedControls()
+    {
+        foreach (int phase in new[] { 0, 1, 2 })
+        using (var r = new ChessRegressionRig())
+        {
+            r.Start(); yield return r.WaitFor(() => r.OwnsLock, "Chess locks player");
+            if (phase == 1) yield return r.WaitFor(() => r.Transition.Director.state == PlayState.Playing, "Cancel during playback");
+            else Assert.IsFalse(r.Transition.Director.gameObject.activeSelf, "Cancel before cutscene activation");
+            var model = r.Transition.Player.Model;
+            if (phase == 2) model.isDie = true;
+            r.Transition.Boss.ForceStopCurrentAction(); r.Transition.Boss.ForceStopCurrentAction();
+            Assert.IsFalse(r.OwnsLock);
+            Assert.IsFalse(r.Transition.Director.gameObject.activeSelf);
+            if (phase == 2)
+                Assert.IsFalse(model.canMove || model.canAttack || model.canSkill || model.canUse || r.Transition.Player.Agent.enabled, "Do not release death/respawn controls");
+            else
+                Assert.IsTrue(model.canMove && model.canAttack && model.canSkill && model.canUse && r.Transition.Player.Agent.isOnNavMesh);
+            yield return new WaitForSeconds(.6f);
+            Assert.IsFalse(r.Transition.Director.gameObject.activeSelf, "Cancelled work cannot start late");
+        }
+    }
+
+    public static IEnumerator ChessWaitsForExistingControlLock()
+    {
+        using (var r = new ChessRegressionRig())
+        {
+            var model = r.Transition.Player.Model;
+            model.SetControlable(false); r.Start();
+            yield return r.WaitFor(() => !r.Transition.Boss.bossMeshs[0].enabled, "Swing presentation finishes");
+            yield return new WaitForSeconds(.7f);
+            Assert.IsFalse(r.OwnsLock || r.Transition.Director.gameObject.activeSelf);
+            r.Transition.Boss.ForceStopCurrentAction();
+            Assert.IsFalse(model.canMove || model.canAttack || model.canSkill || model.canUse || r.Transition.Player.Agent.enabled, "An existing external lock belongs to its original owner");
+            model.SetControlable(true);
+        }
+    }
+
+    public static void BatAnimationsLeaveGameplayRootUnbound()
+    {
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(Boss60CorrectionsCases.MiddlePrefab);
+        foreach (var clip in prefab.GetComponent<Animator>().runtimeAnimatorController.animationClips.Distinct())
+            Assert.IsFalse(AnimationUtility.GetCurveBindings(clip).Any(b => b.path == "" && b.type == typeof(Transform)), clip.name + " must animate the visual skeleton only");
+    }
+
+    public static IEnumerator BatRecognizesPlayerAndChasesIntoMeleeRange()
+    {
+        using (var r = new MovementRig(true))
+        {
+            Vector3 origin = r.Model.transform.position;
+            var go = UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(Boss60CorrectionsCases.MiddlePrefab), origin + Vector3.right * 15f, Quaternion.identity);
+            var anchor = new GameObject("BatDetectionSpawn"); anchor.transform.position = go.transform.position;
+            var boss = go.GetComponent<D1_MiddleBoss>();
+            boss.bossSpawnPoint = anchor.transform; boss.isInField = true; boss.isCombatStarted = false;
+            try
+            {
+                Assert.IsTrue(r.Agent.Warp(origin + Vector3.left * 12f));
+                yield return new WaitForSeconds(.15f);
+                Assert.IsFalse(boss.isCombatStarted, "Outside the detection radius");
+                r.Agent.enabled = false; r.Model.transform.position = go.transform.position + Vector3.up * 100f;
+                yield return new WaitForSeconds(.15f);
+                Assert.IsFalse(boss.isCombatStarted, "The elevated entrance must not trigger combat");
+                r.Model.transform.position = origin; r.Agent.enabled = true; Assert.IsTrue(r.Agent.Warp(origin));
+                var patterns = (System.Collections.Generic.List<BossPatternBase>)typeof(BossModel).GetField("normalPatterns", Flags).GetValue(boss);
+                patterns.RemoveAll(p => !p.patternName.EndsWith("Swipe"));
+                float meleeRange = patterns.Single().range;
+                Vector3 initial = boss.transform.position;
+                yield return new WaitForSeconds(.5f);
+                Assert.AreSame(r.Model, boss.Target, "Acquire the player without damage or injected target");
+                Assert.IsTrue(boss.isCombatStarted);
+                Assert.Greater(Vector3.Distance(initial, boss.transform.position), .4f, "position=" + boss.transform.position + " next=" + boss.Agent.nextPosition + " speed=" + boss.Agent.speed + " velocity=" + boss.Agent.velocity + " stopped=" + boss.Agent.isStopped + " remaining=" + boss.Agent.remainingDistance + " path=" + boss.Agent.pathStatus + " pending=" + boss.Agent.pathPending);
+                Assert.Less(boss.Agent.stoppingDistance, meleeRange);
+                float deadline = Time.realtimeSinceStartup + 5f;
+                while (Vector3.Distance(boss.transform.position, origin) > meleeRange && Time.realtimeSinceStartup < deadline) yield return null;
+                Assert.LessOrEqual(Vector3.Distance(boss.transform.position, origin), meleeRange);
+                r.Model.isDie = true; yield return null;
+                Assert.IsTrue(boss.Agent.isStopped, "Stop pursuing a dead player");
+                boss.Agent.enabled = false;
+                yield return null; // Disabled agents must not produce NavMesh exceptions.
+            }
+            finally { UnityEngine.Object.DestroyImmediate(go); UnityEngine.Object.DestroyImmediate(anchor); }
+        }
+    }
+
+    public static IEnumerator BatSwoopHitsOnceCanBeDodgedAndCancelsCleanly()
+    {
+        using (var r = new MovementRig(true))
+        {
+            r.Model.gameObject.AddComponent<CapsuleCollider>();
+            var extra = new GameObject("SwoopExtraCollider"); extra.transform.SetParent(r.Model.transform, false); extra.AddComponent<SphereCollider>();
+            Vector3 origin = r.Model.transform.position;
+            var go = UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(Boss60CorrectionsCases.MiddlePrefab), origin + Vector3.right * 8f, Quaternion.identity);
+            var anchor = new GameObject("BatSwoopSpawn"); anchor.transform.position = go.transform.position;
+            var boss = go.GetComponent<D1_MiddleBoss>(); boss.bossSpawnPoint = anchor.transform; boss.isInField = true; boss.isCombatStarted = false; boss.isImmunity = true;
+            try
+            {
+                yield return null; boss.enabled = false; boss.isImmunity = false;
+                typeof(D1_MiddleBoss).GetField("swoopWindup", Flags).SetValue(boss, .15f);
+                typeof(D1_MiddleBoss).GetField("swoopDuration", Flags).SetValue(boss, .2f);
+                typeof(D1_MiddleBoss).GetField("swoopRecovery", Flags).SetValue(boss, .1f);
+                var patterns = (System.Collections.Generic.List<BossPatternBase>)typeof(BossModel).GetField("normalPatterns", Flags).GetValue(boss);
+                var swoop = patterns.Single(p => p.patternName.EndsWith("Swoop"));
+                r.Model.Stat.Stat.curHp = 1000f; Physics.SyncTransforms();
+                Assert.IsTrue(swoop.IsReady(boss, r.Model.transform));
+                swoop.Execute(boss); yield return new WaitForSeconds(.65f);
+                Assert.AreEqual(1000f - Mathf.RoundToInt(boss.Stat.attackDamage * 1.2f), r.Model.Stat.Stat.curHp, "position=" + boss.transform.position + " next=" + boss.Agent.nextPosition + " player=" + r.Model.transform.position + " objects=" + boss.patternObjects.Count);
+                Assert.AreEqual(0, boss.patternObjects.Count);
+                Assert.Less(Vector3.Distance(origin, boss.transform.position), 1f);
+                Assert.IsFalse(swoop.IsReady(boss, r.Model.transform), "Cooldown prevents immediate reuse");
+
+                Assert.IsTrue(boss.Agent.Warp(anchor.transform.position));
+                float hp = r.Model.Stat.Stat.curHp;
+                swoop.Execute(boss); Assert.AreEqual(1, boss.patternObjects.Count);
+                Assert.IsTrue(r.Agent.Warp(origin + Vector3.forward * 6f)); Physics.SyncTransforms();
+                yield return new WaitForSeconds(.65f);
+                Assert.AreEqual(hp, r.Model.Stat.Stat.curHp, "The strike stays at its announced location");
+                Assert.AreEqual(0, boss.patternObjects.Count);
+                Assert.IsTrue(boss.Agent.Warp(anchor.transform.position));
+                swoop.Execute(boss); boss.ForceStopCurrentAction();
+                Vector3 stopped = boss.transform.position;
+                yield return new WaitForSeconds(.65f);
+                Assert.Less(Vector3.Distance(stopped, boss.transform.position), .1f, "Only NavMesh surface height correction is allowed after cancellation"); Assert.AreEqual(hp, r.Model.Stat.Stat.curHp);
+                Assert.AreEqual(0, boss.patternObjects.Count);
+                swoop.Execute(boss); yield return new WaitForSeconds(.05f);
+                boss.Damaged(new SDamageInfo { damage = 100000, source = r.Model.gameObject });
+                yield return new WaitForSeconds(.65f);
+                Assert.AreEqual(hp, r.Model.Stat.Stat.curHp); Assert.AreEqual(0, boss.patternObjects.Count);
+            }
+            finally { UnityEngine.Object.DestroyImmediate(go); UnityEngine.Object.DestroyImmediate(anchor); }
+        }
+    }
+
+    public static IEnumerator CameraCutClearsBlendAndSnapsToWarpedPlayer()
+    {
+        using (var r = new MovementRig(true))
+        {
+            var cameraObject = new GameObject("CameraCutOutput");
+            var first = new GameObject("CameraCutFollow"); var second = new GameObject("CameraCutOther");
+            try
+            {
+                var camera = cameraObject.AddComponent<Camera>(); var brain = cameraObject.AddComponent<CinemachineBrain>();
+                brain.m_DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.EaseInOut, 2f);
+                var follow = first.AddComponent<CinemachineVirtualCamera>(); follow.Follow = r.Model.transform;
+                var body = follow.AddCinemachineComponent<CinemachineTransposer>();
+                body.m_BindingMode = CinemachineTransposer.BindingMode.WorldSpace;
+                body.m_FollowOffset = new Vector3(0, 6, -8); body.m_XDamping = body.m_YDamping = body.m_ZDamping = 2f;
+                var other = second.AddComponent<CinemachineVirtualCamera>(); second.transform.position = Vector3.one * -300f;
+                r.Model.mainCam = camera; r.Model.cams = new[] { follow, other };
+                r.Model.ChangeCam(0, true); yield return null;
+                r.Model.ChangeCam(1); yield return null;
+                Assert.IsTrue(brain.IsBlending);
+                r.Agent.Warp(r.Model.transform.position + Vector3.right * 10f);
+                r.Model.ChangeCam(0, true);
+                Assert.IsFalse(brain.IsBlending);
+                Assert.AreSame(follow, brain.ActiveVirtualCamera);
+                Assert.Less(Vector3.Distance(camera.transform.position, r.Model.transform.position + body.m_FollowOffset), .1f);
+                follow.gameObject.SetActive(false);
+                r.Model.ChangeCam(0, true);
+                Assert.IsTrue(follow.gameObject.activeSelf);
+                Assert.AreSame(follow, brain.ActiveVirtualCamera);
+                Assert.DoesNotThrow(() => r.Model.ChangeCam(-1, true));
+                Assert.DoesNotThrow(() => r.Model.ChangeCam(10, true));
+            }
+            finally { UnityEngine.Object.DestroyImmediate(first); UnityEngine.Object.DestroyImmediate(second); UnityEngine.Object.DestroyImmediate(cameraObject); }
+        }
+    }
+
+    public static IEnumerator CutsceneFirstFrameAndRetryUseTimelineCamera()
+    {
+        using (var r = new Jester60IntroductionRig())
+        {
+            yield return null;
+            var camera = (Camera)Jester60IntroductionCases.Get(r.Binder, "presentationCamera");
+            var brain = camera.GetComponent<CinemachineBrain>();
+            for (int attempt = 0; attempt < 2; attempt++)
+            {
+                r.StartTimeline();
+                Assert.IsTrue(camera.enabled && brain.enabled);
+                Assert.IsNotNull(brain.ActiveVirtualCamera);
+                Assert.IsTrue(brain.ActiveVirtualCamera.VirtualCameraGameObject.transform.IsChildOf(r.Intro.transform));
+                Assert.Less(Vector3.Distance(camera.transform.position, brain.ActiveVirtualCamera.State.FinalPosition), .1f);
+                r.Director.time = 18d; r.Director.Evaluate(); yield return null;
+                r.Transition.Boss.ForceStopCurrentAction();
+                Assert.IsFalse(camera.enabled || brain.enabled);
+                Assert.IsTrue(r.GameplayCamera.enabled);
+                yield return null;
+            }
+        }
+    }
     public static void CameraRestoresOriginalFourShots()
     {
         var original=AssetDatabase.LoadAssetAtPath<TimelineAsset>("Assets/Jester60/Jester60-Assets/CameraTimeline.playable").GetOutputTracks().SelectMany(t=>t.GetClips()).OrderBy(c=>c.start).ToArray();
@@ -81,9 +333,9 @@ public static class BossFourIssuesCases
             typeof(EnemyBase).GetField("_target",Flags).SetValue(boss,r.Model);
             try
             {
-                yield return null;Physics.SyncTransforms();
+                yield return null;boss.enabled=false;Physics.SyncTransforms();
                 var patterns=(System.Collections.Generic.List<BossPatternBase>)typeof(BossModel).GetField("normalPatterns",Flags).GetValue(boss);
-                Assert.AreEqual(3,patterns.Count);
+                Assert.AreEqual(4,patterns.Count);
                 var swipe=patterns.Single(p=>p.patternName.Contains("Swipe"));
                 var pulse=patterns.Single(p=>p.patternName.Contains("Pulse"));
                 r.Model.Stat.Stat.curHp=1000f;float hp=r.Model.Stat.Stat.curHp;

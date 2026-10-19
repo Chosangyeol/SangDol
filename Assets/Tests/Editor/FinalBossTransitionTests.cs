@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
+using Cinemachine;
 
 public static class FinalBossTransitionCases
 {
@@ -135,6 +136,70 @@ public sealed class FinalBossTransitionRig : IDisposable
         GameEvent.OnBossStateChange = previousBossState;
         GameEvent.OnUIInvisable = previousHidden;
         GameEvent.OnMainUIviable = previousVisible;
+    }
+}
+
+public sealed class ChessRegressionRig : IDisposable
+{
+    public readonly FinalBossTransitionRig Transition = new FinalBossTransitionRig();
+    public readonly Camera Output;
+    public readonly CinemachineBrain Brain;
+    public readonly CinemachineVirtualCamera FollowCamera, OtherCamera;
+    public readonly Transform StartPoint;
+    public readonly Vector3 FollowOffset = new Vector3(0, 6, -8);
+    private readonly List<UnityEngine.Object> owned = new List<UnityEngine.Object>();
+    private readonly AudioManager previousAudio = AudioManager.instance;
+    private readonly float previousVolume = AudioListener.volume;
+    public bool OwnsLock => typeof(D1_FinalBoss).GetField("chessLockedPlayer", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(Transition.Boss) != null;
+    public ChessRegressionRig()
+    {
+        AudioListener.volume = 0f;
+        var board = Own(new GameObject("ChessRegressionBoard")); board.SetActive(false);
+        var chess = board.AddComponent<D1_Chess>();
+        var start = new GameObject("ChessRegressionStart"); start.transform.SetParent(board.transform);
+        StartPoint = start.transform; StartPoint.position = Transition.Player.Model.transform.position + Vector3.right * 10f;
+        var king = new GameObject("ChessRegressionKingSpawn"); king.transform.SetParent(board.transform);
+        chess.startPos = StartPoint; chess.kingSpawnPos = king.transform;
+        Transition.Boss.Special5 = new D1_Final_Special5Data { prefab = chess, cutSceneObj = Transition.Director.gameObject };
+        Transition.Director.extrapolationMode = DirectorWrapMode.None;
+        var audioObject = Own(new GameObject("ChessRegressionAudio")); audioObject.SetActive(false);
+        AudioManager.instance = null;
+        var audio = audioObject.AddComponent<AudioManager>();
+        var clip = Own(AudioClip.Create("ChessRegressionMusic", 44100, 1, 44100, false));
+        audio.bgmDatabase = new[] { new BGMData { soundName = C_Enums.BGM_List.D1_Final_BGM3, clip = clip } };
+        audio.sfxDatabase = new SFXData[0]; audioObject.SetActive(true);
+        var outputObject = Own(new GameObject("ChessRegressionCamera"));
+        Output = outputObject.AddComponent<Camera>(); Brain = outputObject.AddComponent<CinemachineBrain>();
+        Brain.m_UpdateMethod = CinemachineBrain.UpdateMethod.ManualUpdate;
+        Brain.m_DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.EaseInOut, 2f);
+        FollowCamera = Own(new GameObject("ChessRegressionFollow")).AddComponent<CinemachineVirtualCamera>();
+        FollowCamera.Follow = Transition.Player.Model.transform;
+        var body = FollowCamera.AddCinemachineComponent<CinemachineTransposer>();
+        body.m_BindingMode = CinemachineTransposer.BindingMode.WorldSpace; body.m_FollowOffset = FollowOffset;
+        body.m_XDamping = body.m_YDamping = body.m_ZDamping = 2f;
+        OtherCamera = Own(new GameObject("ChessRegressionOther")).AddComponent<CinemachineVirtualCamera>();
+        OtherCamera.transform.position = Vector3.one * -300f;
+        Transition.Player.Model.mainCam = Output;
+        Transition.Player.Model.cams = new[] { FollowCamera, OtherCamera };
+        Transition.Player.Model.ChangeCam(0, true);
+    }
+    private T Own<T>(T item) where T : UnityEngine.Object { owned.Add(item); return item; }
+    public void Start()
+    {
+        Transition.Boss.isDoingSpecial = true;
+        Transition.Boss.StartCoroutine((IEnumerator)typeof(D1_FinalBoss).GetMethod("Special_Chess", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(Transition.Boss, null));
+    }
+    public IEnumerator WaitFor(Func<bool> condition, string message, float seconds = 14f)
+    {
+        float deadline = Time.realtimeSinceStartup + seconds;
+        while (!condition() && Time.realtimeSinceStartup < deadline) yield return null;
+        Assert.IsTrue(condition(), message);
+    }
+    public void Dispose()
+    {
+        Transition.Dispose();
+        for (int i = owned.Count - 1; i >= 0; i--) if (owned[i] != null) UnityEngine.Object.DestroyImmediate(owned[i]);
+        AudioManager.instance = previousAudio; AudioListener.volume = previousVolume;
     }
 }
 

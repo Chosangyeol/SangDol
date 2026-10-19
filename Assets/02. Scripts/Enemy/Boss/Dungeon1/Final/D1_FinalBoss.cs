@@ -563,6 +563,9 @@ public class D1_FinalBoss : BossModel
         director.time = 0d;
         if (DungeonManager.instance != null) DungeonManager.instance.PlayCutscene(director);
         else director.Play();
+        // Evaluate the first Timeline shot before exposing the cinematic camera.
+        director.Evaluate();
+        if (presentation != null) presentation.PrepareCameraFrame();
         if (useFade) yield return presentation.FadeTo(0f);
 
         while (director != null && director.isActiveAndEnabled && director.state == PlayState.Playing
@@ -641,6 +644,7 @@ public class D1_FinalBoss : BossModel
             if (Target.cams[i] != null)
                 Target.cams[i].PreviousStateIsValid = false;
         }
+        Target.ChangeCam(0, true);
     }
 
     private IEnumerator Special_MiddleBoss()
@@ -740,18 +744,6 @@ public class D1_FinalBoss : BossModel
         GameEvent.OnBossStateChange?.Invoke(_special3MiddleBoss);
         while (Target != null && !Target.isDie && _special3MiddleBoss != null && !_special3MiddleBoss.IsDead)
         {
-            Vector3 playerPosition = Target.transform.position;
-            Vector3 bossPosition = _special3MiddleBoss.transform.position;
-            playerPosition.y = 0f;
-            bossPosition.y = 0f;
-
-            if (!_special3MiddleBoss.isCombatStarted
-                && (playerPosition - bossPosition).sqrMagnitude <= Mathf.Pow(_special3MiddleBoss.Stat.attackRange, 2f))
-            {
-                _special3MiddleBoss.isCombatStarted = true;
-                Debug.Log("[D1_FinalBoss] 플레이어가 중간 보스 공격 범위에 진입해 전투를 시작합니다.");
-            }
-
             yield return null;
         }
 
@@ -968,6 +960,15 @@ public class D1_FinalBoss : BossModel
         Destroy(ballSpawnPos);
     }
 
+    private CharacterModel chessLockedPlayer;
+
+    private void ReleaseChessControls()
+    {
+        var player = chessLockedPlayer;
+        chessLockedPlayer = null;
+        if (player != null && !player.isDie) player.SetControlable(true);
+    }
+
     IEnumerator Special_Chess()
     {
         SetImmunity(true);
@@ -978,7 +979,12 @@ public class D1_FinalBoss : BossModel
 
         yield return new WaitForSeconds(0.5f);
 
-        Target.canMove = false;
+        // Wait for an existing skill/interaction lock instead of taking ownership of it.
+        while (Target != null && !Target.isDie && Target.IsExternalControlLocked) yield return null;
+        if (Target == null || Target.isDie) yield break;
+        chessLockedPlayer = Target;
+        Target.PlayerController?.StopMove();
+        Target.SetControlable(false);
 
         yield return new WaitForSeconds(0.5f);
 
@@ -998,18 +1004,18 @@ public class D1_FinalBoss : BossModel
         else
             yield return new WaitForSeconds(1f);
 
-        Target.ChangeCam(0, true);
-
         Target.Navmesh.enabled = false;
 
         Target.transform.position = Special5.prefab.startPos.position;
 
         Target.Navmesh.enabled = true;
+        if (Target.Navmesh.isOnNavMesh) Target.Navmesh.ResetPath();
+        Target.ChangeCam(0, true);
 
         yield return new WaitForSeconds(0.5f);
 
 
-        Target.SetCanMove();
+        ReleaseChessControls();
         GameEvent.OnMainUIviable?.Invoke();
 
 
@@ -1020,6 +1026,7 @@ public class D1_FinalBoss : BossModel
 
     protected override void OnActionsStopped()
     {
+        ReleaseChessControls();
         StopSpecial3Timeline();
         if (special3InEncounter && Target != null && !Target.isDie)
             WarpPlayerTo(Special3.returnPoint != null ? Special3.returnPoint : playerStartPos);

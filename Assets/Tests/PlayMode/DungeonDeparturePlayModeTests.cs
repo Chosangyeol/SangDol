@@ -42,6 +42,7 @@ public class DungeonDeparturePlayModeTests
         var type = Type.GetType("DungeonDepartureRuntimeCases, Assembly-CSharp-Editor"); Assert.IsNotNull(type);
         return (IEnumerator)type.GetMethod(name).Invoke(null, null);
     }
+    [UnityTest] public IEnumerator AssignedEndingVideoCompletesSkipsAndCancelsCleanly() => Run(nameof(AssignedEndingVideoCompletesSkipsAndCancelsCleanly));
     [UnityTest] public IEnumerator DisabledOrRemovedEndpointRestoresDefaultDeparture() => Run(nameof(DisabledOrRemovedEndpointRestoresDefaultDeparture));
     [UnityTest] public IEnumerator MissingEndpointAndInvalidMenuUseDefaultDeparture() => Run(nameof(MissingEndpointAndInvalidMenuUseDefaultDeparture));
     [UnityTest] public IEnumerator MovingAndReenablingEndpointKeepsOneSubscription() => Run(nameof(MovingAndReenablingEndpointKeepsOneSubscription));

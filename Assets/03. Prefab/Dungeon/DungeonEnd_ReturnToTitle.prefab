@@ -47,3 +47,5 @@ MonoBehaviour:
   dungeonManager: {fileID: 0}
   titleSceneName: Title
   returnDelay: 5
+  endingVideo: {fileID: 32900000, guid: 1eab8bf75d3fc60419a778ca448268f3, type: 3}
+  endingDirector: {fileID: 0}

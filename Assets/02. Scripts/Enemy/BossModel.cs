@@ -136,6 +136,12 @@ public class BossModel : EnemyBase, ICounterable
             _target = FindAnyObjectByType<CharacterModel>();
         }
 
+        if (Target == null || Target.isDie || !Target.gameObject.activeInHierarchy)
+        {
+            StopChase();
+            return;
+        }
+
         if (isInField && !isCombatStarted) return;
 
         HandleCheckSpecial();
@@ -332,12 +338,12 @@ public class BossModel : EnemyBase, ICounterable
 
     private void Chase()
     {
-        if (Agent == null || !Agent.isOnNavMesh) return;
+        if (Agent == null || !Agent.enabled || !Agent.isOnNavMesh) return;
 
         if (Agent.isStopped)
         {
             Agent.isStopped = false;
-            Anim.SetBool("Move", true);
+            if (Anim != null) Anim.SetBool("Move", true);
         }
 
         Agent.SetDestination(Target.transform.position);
@@ -345,13 +351,13 @@ public class BossModel : EnemyBase, ICounterable
 
     private void StopChase()
     {
-        if (Agent == null || !Agent.isOnNavMesh) return;
+        if (Agent == null || !Agent.enabled || !Agent.isOnNavMesh) return;
 
         if (!Agent.isStopped)
         {
             Agent.isStopped = true;
             Agent.velocity = Vector3.zero; // 얼음판처럼 미끄러지는 현상 방지
-            Anim.SetBool("Move", false);   // 걷는 애니메이션 끄기
+            if (Anim != null) Anim.SetBool("Move", false);   // 걷는 애니메이션 끄기
         }
     }
 
