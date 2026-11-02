@@ -134,12 +134,12 @@ public class InteractableObject : PoolableMono, IInteractable
         UpdateUIState();
     }
 
-    private void OnTriggerEnter(Collider other)
+    protected virtual void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player")) EnableInteract(other.transform);
     }
 
-    private void OnTriggerExit(Collider other)
+    protected virtual void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Player")) DisableInteract(other.transform);
     }

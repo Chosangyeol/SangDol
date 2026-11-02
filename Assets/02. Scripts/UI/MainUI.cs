@@ -118,6 +118,16 @@ public class MainUI : MonoBehaviour
             slot.Refresh();
     }
 
+    internal void RegisterUseItemSlot(C_Enums.UseSlot useSlot, int inventoryIndex)
+    {
+        foreach (var slot in useItemSlots)
+        {
+            if (slot.useSlot != useSlot) continue;
+            slot.SetInventoryItemIndex(inventoryIndex);
+            return;
+        }
+    }
+
     public void UpdatePlayerUI(CharacterStat stat)
     {
         slPlayerHp.value = stat.curHp / stat.maxHp.GetValue();

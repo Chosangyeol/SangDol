@@ -30,6 +30,9 @@ public class SkillTreeSlot : MonoBehaviour,
 
     private SkillBase currentSkill;
     public SkillBase CurrentSkill => currentSkill;
+    private Color originalIconColor;
+    private Color originalNameColor;
+    private Color originalLevelColor;
 
     public void Init(C_SkillSystem skillSystem, SkillBase skill, SkillToolTip skillToolTip)
     {
@@ -38,6 +41,9 @@ public class SkillTreeSlot : MonoBehaviour,
         _skillTooltip = skillToolTip;
 
         rootCanvas = GetComponentInParent<Canvas>();
+        originalIconColor = skillIcon.color;
+        originalNameColor = skillName.color;
+        originalLevelColor = skillLevel.color;
         
         levelUpButton.onClick.AddListener((() => _skillSystem.LevelUpSkill(currentSkill)));
         levelDownButton.onClick.AddListener((() => _skillSystem.LevelDownSkill(currentSkill)));
@@ -49,6 +55,17 @@ public class SkillTreeSlot : MonoBehaviour,
         skillIcon.sprite = currentSkill.skillData.skillIcon;
         skillName.text = currentSkill.skillData.skillName;
         skillLevel.text = currentSkill.SkillLevel.ToString();
+
+        bool levelLocked = !_skillSystem.MeetsRequiredLevel(currentSkill);
+        skillIcon.color = levelLocked ? Dim(originalIconColor) : originalIconColor;
+        skillName.color = levelLocked ? Dim(originalNameColor) : originalNameColor;
+        skillLevel.color = levelLocked ? Dim(originalLevelColor) : originalLevelColor;
+        levelUpButton.interactable = _skillSystem.CanLevelUpSkill(currentSkill);
+    }
+
+    private static Color Dim(Color color)
+    {
+        return new Color(color.r * 0.6f, color.g * 0.6f, color.b * 0.6f, color.a);
     }
 
     #region 드래그 드랍

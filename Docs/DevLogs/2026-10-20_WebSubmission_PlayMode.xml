@@ -1,0 +1,787 @@
+<test-suite type="TestSuite" id="1000" name="BackUp" fullname="BackUp" runstate="Runnable" testcasecount="95" result="Passed" start-time="2026-10-19 22:52:45Z" end-time="2026-10-19 22:59:01Z" duration="376.087967" total="95" passed="95" failed="0" inconclusive="0" skipped="0" asserts="0"><properties /><test-suite type="Assembly" id="1112" name="PlayerMovement.PlayModeTests.dll" fullname="D:/UnityProjects/SangDol/Library/ScriptAssemblies/PlayerMovement.PlayModeTests.dll" runstate="Runnable" testcasecount="95" result="Passed" start-time="2026-10-19 22:52:45Z" end-time="2026-10-19 22:59:01Z" duration="376.079099" total="95" passed="95" failed="0" inconclusive="0" skipped="0" asserts="0"><properties><property name="_PID" value="34976" /><property name="_APPDOMAIN" value="Unity Child Domain" /><property name="platform" value="PlayMode" /></properties><test-suite type="TestFixture" id="1001" name="Boss60CorrectionsPlayModeTests" fullname="Boss60CorrectionsPlayModeTests" classname="Boss60CorrectionsPlayModeTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-10-19 22:52:45Z" end-time="2026-10-19 22:53:20Z" duration="34.616195" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0"><properties /><test-case id="1006" name="ActualBatCastsOncePerTargetAndStopsOnDeath" fullname="Boss60CorrectionsPlayModeTests.ActualBatCastsOncePerTargetAndStopsOnDeath" methodname="ActualBatCastsOncePerTargetAndStopsOnDeath" classname="Boss60CorrectionsPlayModeTests" runstate="Runnable" seed="664124271" result="Passed" start-time="2026-10-19 22:52:45Z" end-time="2026-10-19 22:52:50Z" duration="4.880748" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+[보스 패턴 발동] Clockwork Bat Spell (사거리: 8)
+Parameter 'AttackSpeed' does not exist.
+캐릭터가 사망했습니다.
+Parameter 'Die' does not exist.
+플레이어 사망. 대청소 시작
+필드 보스가 초기 위치로 돌아가 다시 대기합니다.
+필드 보스가 공격을 받고 전투를 시작합니다!
+받은 피해량 : 100000 /  몬스터 남은 채력 : 0
+[부활 시스템] 씬에 'SpawnPoint' 스크립트를 가진 오브젝트가 없어 제자리 부활합니다.
+Parameter 'AttackSpeed' does not exist.
+Parameter 'Revive' does not exist.
+Failed to create agent because there is no valid NavMesh
+]]></output></test-case><test-case id="1005" name="MusicCancellationPreservesOriginalPlaybackAndMute" fullname="Boss60CorrectionsPlayModeTests.MusicCancellationPreservesOriginalPlaybackAndMute" methodname="MusicCancellationPreservesOriginalPlaybackAndMute" classname="Boss60CorrectionsPlayModeTests" runstate="Runnable" seed="246652041" result="Passed" start-time="2026-10-19 22:52:50Z" end-time="2026-10-19 22:52:50Z" duration="0.131823" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+0
+Q / MovementProbeSkill
+Failed to create agent because there is no valid NavMesh
+]]></output></test-case><test-case id="1004" name="MusicResumesOnlyAfterMiddleBossDeathAndReturn" fullname="Boss60CorrectionsPlayModeTests.MusicResumesOnlyAfterMiddleBossDeathAndReturn" methodname="MusicResumesOnlyAfterMiddleBossDeathAndReturn" classname="Boss60CorrectionsPlayModeTests" runstate="Runnable" seed="1162597239" result="Passed" start-time="2026-10-19 22:52:50Z" end-time="2026-10-19 22:53:16Z" duration="26.383644" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+[D1_FinalBoss] Special3 cutscene unavailable; continuing the middle boss encounter.
+필드 보스가 공격을 받고 전투를 시작합니다!
+받은 피해량 : 10000 /  몬스터 남은 채력 : 0
+받은 피해량 : 1 /  몬스터 남은 채력 : 99
+[D1_FinalBoss] Special3 cutscene unavailable; continuing the middle boss encounter.
+Failed to create agent because there is no valid NavMesh
+]]></output></test-case><test-case id="1002" name="RealJumpInteractionEndsLoopOnlyAtLanding" fullname="Boss60CorrectionsPlayModeTests.RealJumpInteractionEndsLoopOnlyAtLanding" methodname="RealJumpInteractionEndsLoopOnlyAtLanding" classname="Boss60CorrectionsPlayModeTests" runstate="Runnable" seed="667714171" result="Passed" start-time="2026-10-19 22:53:16Z" end-time="2026-10-19 22:53:19Z" duration="2.600101" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+0
+Q / MovementProbeSkill
+0
+Q / MovementProbeSkill
+0
+Q / MovementProbeSkill
+Failed to create agent because there is no valid NavMesh
+]]></output></test-case><test-case id="1003" name="SwingAllowsMovementAndBossIgnoresDamage" fullname="Boss60CorrectionsPlayModeTests.SwingAllowsMovementAndBossIgnoresDamage" methodname="SwingAllowsMovementAndBossIgnoresDamage" classname="Boss60CorrectionsPlayModeTests" runstate="Runnable" seed="2085823052" result="Passed" start-time="2026-10-19 22:53:19Z" end-time="2026-10-19 22:53:20Z" duration="0.599981" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+Failed to create agent because there is no valid NavMesh
+]]></output></test-case></test-suite><test-suite type="TestSuite" id="1114" name="BossFourFixes" fullname="BossFourFixes" runstate="Runnable" testcasecount="11" result="Passed" start-time="2026-10-19 22:53:20Z" end-time="2026-10-19 22:54:14Z" duration="54.550450" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0"><properties /><test-suite type="TestFixture" id="1100" name="BossFourIssuesPlayModeTests" fullname="BossFourFixes.BossFourIssuesPlayModeTests" classname="BossFourFixes.BossFourIssuesPlayModeTests" runstate="Runnable" testcasecount="11" result="Passed" start-time="2026-10-19 22:53:20Z" end-time="2026-10-19 22:54:14Z" duration="54.535000" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0"><properties /><test-case id="1106" name="BatRecognizesPlayerAndChasesIntoMeleeRange" fullname="BossFourFixes.BossFourIssuesPlayModeTests.BatRecognizesPlayerAndChasesIntoMeleeRange" methodname="BatRecognizesPlayerAndChasesIntoMeleeRange" classname="BossFourFixes.BossFourIssuesPlayModeTests" runstate="Runnable" seed="779119968" result="Passed" start-time="2026-10-19 22:53:20Z" end-time="2026-10-19 22:53:23Z" duration="3.349913" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+[보스 패턴 발동] Clockwork Bat Wing Swipe (사거리: 3)
+Failed to create agent because there is no valid NavMesh
+]]></output></test-case><test-case id="1107" name="BatSwoopHitsOnceCanBeDodgedAndCancelsCleanly" fullname="BossFourFixes.BossFourIssuesPlayModeTests.BatSwoopHitsOnceCanBeDodgedAndCancelsCleanly" methodname="BatSwoopHitsOnceCanBeDodgedAndCancelsCleanly" classname="BossFourFixes.BossFourIssuesPlayModeTests" runstate="Runnable" seed="228242436" result="Passed" start-time="2026-10-19 22:53:23Z" end-time="2026-10-19 22:53:26Z" duration="2.816874" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+[보스 패턴 발동] Clockwork Bat Swoop (사거리: 12)
+Parameter 'AttackSpeed' does not exist.
+[보스 패턴 발동] Clockwork Bat Swoop (사거리: 12)
+[보스 패턴 발동] Clockwork Bat Swoop (사거리: 12)
+[보스 패턴 발동] Clockwork Bat Swoop (사거리: 12)
+필드 보스가 공격을 받고 전투를 시작합니다!
+받은 피해량 : 100000 /  몬스터 남은 채력 : 0
+Failed to create agent because there is no valid NavMesh
+]]></output></test-case><test-case id="1108" name="CameraCutClearsBlendAndSnapsToWarpedPlayer" fullname="BossFourFixes.BossFourIssuesPlayModeTests.CameraCutClearsBlendAndSnapsToWarpedPlayer" methodname="CameraCutClearsBlendAndSnapsToWarpedPlayer" classname="BossFourFixes.BossFourIssuesPlayModeTests" runstate="Runnable" seed="1187774952" result="Passed" start-time="2026-10-19 22:53:26Z" end-time="2026-10-19 22:53:26Z" duration="0.100122" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+Failed to create agent because there is no valid NavMesh
+]]></output></test-case><test-case id="1104" name="ChessCancellationRestoresOnlyOwnedControls" fullname="BossFourFixes.BossFourIssuesPlayModeTests.ChessCancellationRestoresOnlyOwnedControls" methodname="ChessCancellationRestoresOnlyOwnedControls" classname="BossFourFixes.BossFourIssuesPlayModeTests" runstate="Runnable" seed="37012197" result="Passed" start-time="2026-10-19 22:53:26Z" end-time="2026-10-19 22:53:51Z" duration="24.798802" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+체스 미니게임 상태 초기화 완료
+체스 미니게임 상태 초기화 완료
+체스 미니게임 상태 초기화 완료
+0
+Q / MovementProbeSkill
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+체스 미니게임 상태 초기화 완료
+체스 미니게임 상태 초기화 완료
+체스 미니게임 상태 초기화 완료
+0
+Q / MovementProbeSkill
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+체스 미니게임 상태 초기화 완료
+체스 미니게임 상태 초기화 완료
+체스 미니게임 상태 초기화 완료
+Failed to create agent because there is no valid NavMesh
+]]></output></test-case><test-case id="1103" name="ChessCutsceneLocksControlsAndWarpsBeforeCameraCut" fullname="BossFourFixes.BossFourIssuesPlayModeTests.ChessCutsceneLocksControlsAndWarpsBeforeCameraCut" methodname="ChessCutsceneLocksControlsAndWarpsBeforeCameraCut" classname="BossFourFixes.BossFourIssuesPlayModeTests" runstate="Runnable" seed="901750162" result="Passed" start-time="2026-10-19 22:53:51Z" end-time="2026-10-19 22:54:00Z" duration="8.835340" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+체스 미니게임 상태 초기화 완료
+체스 미니게임 상태 초기화 완료
+Failed to create agent because there is no valid NavMesh
+]]></output></test-case><test-case id="1105" name="ChessWaitsForExistingControlLock" fullname="BossFourFixes.BossFourIssuesPlayModeTests.ChessWaitsForExistingControlLock" methodname="ChessWaitsForExistingControlLock" classname="BossFourFixes.BossFourIssuesPlayModeTests" runstate="Runnable" seed="616390566" result="Passed" start-time="2026-10-19 22:54:00Z" end-time="2026-10-19 22:54:07Z" duration="7.615053" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+체스 미니게임 상태 초기화 완료
+체스 미니게임 상태 초기화 완료
+Failed to create agent because there is no valid NavMesh
+]]></output></test-case><test-case id="1109" name="CutsceneFirstFrameAndRetryUseTimelineCamera" fullname="BossFourFixes.BossFourIssuesPlayModeTests.CutsceneFirstFrameAndRetryUseTimelineCamera" methodname="CutsceneFirstFrameAndRetryUseTimelineCamera" classname="BossFourFixes.BossFourIssuesPlayModeTests" runstate="Runnable" seed="1867073" result="Passed" start-time="2026-10-19 22:54:07Z" end-time="2026-10-19 22:54:07Z" duration="0.151505" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+Failed to create agent because there is no valid NavMesh
+]]></output></test-case><test-case id="1111" name="EndingPlaysBeforeDepartureAndCancellationRestoresUI" fullname="BossFourFixes.BossFourIssuesPlayModeTests.EndingPlaysBeforeDepartureAndCancellationRestoresUI" methodname="EndingPlaysBeforeDepartureAndCancellationRestoresUI" classname="BossFourFixes.BossFourIssuesPlayModeTests" runstate="Runnable" seed="407964895" result="Passed" start-time="2026-10-19 22:54:07Z" end-time="2026-10-19 22:54:08Z" duration="0.399695" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[★ 던전의 모든 위협을 제거했습니다! ★
+Failed to create agent because there is no valid NavMesh
+]]></output></test-case><test-case id="1102" name="OverlappingPatternTargetsKeepFacingDuringPlayback" fullname="BossFourFixes.BossFourIssuesPlayModeTests.OverlappingPatternTargetsKeepFacingDuringPlayback" methodname="OverlappingPatternTargetsKeepFacingDuringPlayback" classname="BossFourFixes.BossFourIssuesPlayModeTests" runstate="Runnable" seed="583107398" result="Passed" start-time="2026-10-19 22:54:08Z" end-time="2026-10-19 22:54:08Z" duration="0.600415" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[Failed to create agent because there is no valid NavMesh
+]]></output></test-case><test-case id="1101" name="ScaleAndCameraRecoverAcrossRetries" fullname="BossFourFixes.BossFourIssuesPlayModeTests.ScaleAndCameraRecoverAcrossRetries" methodname="ScaleAndCameraRecoverAcrossRetries" classname="BossFourFixes.BossFourIssuesPlayModeTests" runstate="Runnable" seed="544286392" result="Passed" start-time="2026-10-19 22:54:08Z" end-time="2026-10-19 22:54:09Z" duration="0.216814" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+Can't call Animator.Update on inactive object
+Failed to create agent because there is no valid NavMesh
+]]></output></test-case><test-case id="1110" name="ShortAttacksHitOnceAndCancelCleanly" fullname="BossFourFixes.BossFourIssuesPlayModeTests.ShortAttacksHitOnceAndCancelCleanly" methodname="ShortAttacksHitOnceAndCancelCleanly" classname="BossFourFixes.BossFourIssuesPlayModeTests" runstate="Runnable" seed="919823489" result="Passed" start-time="2026-10-19 22:54:09Z" end-time="2026-10-19 22:54:14Z" duration="5.632427" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+[보스 패턴 발동] Clockwork Bat Double Pulse (사거리: 7)
+[보스 패턴 발동] Clockwork Bat Wing Swipe (사거리: 3)
+Parameter 'AttackSpeed' does not exist.
+[보스 패턴 발동] Clockwork Bat Double Pulse (사거리: 7)
+Parameter 'AttackSpeed' does not exist.
+Parameter 'AttackSpeed' does not exist.
+[보스 패턴 발동] Clockwork Bat Wing Swipe (사거리: 3)
+[보스 패턴 발동] Clockwork Bat Double Pulse (사거리: 7)
+받은 피해량 : 100000 /  몬스터 남은 채력 : 0
+Failed to create agent because there is no valid NavMesh
+]]></output></test-case></test-suite></test-suite><test-suite type="TestFixture" id="1007" name="BossLifecyclePlayModeTests" fullname="BossLifecyclePlayModeTests" classname="BossLifecyclePlayModeTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-10-19 22:54:14Z" end-time="2026-10-19 22:54:15Z" duration="0.851588" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0"><properties /><test-case id="1008" name="DeathStopsAttacksAndWaitsBeforeReturn" fullname="BossLifecyclePlayModeTests.DeathStopsAttacksAndWaitsBeforeReturn" methodname="DeathStopsAttacksAndWaitsBeforeReturn" classname="BossLifecyclePlayModeTests" runstate="Runnable" seed="1711229121" result="Passed" start-time="2026-10-19 22:54:14Z" end-time="2026-10-19 22:54:14Z" duration="0.150564" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties></test-case><test-case id="1010" name="PlayerDeathDuringDefeatCompletesOnce" fullname="BossLifecyclePlayModeTests.PlayerDeathDuringDefeatCompletesOnce" methodname="PlayerDeathDuringDefeatCompletesOnce" classname="BossLifecyclePlayModeTests" runstate="Runnable" seed="888555606" result="Passed" start-time="2026-10-19 22:54:14Z" end-time="2026-10-19 22:54:14Z" duration="0.150146" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[플레이어 사망. 대청소 시작
+플레이어 사망. 대청소 시작
+]]></output></test-case><test-case id="1009" name="PoolReuseResetsDeathAndSpecialState" fullname="BossLifecyclePlayModeTests.PoolReuseResetsDeathAndSpecialState" methodname="PoolReuseResetsDeathAndSpecialState" classname="BossLifecyclePlayModeTests" runstate="Runnable" seed="2084128400" result="Passed" start-time="2026-10-19 22:54:14Z" end-time="2026-10-19 22:54:15Z" duration="0.149331" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties></test-case><test-case id="1011" name="SectorWaitsForPresentationAndRetainsCompletionAfterReuse" fullname="BossLifecyclePlayModeTests.SectorWaitsForPresentationAndRetainsCompletionAfterReuse" methodname="SectorWaitsForPresentationAndRetainsCompletionAfterReuse" classname="BossLifecyclePlayModeTests" runstate="Runnable" seed="1306862888" result="Passed" start-time="2026-10-19 22:54:15Z" end-time="2026-10-19 22:54:15Z" duration="0.384500" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties></test-case></test-suite><test-suite type="TestFixture" id="1012" name="DungeonDeparturePlayModeTests" fullname="DungeonDeparturePlayModeTests" classname="DungeonDeparturePlayModeTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-10-19 22:54:15Z" end-time="2026-10-19 22:54:41Z" duration="25.700062" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0"><properties /><test-case id="1013" name="AssignedEndingVideoCompletesSkipsAndCancelsCleanly" fullname="DungeonDeparturePlayModeTests.AssignedEndingVideoCompletesSkipsAndCancelsCleanly" methodname="AssignedEndingVideoCompletesSkipsAndCancelsCleanly" classname="DungeonDeparturePlayModeTests" runstate="Runnable" seed="1068675672" result="Passed" start-time="2026-10-19 22:54:15Z" end-time="2026-10-19 22:54:23Z" duration="8.460847" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+★ 던전의 모든 위협을 제거했습니다! ★
+0
+Q / MovementProbeSkill
+★ 던전의 모든 위협을 제거했습니다! ★
+0
+Q / MovementProbeSkill
+★ 던전의 모든 위협을 제거했습니다! ★
+Failed to create agent because there is no valid NavMesh
+]]></output></test-case><test-case id="1014" name="DisabledOrRemovedEndpointRestoresDefaultDeparture" fullname="DungeonDeparturePlayModeTests.DisabledOrRemovedEndpointRestoresDefaultDeparture" methodname="DisabledOrRemovedEndpointRestoresDefaultDeparture" classname="DungeonDeparturePlayModeTests" runstate="Runnable" seed="1374846248" result="Passed" start-time="2026-10-19 22:54:23Z" end-time="2026-10-19 22:54:24Z" duration="0.133138" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+★ 던전의 모든 위협을 제거했습니다! ★
+★ 던전의 모든 위협을 제거했습니다! ★
+0
+Q / MovementProbeSkill
+★ 던전의 모든 위협을 제거했습니다! ★
+Failed to create agent because there is no valid NavMesh
+]]></output></test-case><test-case id="1015" name="MissingEndpointAndInvalidMenuUseDefaultDeparture" fullname="DungeonDeparturePlayModeTests.MissingEndpointAndInvalidMenuUseDefaultDeparture" methodname="MissingEndpointAndInvalidMenuUseDefaultDeparture" classname="DungeonDeparturePlayModeTests" runstate="Runnable" seed="1431482154" result="Passed" start-time="2026-10-19 22:54:24Z" end-time="2026-10-19 22:54:24Z" duration="0.099853" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[★ 던전의 모든 위협을 제거했습니다! ★
+★ 던전의 모든 위협을 제거했습니다! ★
+[DungeonCompletionReturnToTitle] 시작 화면 씬을 로드할 수 없습니다. 기존 던전 복귀를 사용합니다.
+Failed to create agent because there is no valid NavMesh
+]]></output></test-case><test-case id="1016" name="MovingAndReenablingEndpointKeepsOneSubscription" fullname="DungeonDeparturePlayModeTests.MovingAndReenablingEndpointKeepsOneSubscription" methodname="MovingAndReenablingEndpointKeepsOneSubscription" classname="DungeonDeparturePlayModeTests" runstate="Runnable" seed="913766583" result="Passed" start-time="2026-10-19 22:54:24Z" end-time="2026-10-19 22:54:24Z" duration="0.083353" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[★ 던전의 모든 위협을 제거했습니다! ★
+Failed to create agent because there is no valid NavMesh
+]]></output></test-case><test-case id="1017" name="ReturnsToActualTitleAndCanStartFreshGame" fullname="DungeonDeparturePlayModeTests.ReturnsToActualTitleAndCanStartFreshGame" methodname="ReturnsToActualTitleAndCanStartFreshGame" classname="DungeonDeparturePlayModeTests" runstate="Runnable" seed="363682671" result="Passed" start-time="2026-10-19 22:54:24Z" end-time="2026-10-19 22:54:41Z" duration="16.918172" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[★ 던전의 모든 위협을 제거했습니다! ★
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+Failed to create agent because there is no valid NavMesh
+[DialogueManager] 대사 로드 완료: 30개
+[QuestManager] 퀘스트 로드 완료: 3개
+0
+The tree tree11_LOD1 must use the Nature/Soft Occlusion shader. Otherwise billboarding/lighting will not work correctly.
+Failed to create agent because it is not close enough to the NavMesh
+Failed to create agent because it is not close enough to the NavMesh
+Failed to create agent because it is not close enough to the NavMesh
+Failed to create agent because it is not close enough to the NavMesh
+Failed to create agent because it is not close enough to the NavMesh
+[CameraStack] UICamera 추가됨
+]]></output></test-case></test-suite><test-suite type="TestFixture" id="1018" name="FinalBossTransitionPlayModeTests" fullname="FinalBossTransitionPlayModeTests" classname="FinalBossTransitionPlayModeTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-10-19 22:54:41Z" end-time="2026-10-19 22:55:03Z" duration="22.500087" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0"><properties /><test-case id="1022" name="CancellationRestoresAirborneBossAndControls" fullname="FinalBossTransitionPlayModeTests.CancellationRestoresAirborneBossAndControls" methodname="CancellationRestoresAirborneBossAndControls" classname="FinalBossTransitionPlayModeTests" runstate="Runnable" seed="2099180019" result="Passed" start-time="2026-10-19 22:54:41Z" end-time="2026-10-19 22:54:45Z" duration="4.617190" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+]]></output></test-case><test-case id="1023" name="CancellationStopsTimelineWithoutStartingEncounter" fullname="FinalBossTransitionPlayModeTests.CancellationStopsTimelineWithoutStartingEncounter" methodname="CancellationStopsTimelineWithoutStartingEncounter" classname="FinalBossTransitionPlayModeTests" runstate="Runnable" seed="187682337" result="Passed" start-time="2026-10-19 22:54:45Z" end-time="2026-10-19 22:54:45Z" duration="0.048801" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+]]></output></test-case><test-case id="1019" name="NormalAnimationFinishesBeforeSwingStarts" fullname="FinalBossTransitionPlayModeTests.NormalAnimationFinishesBeforeSwingStarts" methodname="NormalAnimationFinishesBeforeSwingStarts" classname="FinalBossTransitionPlayModeTests" runstate="Runnable" seed="2012971301" result="Passed" start-time="2026-10-19 22:54:45Z" end-time="2026-10-19 22:54:46Z" duration="0.333247" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+]]></output></test-case><test-case id="1020" name="SwingLandsAtCenterBeforeTimelineAndEncounter" fullname="FinalBossTransitionPlayModeTests.SwingLandsAtCenterBeforeTimelineAndEncounter" methodname="SwingLandsAtCenterBeforeTimelineAndEncounter" classname="FinalBossTransitionPlayModeTests" runstate="Runnable" seed="1706366716" result="Passed" start-time="2026-10-19 22:54:46Z" end-time="2026-10-19 22:54:55Z" duration="8.783335" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+[D1_FinalBoss] Special3 cutscene unavailable; continuing the middle boss encounter.
+]]></output></test-case><test-case id="1021" name="VideoFinishesBeforeTimelineAndEncounter" fullname="FinalBossTransitionPlayModeTests.VideoFinishesBeforeTimelineAndEncounter" methodname="VideoFinishesBeforeTimelineAndEncounter" classname="FinalBossTransitionPlayModeTests" runstate="Runnable" seed="213100358" result="Passed" start-time="2026-10-19 22:54:55Z" end-time="2026-10-19 22:55:03Z" duration="8.700800" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+]]></output></test-case></test-suite><test-suite type="TestFixture" id="1024" name="GameFlowPlayModeTests" fullname="GameFlowPlayModeTests" classname="GameFlowPlayModeTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-10-19 22:55:03Z" end-time="2026-10-19 22:57:45Z" duration="162.132252" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0"><properties /><test-case id="1025" name="TitleForestQuestsDungeonBossAndReturn" fullname="GameFlowPlayModeTests.TitleForestQuestsDungeonBossAndReturn" methodname="TitleForestQuestsDungeonBossAndReturn" classname="GameFlowPlayModeTests" runstate="Runnable" seed="657671097" result="Passed" start-time="2026-10-19 22:55:03Z" end-time="2026-10-19 22:57:45Z" duration="162.116450" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+Failed to create agent because there is no valid NavMesh
+[DialogueManager] 대사 로드 완료: 30개
+[QuestManager] 퀘스트 로드 완료: 3개
+0
+The tree tree11_LOD1 must use the Nature/Soft Occlusion shader. Otherwise billboarding/lighting will not work correctly.
+Failed to create agent because it is not close enough to the NavMesh
+Failed to create agent because it is not close enough to the NavMesh
+Failed to create agent because it is not close enough to the NavMesh
+Failed to create agent because it is not close enough to the NavMesh
+Failed to create agent because it is not close enough to the NavMesh
+[GameFlow] Title -> Forest loaded
+[CameraStack] UICamera 추가됨
+마리아
+대화가 종료되었습니다.
+촌장
+[Q_30001_001] 퀘스트 상세 정보창 띄우기 요청 (UI 연결 필요)
+False
+대화가 종료되었습니다.
+마리아
+<color=cyan>[대화 완료] 대화 퀘스트 조건을 달성했습니다!</color>
+1100원 보유
+[Q_30001_002] 퀘스트 상세 정보창 띄우기 요청 (UI 연결 필요)
+0
+대화가 종료되었습니다.
+상인
+추가
+1000원 보유
+인벤토리 추가 : 잘 익은 사과
+마리아
+1200원 보유
+레벨업, 레벨 : 2 / 경험치 : 130 / 스탯포인트 : 1
+레벨업, 레벨 : 3 / 경험치 : 30 / 스탯포인트 : 2
+인벤토리 추가 : 체력 포션
+대화가 종료되었습니다.
+다일
+[Q_30001_003] 퀘스트 상세 정보창 띄우기 요청 (UI 연결 필요)
+대화가 종료되었습니다.
+Golem-Spawner1 스포너 활성화: 몬스터 생성
+대기 상태로 진입
+재배치
+대기 상태에서 벗어남
+대기 상태로 진입
+대기 상태로 진입
+재배치
+대기 상태에서 벗어남
+대기 상태로 진입
+Golem-Spawner3 스포너 활성화: 몬스터 생성
+대기 상태로 진입
+재배치
+대기 상태에서 벗어남
+대기 상태로 진입
+대기 상태로 진입
+재배치
+대기 상태에서 벗어남
+대기 상태로 진입
+DemonGolem-Spawner 스포너 활성화: 몬스터 생성
+대기 상태로 진입
+재배치
+대기 상태에서 벗어남
+대기 상태로 진입
+Boss-Elder-Golem 스포너 활성화: 몬스터 생성
+<color=yellow>[하이라이트] Golem에게 마우스 호버됨!</color>
+Wolf-Spawner1 스포너 활성화: 몬스터 생성
+대기 상태로 진입
+재배치
+대기 상태에서 벗어남
+대기 상태로 진입
+대기 상태로 진입
+재배치
+대기 상태에서 벗어남
+대기 상태로 진입
+대기 상태로 진입
+재배치
+대기 상태에서 벗어남
+대기 상태로 진입
+Wolf-Spawner3 스포너 활성화: 몬스터 생성
+대기 상태로 진입
+재배치
+대기 상태에서 벗어남
+대기 상태로 진입
+대기 상태로 진입
+재배치
+대기 상태에서 벗어남
+대기 상태로 진입
+대기 상태로 진입
+재배치
+대기 상태에서 벗어남
+대기 상태로 진입
+Oak-Spawner1 스포너 활성화: 몬스터 생성
+대기 상태로 진입
+재배치
+대기 상태에서 벗어남
+대기 상태로 진입
+대기 상태로 진입
+재배치
+대기 상태에서 벗어남
+대기 상태로 진입
+대기 상태로 진입
+재배치
+대기 상태에서 벗어남
+대기 상태로 진입
+Oak-Spawner2 스포너 활성화: 몬스터 생성
+대기 상태로 진입
+재배치
+대기 상태에서 벗어남
+대기 상태로 진입
+대기 상태로 진입
+재배치
+대기 상태에서 벗어남
+대기 상태로 진입
+대기 상태로 진입
+재배치
+대기 상태에서 벗어남
+대기 상태로 진입
+Oak-Spawner3 스포너 활성화: 몬스터 생성
+대기 상태로 진입
+재배치
+대기 상태에서 벗어남
+대기 상태로 진입
+대기 상태로 진입
+재배치
+대기 상태에서 벗어남
+대기 상태로 진입
+대기 상태로 진입
+재배치
+대기 상태에서 벗어남
+대기 상태로 진입
+Golem-Spawner1 스포너 비활성화: 몬스터 회수
+Golem-Spawner3 스포너 비활성화: 몬스터 회수
+DemonGolem-Spawner 스포너 비활성화: 몬스터 회수
+Boss-Elder-Golem 스포너 비활성화: 몬스터 회수
+받은 피해량 : 300 /  몬스터 남은 채력 : 0
+[퀘스트 진행] 늑대 사냥 : 1 / 5
+대기 상태에서 벗어남
+사망 애니메이션 실행
+1210원 보유
+받은 피해량 : 300 /  몬스터 남은 채력 : 0
+[퀘스트 진행] 늑대 사냥 : 2 / 5
+대기 상태에서 벗어남
+사망 애니메이션 실행
+1220원 보유
+받은 피해량 : 300 /  몬스터 남은 채력 : 0
+[퀘스트 진행] 늑대 사냥 : 3 / 5
+대기 상태에서 벗어남
+사망 애니메이션 실행
+1230원 보유
+받은 피해량 : 300 /  몬스터 남은 채력 : 0
+[퀘스트 진행] 늑대 사냥 : 4 / 5
+대기 상태에서 벗어남
+사망 애니메이션 실행
+1240원 보유
+받은 피해량 : 300 /  몬스터 남은 채력 : 0
+[퀘스트 진행] 늑대 사냥 : 5 / 5
+<color=cyan>[퀘스트 조건 달성] NPC에게 돌아가 보상을 받으세요!</color>
+대기 상태에서 벗어남
+사망 애니메이션 실행
+1250원 보유
+다일
+1750원 보유
+레벨업, 레벨 : 4 / 경험치 : 355 / 스탯포인트 : 3
+레벨업, 레벨 : 5 / 경험치 : 255 / 스탯포인트 : 4
+레벨업, 레벨 : 6 / 경험치 : 155 / 스탯포인트 : 5
+레벨업, 레벨 : 7 / 경험치 : 55 / 스탯포인트 : 6
+인벤토리 추가 : 낡은 철제 갑주
+대화가 종료되었습니다.
+[GameFlow] All 3 quests completed; level 1 -> 7; gold=1750
+아이템 Slot_1 사용 시도
+19
+Wolf-Spawner1 스포너 비활성화: 몬스터 회수
+Wolf-Spawner3 스포너 비활성화: 몬스터 회수
+Oak-Spawner1 스포너 비활성화: 몬스터 회수
+Oak-Spawner2 스포너 비활성화: 몬스터 회수
+Oak-Spawner3 스포너 비활성화: 몬스터 회수
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+[GameFlow] Forest -> Dungeon entered
+[CameraStack] UICamera 추가됨
+<color=green>[DungeonManager] 현재 활성 섹터 동기화 완료: Index [0] - 탐욕의 유람극장 - 서막</color>
+[탐욕의 유람극장 - 서막] 동시 모드 : 시작
+대기 상태로 진입
+대기 상태로 진입
+대기 상태로 진입
+대기 상태로 진입
+대기 상태로 진입
+[GameFlow] Dungeon enemies spawned
+받은 피해량 : 400 /  몬스터 남은 채력 : 0
+대기 상태에서 벗어남
+사망 애니메이션 실행
+1750원 보유
+받은 피해량 : 400 /  몬스터 남은 채력 : 0
+대기 상태에서 벗어남
+사망 애니메이션 실행
+1750원 보유
+받은 피해량 : 400 /  몬스터 남은 채력 : 0
+대기 상태에서 벗어남
+사망 애니메이션 실행
+1750원 보유
+받은 피해량 : 400 /  몬스터 남은 채력 : 0
+대기 상태에서 벗어남
+사망 애니메이션 실행
+1750원 보유
+받은 피해량 : 400 /  몬스터 남은 채력 : 0
+대기 상태에서 벗어남
+사망 애니메이션 실행
+1750원 보유
+[GameFlow] Dungeon enemies defeated: 5/5
+[탐욕의 유람극장 - 서막] 섹터 클리어 보상: 포탈 활성화!
+<color=green>[DungeonManager] 현재 활성 섹터 동기화 완료: Index [1] - 탐욕의 유람극장 - 1막</color>
+[탐욕의 유람극장 - 1막] 동시 모드 : 시작
+[GoalSector] 목표 지점으로 이동하세요.
+[탐욕의 유람극장 - 서막] 클리어 -> 다음 섹터 [탐욕의 유람극장 - 1막] 자동 활성화 완료!
+[GameFlow] First sector jump unlocked
+[GameFlow] Jump state controls=True agent=True nav=True pos=(-5.60, 4.11, 40.85) target=(-5.60, 4.11, 40.85)
+[GameFlow] Platform jump completed: JUMP (6)
+[GameFlow] Platform jump completed: JUMP (7)
+[GameFlow] Platform jump completed: JUMP (8)
+[GameFlow] Platform jump completed: JUMP (9)
+[GameFlow] Platform jump completed: JUMP (10)
+[GameFlow] Platform jump completed: JUMP (11)
+[GoalSector] 목표 지점 도달 완료!
+<color=green>[DungeonManager] 현재 활성 섹터 동기화 완료: Index [2] - 탐욕의 유람극장 - 종막</color>
+[탐욕의 유람극장 - 종막] 동시 모드 : 시작
+[탐욕의 유람극장 - 1막] 클리어 -> 다음 섹터 [탐욕의 유람극장 - 종막] 자동 활성화 완료!
+[GameFlow] Movement sector -> third sector
+사망 상태에서 벗어남
+대기 상태로 진입
+사망 상태에서 벗어남
+대기 상태로 진입
+사망 상태에서 벗어남
+대기 상태로 진입
+사망 상태에서 벗어남
+대기 상태로 진입
+사망 상태에서 벗어남
+대기 상태로 진입
+[GameFlow] Dungeon enemies spawned
+받은 피해량 : 400 /  몬스터 남은 채력 : 0
+대기 상태에서 벗어남
+사망 애니메이션 실행
+1750원 보유
+받은 피해량 : 400 /  몬스터 남은 채력 : 0
+대기 상태에서 벗어남
+사망 애니메이션 실행
+1750원 보유
+받은 피해량 : 400 /  몬스터 남은 채력 : 0
+대기 상태에서 벗어남
+사망 애니메이션 실행
+1750원 보유
+받은 피해량 : 400 /  몬스터 남은 채력 : 0
+대기 상태에서 벗어남
+사망 애니메이션 실행
+1750원 보유
+받은 피해량 : 400 /  몬스터 남은 채력 : 0
+대기 상태에서 벗어남
+사망 애니메이션 실행
+1750원 보유
+[GameFlow] Dungeon enemies defeated: 5/5
+[탐욕의 유람극장 - 종막] 섹터 클리어 보상: 포탈 활성화!
+[GameFlow] Boss portal unlocked
+[GameFlow] First portal -> boss waiting room
+<color=green>[DungeonManager] 현재 활성 섹터 동기화 완료: Index [3] - 탐욕의 유람극장 - 앵콜</color>
+[탐욕의 유람극장 - 앵콜] 동시 모드 : 시작
+보스 섹터 시작
+D1_Final_Enter
+D1_Final_Enter
+🚨 [기믹 발동] 쇼타임 시작!
+아이템 Slot_1 사용 시도
+18
+[보스 패턴 발동] Normal5 (사거리: 50)
+[GameFlow] Opening boss pattern finishes
+[GameFlow] Boss player HP=356/680 use=True colliders=1
+[GameFlow] Actual normal boss pattern starts
+받은 피해량 : 500 /  몬스터 남은 채력 : 9500
+받은 피해량 : 1600 /  몬스터 남은 채력 : 7900
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+D1_Final_Shot
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+D1_Final_Shot
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+D1_Final_Shot
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+D1_Final_Shot
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+17
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+🚨 [기믹 발동] 운명의 점 시작!
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+D1_Final_S2
+[GameFlow] 80% card spawned at gameTime=184.0708
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+16
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+15
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+생존 성공! 정답 카드 위에 있습니다.
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+[보스 패턴 발동] Normal1 (사거리: 20)
+[GameFlow] 80% card mechanic survived
+[GameFlow] 80% return swing finishes and damage is enabled
+받은 피해량 : 2001 /  몬스터 남은 채력 : 5899
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+D1_Final_N1
+D1_Final_N1
+D1_Final_N1
+아이템 Slot_1 사용 시도
+🚨 [기믹 발동] 중간 보스 시작!
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+14
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+아이템 Slot_1 사용 시도
+[GameFlow] Actual 60% swing/video/Timeline sequence started
+[GameFlow] 26-second intro -> actual middle boss
+[GameFlow] Cutscene fade completes before player control
+[보스 패턴 발동] Clockwork Bat Wing Swipe (사거리: 3)
+[GameFlow] Middle boss combat starts on approach
+아이템 Slot_1 사용 시도
+13
+펀치1
+받은 피해량 : 616 /  몬스터 남은 채력 : 1884
+[GameFlow] Player basic attack animation damages the middle boss
+받은 피해량 : 2500 /  몬스터 남은 채력 : 0
+D1_Final_Box
+[GameFlow] Middle boss defeated -> final boss combat restored
+받은 피해량 : 10000 /  몬스터 남은 채력 : 0
+체스 미니게임 상태 초기화 완료
+체스 미니게임 상태 초기화 완료
+★ 던전의 모든 위협을 제거했습니다! ★
+[GameFlow] Boss cleared -> Title only; gameplay player/pool cleaned up
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+Failed to create agent because there is no valid NavMesh
+[DialogueManager] 대사 로드 완료: 30개
+[QuestManager] 퀘스트 로드 완료: 3개
+0
+The tree tree11_LOD1 must use the Nature/Soft Occlusion shader. Otherwise billboarding/lighting will not work correctly.
+Failed to create agent because it is not close enough to the NavMesh
+Failed to create agent because it is not close enough to the NavMesh
+Failed to create agent because it is not close enough to the NavMesh
+Failed to create agent because it is not close enough to the NavMesh
+Failed to create agent because it is not close enough to the NavMesh
+[GameFlow] Return Title -> fresh Forest restart
+[CameraStack] UICamera 추가됨
+[GameFlow] Complete flow PASS
+]]></output></test-case></test-suite><test-suite type="TestFixture" id="1026" name="GameFlowRegressionPlayModeTests" fullname="GameFlowRegressionPlayModeTests" classname="GameFlowRegressionPlayModeTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-10-19 22:57:45Z" end-time="2026-10-19 22:57:47Z" duration="1.699233" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0"><properties /><test-case id="1027" name="BoxPatternYieldsAndEndsWhenGroundIsMissing" fullname="GameFlowRegressionPlayModeTests.BoxPatternYieldsAndEndsWhenGroundIsMissing" methodname="BoxPatternYieldsAndEndsWhenGroundIsMissing" classname="GameFlowRegressionPlayModeTests" runstate="Runnable" seed="612781503" result="Passed" start-time="2026-10-19 22:57:45Z" end-time="2026-10-19 22:57:46Z" duration="1.042650" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+[D1_Final_Normal1] Could not place all boxes on the ground; ending the pattern.
+]]></output></test-case><test-case id="1031" name="JumpReleasesOnlyLivingPlayersAndHandlesCancellation" fullname="GameFlowRegressionPlayModeTests.JumpReleasesOnlyLivingPlayersAndHandlesCancellation" methodname="JumpReleasesOnlyLivingPlayersAndHandlesCancellation" classname="GameFlowRegressionPlayModeTests" runstate="Runnable" seed="1758959156" result="Passed" start-time="2026-10-19 22:57:46Z" end-time="2026-10-19 22:57:47Z" duration="0.633210" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+0
+Q / MovementProbeSkill
+0
+Q / MovementProbeSkill
+0
+Q / MovementProbeSkill
+]]></output></test-case><test-case id="1028" name="MissingGameplayCameraDoesNotBreakHover" fullname="GameFlowRegressionPlayModeTests.MissingGameplayCameraDoesNotBreakHover" methodname="MissingGameplayCameraDoesNotBreakHover" classname="GameFlowRegressionPlayModeTests" runstate="Runnable" seed="594407258" result="Passed" start-time="2026-10-19 22:57:47Z" end-time="2026-10-19 22:57:47Z" duration="0.004014" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties></test-case><test-case id="1029" name="ProjectileResolvesOnlyOnePlayerHit" fullname="GameFlowRegressionPlayModeTests.ProjectileResolvesOnlyOnePlayerHit" methodname="ProjectileResolvesOnlyOnePlayerHit" classname="GameFlowRegressionPlayModeTests" runstate="Runnable" seed="1441573447" result="Passed" start-time="2026-10-19 22:57:47Z" end-time="2026-10-19 22:57:47Z" duration="0.010893" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+Parameter 'AttackSpeed' does not exist.
+캐릭터가 사망했습니다.
+Parameter 'Die' does not exist.
+]]></output></test-case><test-case id="1030" name="SwingLastFrameCannotReviveDeadOrDestroyedEnemy" fullname="GameFlowRegressionPlayModeTests.SwingLastFrameCannotReviveDeadOrDestroyedEnemy" methodname="SwingLastFrameCannotReviveDeadOrDestroyedEnemy" classname="GameFlowRegressionPlayModeTests" runstate="Runnable" seed="1352188643" result="Passed" start-time="2026-10-19 22:57:47Z" end-time="2026-10-19 22:57:47Z" duration="0.006478" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties></test-case></test-suite><test-suite type="TestFixture" id="1032" name="GameplayAuditPlayModeTests" fullname="GameplayAuditPlayModeTests" classname="GameplayAuditPlayModeTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-10-19 22:57:47Z" end-time="2026-10-19 22:57:47Z" duration="0.123001" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0"><properties /><test-case id="1033" name="BasicAttackDamagesAndCountersEachEnemyOnce" fullname="GameplayAuditPlayModeTests.BasicAttackDamagesAndCountersEachEnemyOnce" methodname="BasicAttackDamagesAndCountersEachEnemyOnce" classname="GameplayAuditPlayModeTests" runstate="Runnable" seed="1683510870" result="Passed" start-time="2026-10-19 22:57:47Z" end-time="2026-10-19 22:57:47Z" duration="0.013143" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+]]></output></test-case><test-case id="1034" name="PumpkinAttackHitsOnceAndRejectsInvalidTargets" fullname="GameplayAuditPlayModeTests.PumpkinAttackHitsOnceAndRejectsInvalidTargets" methodname="PumpkinAttackHitsOnceAndRejectsInvalidTargets" classname="GameplayAuditPlayModeTests" runstate="Runnable" seed="1156075378" result="Passed" start-time="2026-10-19 22:57:47Z" end-time="2026-10-19 22:57:47Z" duration="0.012343" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+공격 실행
+공격 실행
+공격 실행
+공격 실행
+]]></output></test-case><test-case id="1035" name="ReopeningNpcUiDoesNotDuplicateTalkButtons" fullname="GameplayAuditPlayModeTests.ReopeningNpcUiDoesNotDuplicateTalkButtons" methodname="ReopeningNpcUiDoesNotDuplicateTalkButtons" classname="GameplayAuditPlayModeTests" runstate="Runnable" seed="134188079" result="Passed" start-time="2026-10-19 22:57:47Z" end-time="2026-10-19 22:57:47Z" duration="0.096106" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[[DialogueManager] 대사 로드 완료: 30개
+]]></output></test-case></test-suite><test-suite type="TestFixture" id="1036" name="InventoryTransferPlayModeTests" fullname="InventoryTransferPlayModeTests" classname="InventoryTransferPlayModeTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-10-19 22:57:47Z" end-time="2026-10-19 22:57:47Z" duration="0.032890" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0"><properties /><test-case id="1041" name="ClosingUIInvalidatesDrag" fullname="InventoryTransferPlayModeTests.ClosingUIInvalidatesDrag" methodname="ClosingUIInvalidatesDrag" classname="InventoryTransferPlayModeTests" runstate="Runnable" seed="2094530528" result="Passed" start-time="2026-10-19 22:57:47Z" end-time="2026-10-19 22:57:47Z" duration="0.006199" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties></test-case><test-case id="1040" name="ForeignInventoryDragIsRejected" fullname="InventoryTransferPlayModeTests.ForeignInventoryDragIsRejected" methodname="ForeignInventoryDragIsRejected" classname="InventoryTransferPlayModeTests" runstate="Runnable" seed="494062371" result="Passed" start-time="2026-10-19 22:57:47Z" end-time="2026-10-19 22:57:47Z" duration="0.004826" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[아이템 버리기
+]]></output></test-case><test-case id="1037" name="GearDropSwapsAndUpdatesIcons" fullname="InventoryTransferPlayModeTests.GearDropSwapsAndUpdatesIcons" methodname="GearDropSwapsAndUpdatesIcons" classname="InventoryTransferPlayModeTests" runstate="Runnable" seed="1220136025" result="Passed" start-time="2026-10-19 22:57:47Z" end-time="2026-10-19 22:57:47Z" duration="0.006042" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties></test-case><test-case id="1042" name="GroundDropKeepsRemainderAndReturnsOnlyWhenCollected" fullname="InventoryTransferPlayModeTests.GroundDropKeepsRemainderAndReturnsOnlyWhenCollected" methodname="GroundDropKeepsRemainderAndReturnsOnlyWhenCollected" classname="InventoryTransferPlayModeTests" runstate="Runnable" seed="1596013183" result="Passed" start-time="2026-10-19 22:57:47Z" end-time="2026-10-19 22:57:47Z" duration="0.004590" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[인벤토리 공간 부족
+인벤토리 공간 부족
+인벤토리 추가 : Test material
+]]></output></test-case><test-case id="1038" name="RejectedEquipmentDropRestoresDragIcon" fullname="InventoryTransferPlayModeTests.RejectedEquipmentDropRestoresDragIcon" methodname="RejectedEquipmentDropRestoresDragIcon" classname="InventoryTransferPlayModeTests" runstate="Runnable" seed="783373514" result="Passed" start-time="2026-10-19 22:57:47Z" end-time="2026-10-19 22:57:47Z" duration="0.005030" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties></test-case><test-case id="1039" name="StaleInventoryDragCannotEquipReplacement" fullname="InventoryTransferPlayModeTests.StaleInventoryDragCannotEquipReplacement" methodname="StaleInventoryDragCannotEquipReplacement" classname="InventoryTransferPlayModeTests" runstate="Runnable" seed="491860101" result="Passed" start-time="2026-10-19 22:57:47Z" end-time="2026-10-19 22:57:47Z" duration="0.004690" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[아이템 버리기
+]]></output></test-case></test-suite><test-suite type="TestFixture" id="1043" name="Jester60IntroductionPlayModeTests" fullname="Jester60IntroductionPlayModeTests" classname="Jester60IntroductionPlayModeTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-10-19 22:57:47Z" end-time="2026-10-19 22:58:40Z" duration="52.984153" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0"><properties /><test-case id="1046" name="DisablingBinderDuringPlaybackRestoresOwnedState" fullname="Jester60IntroductionPlayModeTests.DisablingBinderDuringPlaybackRestoresOwnedState" methodname="DisablingBinderDuringPlaybackRestoresOwnedState" classname="Jester60IntroductionPlayModeTests" runstate="Runnable" seed="2098211057" result="Passed" start-time="2026-10-19 22:57:47Z" end-time="2026-10-19 22:57:48Z" duration="0.748312" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+]]></output></test-case><test-case id="1049" name="FadesUseRealtimeAndCancellationReleasesHeldVideo" fullname="Jester60IntroductionPlayModeTests.FadesUseRealtimeAndCancellationReleasesHeldVideo" methodname="FadesUseRealtimeAndCancellationReleasesHeldVideo" classname="Jester60IntroductionPlayModeTests" runstate="Runnable" seed="2025826939" result="Passed" start-time="2026-10-19 22:57:48Z" end-time="2026-10-19 22:57:57Z" duration="8.899868" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+]]></output></test-case><test-case id="1045" name="IntroductionFinishesBeforeMiddleBossStarts" fullname="Jester60IntroductionPlayModeTests.IntroductionFinishesBeforeMiddleBossStarts" methodname="IntroductionFinishesBeforeMiddleBossStarts" classname="Jester60IntroductionPlayModeTests" runstate="Runnable" seed="902394194" result="Passed" start-time="2026-10-19 22:57:57Z" end-time="2026-10-19 22:58:07Z" duration="10.433415" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+]]></output></test-case><test-case id="1048" name="MissingTimelineStillUsesNavigableSharedArenaAndDoesNotCancelOtherPatterns" fullname="Jester60IntroductionPlayModeTests.MissingTimelineStillUsesNavigableSharedArenaAndDoesNotCancelOtherPatterns" methodname="MissingTimelineStillUsesNavigableSharedArenaAndDoesNotCancelOtherPatterns" classname="Jester60IntroductionPlayModeTests" runstate="Runnable" seed="2038885602" result="Passed" start-time="2026-10-19 22:58:07Z" end-time="2026-10-19 22:58:16Z" duration="9.200269" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+[D1_FinalBoss] Special3 cutscene unavailable; continuing the middle boss encounter.
+[D1_FinalBoss] Special3 Cinemachine Timeline unavailable; continuing the middle boss encounter.
+]]></output></test-case><test-case id="1044" name="PooledBossBindsAndCancellationRestoresCameraAndMusic" fullname="Jester60IntroductionPlayModeTests.PooledBossBindsAndCancellationRestoresCameraAndMusic" methodname="PooledBossBindsAndCancellationRestoresCameraAndMusic" classname="Jester60IntroductionPlayModeTests" runstate="Runnable" seed="1156512720" result="Passed" start-time="2026-10-19 22:58:16Z" end-time="2026-10-19 22:58:17Z" duration="0.149909" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+]]></output></test-case><test-case id="1047" name="SharedActorSurvivesCancellationRetryAndBinderDisable" fullname="Jester60IntroductionPlayModeTests.SharedActorSurvivesCancellationRetryAndBinderDisable" methodname="SharedActorSurvivesCancellationRetryAndBinderDisable" classname="Jester60IntroductionPlayModeTests" runstate="Runnable" seed="1869688459" result="Passed" start-time="2026-10-19 22:58:17Z" end-time="2026-10-19 22:58:40Z" duration="23.550417" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+[D1_FinalBoss] Special3 cutscene unavailable; continuing the middle boss encounter.
+상호작용 오브젝트 없음
+[D1_FinalBoss] Special3 cutscene unavailable; continuing the middle boss encounter.
+]]></output></test-case></test-suite><test-suite type="TestFixture" id="1050" name="PlayerMovementPlayModeTests" fullname="PlayerMovementPlayModeTests" classname="PlayerMovementPlayModeTests" runstate="Runnable" testcasecount="24" result="Passed" start-time="2026-10-19 22:58:40Z" end-time="2026-10-19 22:58:59Z" duration="18.667193" total="24" passed="24" failed="0" inconclusive="0" skipped="0" asserts="0"><properties /><test-case id="1070" name="BufferedSkillExpiresWhileModelIsNotUpdating" fullname="PlayerMovementPlayModeTests.BufferedSkillExpiresWhileModelIsNotUpdating" methodname="BufferedSkillExpiresWhileModelIsNotUpdating" classname="PlayerMovementPlayModeTests" runstate="Runnable" seed="47556911" result="Passed" start-time="2026-10-19 22:58:40Z" end-time="2026-10-19 22:58:40Z" duration="0.299500" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+]]></output></test-case><test-case id="1071" name="DodgeDeathDoesNotRestoreControls" fullname="PlayerMovementPlayModeTests.DodgeDeathDoesNotRestoreControls" methodname="DodgeDeathDoesNotRestoreControls" classname="PlayerMovementPlayModeTests" runstate="Runnable" seed="1067525768" result="Passed" start-time="2026-10-19 22:58:40Z" end-time="2026-10-19 22:58:41Z" duration="0.500220" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+Space 스킬 사용!
+]]></output></test-case><test-case id="1072" name="DodgeRecoversWithoutAnimationEvent" fullname="PlayerMovementPlayModeTests.DodgeRecoversWithoutAnimationEvent" methodname="DodgeRecoversWithoutAnimationEvent" classname="PlayerMovementPlayModeTests" runstate="Runnable" seed="2102161431" result="Passed" start-time="2026-10-19 22:58:41Z" end-time="2026-10-19 22:58:41Z" duration="0.466396" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+Space 스킬 사용!
+]]></output></test-case><test-case id="1073" name="DodgeStopsOnStun" fullname="PlayerMovementPlayModeTests.DodgeStopsOnStun" methodname="DodgeStopsOnStun" classname="PlayerMovementPlayModeTests" runstate="Runnable" seed="1187556660" result="Passed" start-time="2026-10-19 22:58:41Z" end-time="2026-10-19 22:58:42Z" duration="0.199944" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+Space 스킬 사용!
+]]></output></test-case><test-case id="1067" name="IdenFinisherInterruptedByStunResumesBasicAttack" fullname="PlayerMovementPlayModeTests.IdenFinisherInterruptedByStunResumesBasicAttack" methodname="IdenFinisherInterruptedByStunResumesBasicAttack" classname="PlayerMovementPlayModeTests" runstate="Runnable" seed="1407767604" result="Passed" start-time="2026-10-19 22:58:42Z" end-time="2026-10-19 22:58:42Z" duration="0.218059" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+]]></output></test-case><test-case id="1065" name="IdenFinisherResumesHeldBasicAttack" fullname="PlayerMovementPlayModeTests.IdenFinisherResumesHeldBasicAttack" methodname="IdenFinisherResumesHeldBasicAttack" classname="PlayerMovementPlayModeTests" runstate="Runnable" seed="196408342" result="Passed" start-time="2026-10-19 22:58:42Z" end-time="2026-10-19 22:58:43Z" duration="0.633273" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+]]></output></test-case><test-case id="1066" name="IdenFinisherResumesReleasedBasicAttack" fullname="PlayerMovementPlayModeTests.IdenFinisherResumesReleasedBasicAttack" methodname="IdenFinisherResumesReleasedBasicAttack" classname="PlayerMovementPlayModeTests" runstate="Runnable" seed="1850833894" result="Passed" start-time="2026-10-19 22:58:43Z" end-time="2026-10-19 22:58:43Z" duration="0.632955" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+]]></output></test-case><test-case id="1069" name="JumpLandsAndResumesMovement" fullname="PlayerMovementPlayModeTests.JumpLandsAndResumesMovement" methodname="JumpLandsAndResumesMovement" classname="PlayerMovementPlayModeTests" runstate="Runnable" seed="684174455" result="Passed" start-time="2026-10-19 22:58:43Z" end-time="2026-10-19 22:58:44Z" duration="1.065648" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+]]></output></test-case><test-case id="1074" name="JumpRejectsInvalidLandingAndRecoversOnInterruption" fullname="PlayerMovementPlayModeTests.JumpRejectsInvalidLandingAndRecoversOnInterruption" methodname="JumpRejectsInvalidLandingAndRecoversOnInterruption" classname="PlayerMovementPlayModeTests" runstate="Runnable" seed="1927523816" result="Passed" start-time="2026-10-19 22:58:44Z" end-time="2026-10-19 22:58:44Z" duration="0.100094" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+]]></output></test-case><test-case id="1068" name="MoveClickDuringAttackLockStartsAfterAttackRecovers" fullname="PlayerMovementPlayModeTests.MoveClickDuringAttackLockStartsAfterAttackRecovers" methodname="MoveClickDuringAttackLockStartsAfterAttackRecovers" classname="PlayerMovementPlayModeTests" runstate="Runnable" seed="1867771340" result="Passed" start-time="2026-10-19 22:58:44Z" end-time="2026-10-19 22:58:44Z" duration="0.082832" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+]]></output></test-case><test-case id="1051" name="MoveResumeAndTurn" fullname="PlayerMovementPlayModeTests.MoveResumeAndTurn" methodname="MoveResumeAndTurn" classname="PlayerMovementPlayModeTests" runstate="Runnable" seed="2065579712" result="Passed" start-time="2026-10-19 22:58:44Z" end-time="2026-10-19 22:58:45Z" duration="0.456234" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+]]></output></test-case><test-case id="1061" name="OldSkillAnimationCannotUnlockNewCast" fullname="PlayerMovementPlayModeTests.OldSkillAnimationCannotUnlockNewCast" methodname="OldSkillAnimationCannotUnlockNewCast" classname="PlayerMovementPlayModeTests" runstate="Runnable" seed="1442050532" result="Passed" start-time="2026-10-19 22:58:45Z" end-time="2026-10-19 22:58:45Z" duration="0.343837" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+Q / Skill_3
+스킬 3 차지 시작
+W / Skill_4
+]]></output></test-case><test-case id="1062" name="Skill1NormalRecoveryStillWorks" fullname="PlayerMovementPlayModeTests.Skill1NormalRecoveryStillWorks" methodname="Skill1NormalRecoveryStillWorks" classname="PlayerMovementPlayModeTests" runstate="Runnable" seed="1480040028" result="Passed" start-time="2026-10-19 22:58:45Z" end-time="2026-10-19 22:58:46Z" duration="0.367544" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+Q / Skill_1
+skill_1 사용
+RegularSkillDamageTarget에게 Sphere 형태의 타격 적중!
+]]></output></test-case><test-case id="1052" name="Skill1StunStopsDashAndRecovers" fullname="PlayerMovementPlayModeTests.Skill1StunStopsDashAndRecovers" methodname="Skill1StunStopsDashAndRecovers" classname="PlayerMovementPlayModeTests" runstate="Runnable" seed="315676198" result="Passed" start-time="2026-10-19 22:58:46Z" end-time="2026-10-19 22:58:47Z" duration="1.098475" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+Q / Skill_1
+skill_1 사용
+]]></output></test-case><test-case id="1063" name="Skill3NormalRecoveryStillDealsDamage" fullname="PlayerMovementPlayModeTests.Skill3NormalRecoveryStillDealsDamage" methodname="Skill3NormalRecoveryStillDealsDamage" classname="PlayerMovementPlayModeTests" runstate="Runnable" seed="1106800322" result="Passed" start-time="2026-10-19 22:58:47Z" end-time="2026-10-19 22:58:47Z" duration="0.299831" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+Q / Skill_3
+스킬 3 차지 시작
+스킬 3 차지 해제, 타격 발동!
+RegularSkillDamageTarget에게 Sphere 형태의 타격 적중!
+]]></output></test-case><test-case id="1055" name="Skill3ReleasedCastCanStillBeInterrupted" fullname="PlayerMovementPlayModeTests.Skill3ReleasedCastCanStillBeInterrupted" methodname="Skill3ReleasedCastCanStillBeInterrupted" classname="PlayerMovementPlayModeTests" runstate="Runnable" seed="1706652273" result="Passed" start-time="2026-10-19 22:58:47Z" end-time="2026-10-19 22:58:47Z" duration="0.466700" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+Q / Skill_3
+스킬 3 차지 시작
+스킬 3 차지 해제, 타격 발동!
+]]></output></test-case><test-case id="1053" name="Skill3StunCancelsChargeAndLateRelease" fullname="PlayerMovementPlayModeTests.Skill3StunCancelsChargeAndLateRelease" methodname="Skill3StunCancelsChargeAndLateRelease" classname="PlayerMovementPlayModeTests" runstate="Runnable" seed="838084071" result="Passed" start-time="2026-10-19 22:58:47Z" end-time="2026-10-19 22:58:48Z" duration="1.066677" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+Q / Skill_3
+스킬 3 차지 시작
+]]></output></test-case><test-case id="1060" name="Skill4DeathAfterRecoveryCancelsDelayedEffect" fullname="PlayerMovementPlayModeTests.Skill4DeathAfterRecoveryCancelsDelayedEffect" methodname="Skill4DeathAfterRecoveryCancelsDelayedEffect" classname="PlayerMovementPlayModeTests" runstate="Runnable" seed="1886278540" result="Passed" start-time="2026-10-19 22:58:48Z" end-time="2026-10-19 22:58:51Z" duration="2.249855" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+Q / Skill_4
+<color=green>퍼펙트 존 성공! [심판의 일격] 발동!</color>
+캐릭터가 사망했습니다.
+]]></output></test-case><test-case id="1064" name="Skill4NormalRecoveryStillWorks" fullname="PlayerMovementPlayModeTests.Skill4NormalRecoveryStillWorks" methodname="Skill4NormalRecoveryStillWorks" classname="PlayerMovementPlayModeTests" runstate="Runnable" seed="140883732" result="Passed" start-time="2026-10-19 22:58:51Z" end-time="2026-10-19 22:58:51Z" duration="0.516365" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+Q / Skill_4
+퍼펙트 실패. 일반 회전 베기로 종료.
+]]></output></test-case><test-case id="1059" name="Skill4ReturnedEffectDoesNotTouchNewOwner" fullname="PlayerMovementPlayModeTests.Skill4ReturnedEffectDoesNotTouchNewOwner" methodname="Skill4ReturnedEffectDoesNotTouchNewOwner" classname="PlayerMovementPlayModeTests" runstate="Runnable" seed="1771460834" result="Passed" start-time="2026-10-19 22:58:51Z" end-time="2026-10-19 22:58:54Z" duration="3.167240" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+Q / Skill_4
+퍼펙트 실패. 일반 회전 베기로 종료.
+]]></output></test-case><test-case id="1054" name="Skill4StunStopsHoldingAndReturnsEffectOnce" fullname="PlayerMovementPlayModeTests.Skill4StunStopsHoldingAndReturnsEffectOnce" methodname="Skill4StunStopsHoldingAndReturnsEffectOnce" classname="PlayerMovementPlayModeTests" runstate="Runnable" seed="1156959368" result="Passed" start-time="2026-10-19 22:58:54Z" end-time="2026-10-19 22:58:58Z" duration="3.366234" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+Q / Skill_4
+]]></output></test-case><test-case id="1056" name="SkillControlLockSurvivesStunAndLateEvents" fullname="PlayerMovementPlayModeTests.SkillControlLockSurvivesStunAndLateEvents" methodname="SkillControlLockSurvivesStunAndLateEvents" classname="PlayerMovementPlayModeTests" runstate="Runnable" seed="161592194" result="Passed" start-time="2026-10-19 22:58:58Z" end-time="2026-10-19 22:58:58Z" duration="0.366513" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+Q / Skill_3
+스킬 3 차지 시작
+]]></output></test-case><test-case id="1057" name="SkillDeathUsesExistingCooldownResetPolicy" fullname="PlayerMovementPlayModeTests.SkillDeathUsesExistingCooldownResetPolicy" methodname="SkillDeathUsesExistingCooldownResetPolicy" classname="PlayerMovementPlayModeTests" runstate="Runnable" seed="915233839" result="Passed" start-time="2026-10-19 22:58:58Z" end-time="2026-10-19 22:58:58Z" duration="0.166884" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+Q / Skill_4
+캐릭터가 사망했습니다.
+]]></output></test-case><test-case id="1058" name="SkillExternalLockExitsChargeAnimation" fullname="PlayerMovementPlayModeTests.SkillExternalLockExitsChargeAnimation" methodname="SkillExternalLockExitsChargeAnimation" classname="PlayerMovementPlayModeTests" runstate="Runnable" seed="596058850" result="Passed" start-time="2026-10-19 22:58:58Z" end-time="2026-10-19 22:58:59Z" duration="0.516151" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+Q / Skill_3
+스킬 3 차지 시작
+]]></output></test-case></test-suite><test-suite type="TestFixture" id="1075" name="PoolOwnershipPlayModeTests" fullname="PoolOwnershipPlayModeTests" classname="PoolOwnershipPlayModeTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-10-19 22:58:59Z" end-time="2026-10-19 22:58:59Z" duration="0.166564" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0"><properties /><test-case id="1076" name="ClearDestroysActiveAndInactiveAndRejectsLateReturn" fullname="PoolOwnershipPlayModeTests.ClearDestroysActiveAndInactiveAndRejectsLateReturn" methodname="ClearDestroysActiveAndInactiveAndRejectsLateReturn" classname="PoolOwnershipPlayModeTests" runstate="Runnable" seed="149877074" result="Passed" start-time="2026-10-19 22:58:59Z" end-time="2026-10-19 22:58:59Z" duration="0.049701" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties></test-case><test-case id="1077" name="ReentrantDisableReturn" fullname="PoolOwnershipPlayModeTests.ReentrantDisableReturn" methodname="ReentrantDisableReturn" classname="PoolOwnershipPlayModeTests" runstate="Runnable" seed="2017051405" result="Passed" start-time="2026-10-19 22:58:59Z" end-time="2026-10-19 22:58:59Z" duration="0.050140" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties></test-case><test-case id="1078" name="ReturnRestoresPoolParentAndSupportsOverflow" fullname="PoolOwnershipPlayModeTests.ReturnRestoresPoolParentAndSupportsOverflow" methodname="ReturnRestoresPoolParentAndSupportsOverflow" classname="PoolOwnershipPlayModeTests" runstate="Runnable" seed="469801045" result="Passed" start-time="2026-10-19 22:58:59Z" end-time="2026-10-19 22:58:59Z" duration="0.049908" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties></test-case></test-suite><test-suite type="TestFixture" id="1079" name="QuestRewardPlayModeTests" fullname="QuestRewardPlayModeTests" classname="QuestRewardPlayModeTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-10-19 22:58:59Z" end-time="2026-10-19 22:58:59Z" duration="0.216693" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0"><properties /><test-case id="1081" name="QuestLifecycleRefreshesOnEnableAndUnsubscribesOnDestroy" fullname="QuestRewardPlayModeTests.QuestLifecycleRefreshesOnEnableAndUnsubscribesOnDestroy" methodname="QuestLifecycleRefreshesOnEnableAndUnsubscribesOnDestroy" classname="QuestRewardPlayModeTests" runstate="Runnable" seed="755239546" result="Passed" start-time="2026-10-19 22:58:59Z" end-time="2026-10-19 22:58:59Z" duration="0.071150" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+[QuestManager] 퀘스트 로드 완료: 3개
+인벤토리 추가 : Test material
+]]></output></test-case><test-case id="1080" name="RewardNotificationsObserveFullCommitAndCannotReenter" fullname="QuestRewardPlayModeTests.RewardNotificationsObserveFullCommitAndCannotReenter" methodname="RewardNotificationsObserveFullCommitAndCannotReenter" classname="QuestRewardPlayModeTests" runstate="Runnable" seed="728501591" result="Passed" start-time="2026-10-19 22:58:59Z" end-time="2026-10-19 22:58:59Z" duration="0.062504" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[1020원 보유
+인벤토리 추가 : Test material
+인벤토리 추가 : 
+]]></output></test-case><test-case id="1082" name="StackMergeAndRemovalUpdateQuestState" fullname="QuestRewardPlayModeTests.StackMergeAndRemovalUpdateQuestState" methodname="StackMergeAndRemovalUpdateQuestState" classname="QuestRewardPlayModeTests" runstate="Runnable" seed="956067632" result="Passed" start-time="2026-10-19 22:58:59Z" end-time="2026-10-19 22:58:59Z" duration="0.066181" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[1020원 보유
+]]></output></test-case></test-suite><test-suite type="TestSuite" id="1113" name="ReproducedFixes" fullname="ReproducedFixes" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-19 22:58:59Z" end-time="2026-10-19 22:59:00Z" duration="0.333205" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0"><properties /><test-suite type="TestFixture" id="1097" name="ReproducedFixPlayModeTests" fullname="ReproducedFixes.ReproducedFixPlayModeTests" classname="ReproducedFixes.ReproducedFixPlayModeTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-19 22:58:59Z" end-time="2026-10-19 22:59:00Z" duration="0.316678" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0"><properties /><test-case id="1098" name="InvincibilityExpiresAndRestoresRuntimeDamage" fullname="ReproducedFixes.ReproducedFixPlayModeTests.InvincibilityExpiresAndRestoresRuntimeDamage" methodname="InvincibilityExpiresAndRestoresRuntimeDamage" classname="ReproducedFixes.ReproducedFixPlayModeTests" runstate="Runnable" seed="1737428053" result="Passed" start-time="2026-10-19 22:58:59Z" end-time="2026-10-19 22:58:59Z" duration="0.183136" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+]]></output></test-case><test-case id="1099" name="RealEscapeInputTogglesOnceAndStopsMovement" fullname="ReproducedFixes.ReproducedFixPlayModeTests.RealEscapeInputTogglesOnceAndStopsMovement" methodname="RealEscapeInputTogglesOnceAndStopsMovement" classname="ReproducedFixes.ReproducedFixPlayModeTests" runstate="Runnable" seed="1214925239" result="Passed" start-time="2026-10-19 22:58:59Z" end-time="2026-10-19 22:59:00Z" duration="0.116609" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+추가
+]]></output></test-case></test-suite></test-suite><test-suite type="TestFixture" id="1083" name="SkillSlotCooldownPlayModeTests" fullname="SkillSlotCooldownPlayModeTests" classname="SkillSlotCooldownPlayModeTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-10-19 22:59:00Z" end-time="2026-10-19 22:59:00Z" duration="0.283866" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0"><properties /><test-case id="1085" name="DragOutsideClearsCooldownAndDragIcon" fullname="SkillSlotCooldownPlayModeTests.DragOutsideClearsCooldownAndDragIcon" methodname="DragOutsideClearsCooldownAndDragIcon" classname="SkillSlotCooldownPlayModeTests" runstate="Runnable" seed="1534649109" result="Passed" start-time="2026-10-19 22:59:00Z" end-time="2026-10-19 22:59:00Z" duration="0.066640" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[Q / MovementProbeSkill
+]]></output></test-case><test-case id="1087" name="FrameUpdateClearsEmptySlotWithoutRefresh" fullname="SkillSlotCooldownPlayModeTests.FrameUpdateClearsEmptySlotWithoutRefresh" methodname="FrameUpdateClearsEmptySlotWithoutRefresh" classname="SkillSlotCooldownPlayModeTests" runstate="Runnable" seed="1445551485" result="Passed" start-time="2026-10-19 22:59:00Z" end-time="2026-10-19 22:59:00Z" duration="0.067360" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[Q / MovementProbeSkill
+]]></output></test-case><test-case id="1086" name="MovingToEmptySlotTransfersCooldownDisplay" fullname="SkillSlotCooldownPlayModeTests.MovingToEmptySlotTransfersCooldownDisplay" methodname="MovingToEmptySlotTransfersCooldownDisplay" classname="SkillSlotCooldownPlayModeTests" runstate="Runnable" seed="266498478" result="Passed" start-time="2026-10-19 22:59:00Z" end-time="2026-10-19 22:59:00Z" duration="0.066192" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[Q / MovementProbeSkill
+]]></output></test-case><test-case id="1084" name="RightClickClearsAndReequipRetainsActualCooldown" fullname="SkillSlotCooldownPlayModeTests.RightClickClearsAndReequipRetainsActualCooldown" methodname="RightClickClearsAndReequipRetainsActualCooldown" classname="SkillSlotCooldownPlayModeTests" runstate="Runnable" seed="1601777982" result="Passed" start-time="2026-10-19 22:59:00Z" end-time="2026-10-19 22:59:00Z" duration="0.067009" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[Q / MovementProbeSkill
+Q / MovementProbeSkill
+]]></output></test-case></test-suite><test-suite type="TestFixture" id="1088" name="VideoRecoveryPlayModeTests" fullname="VideoRecoveryPlayModeTests" classname="VideoRecoveryPlayModeTests" runstate="Runnable" testcasecount="8" result="Passed" start-time="2026-10-19 22:59:00Z" end-time="2026-10-19 22:59:01Z" duration="1.216167" total="8" passed="8" failed="0" inconclusive="0" skipped="0" asserts="0"><properties /><test-case id="1093" name="DisabledManagerCancelsWarpWithoutMoving" fullname="VideoRecoveryPlayModeTests.DisabledManagerCancelsWarpWithoutMoving" methodname="DisabledManagerCancelsWarpWithoutMoving" classname="VideoRecoveryPlayModeTests" runstate="Runnable" seed="1695190209" result="Passed" start-time="2026-10-19 22:59:00Z" end-time="2026-10-19 22:59:00Z" duration="0.182856" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+]]></output></test-case><test-case id="1095" name="DungeonObjectivesStayHiddenUntilVideoFrameIsReleased" fullname="VideoRecoveryPlayModeTests.DungeonObjectivesStayHiddenUntilVideoFrameIsReleased" methodname="DungeonObjectivesStayHiddenUntilVideoFrameIsReleased" classname="VideoRecoveryPlayModeTests" runstate="Runnable" seed="149389275" result="Passed" start-time="2026-10-19 22:59:00Z" end-time="2026-10-19 22:59:00Z" duration="0.068387" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[[VideoPlayManager] Video error: objective visibility test decode failure
+[VideoPlayManager] Video error: objective visibility test decode failure
+]]></output></test-case><test-case id="1091" name="ErrorAndCompletionHidePresentation" fullname="VideoRecoveryPlayModeTests.ErrorAndCompletionHidePresentation" methodname="ErrorAndCompletionHidePresentation" classname="VideoRecoveryPlayModeTests" runstate="Runnable" seed="1808574560" result="Passed" start-time="2026-10-19 22:59:00Z" end-time="2026-10-19 22:59:00Z" duration="0.064767" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[[VideoPlayManager] Video error: test decode failure
+]]></output></test-case><test-case id="1092" name="MissingVideoWarpCompletesAndRestoresControls" fullname="VideoRecoveryPlayModeTests.MissingVideoWarpCompletesAndRestoresControls" methodname="MissingVideoWarpCompletesAndRestoresControls" classname="VideoRecoveryPlayModeTests" runstate="Runnable" seed="252747165" result="Passed" start-time="2026-10-19 22:59:00Z" end-time="2026-10-19 22:59:00Z" duration="0.172960" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[0
+Q / MovementProbeSkill
+[DungeonManager] Cutscene unavailable; continuing the warp.
+]]></output></test-case><test-case id="1096" name="OverlappingTimelinesPauseAndCancellationRestoreObjectives" fullname="VideoRecoveryPlayModeTests.OverlappingTimelinesPauseAndCancellationRestoreObjectives" methodname="OverlappingTimelinesPauseAndCancellationRestoreObjectives" classname="VideoRecoveryPlayModeTests" runstate="Runnable" seed="203726547" result="Passed" start-time="2026-10-19 22:59:00Z" end-time="2026-10-19 22:59:01Z" duration="0.326557" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties></test-case><test-case id="1090" name="SkipDisableAndStaleSessionAreSafe" fullname="VideoRecoveryPlayModeTests.SkipDisableAndStaleSessionAreSafe" methodname="SkipDisableAndStaleSessionAreSafe" classname="VideoRecoveryPlayModeTests" runstate="Runnable" seed="709399123" result="Passed" start-time="2026-10-19 22:59:01Z" end-time="2026-10-19 22:59:01Z" duration="0.066432" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties></test-case><test-case id="1094" name="TransitionFrameIsOwnedAndReleasedOnCancelDisableOrFailure" fullname="VideoRecoveryPlayModeTests.TransitionFrameIsOwnedAndReleasedOnCancelDisableOrFailure" methodname="TransitionFrameIsOwnedAndReleasedOnCancelDisableOrFailure" classname="VideoRecoveryPlayModeTests" runstate="Runnable" seed="345628944" result="Passed" start-time="2026-10-19 22:59:01Z" end-time="2026-10-19 22:59:01Z" duration="0.099754" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[[VideoPlayManager] Video error: transition decode failure
+]]></output></test-case><test-case id="1089" name="WatchdogUsesRealtimeAndUnlocksFailedPlayback" fullname="VideoRecoveryPlayModeTests.WatchdogUsesRealtimeAndUnlocksFailedPlayback" methodname="WatchdogUsesRealtimeAndUnlocksFailedPlayback" classname="VideoRecoveryPlayModeTests" runstate="Runnable" seed="1560418842" result="Passed" start-time="2026-10-19 22:59:01Z" end-time="2026-10-19 22:59:01Z" duration="0.217009" asserts="0"><properties><property name="_JOINTYPE" value="UnityCombinatorial" /></properties><output><![CDATA[[VideoPlayManager] Playback timed out or VideoPlayer became unavailable.
+]]></output></test-case></test-suite></test-suite></test-suite>

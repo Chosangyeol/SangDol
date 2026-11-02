@@ -168,7 +168,7 @@ public class CharacterModel : MonoBehaviour
             playerController.StopMove();
             return;
         }
-
+#if UNITY_EDITOR
         if (Input.GetKeyDown(KeyCode.F1))
         {
             GainExp(1000);
@@ -178,6 +178,7 @@ public class CharacterModel : MonoBehaviour
         {
             Heal(1000);
         }
+#endif
     }
 
     public void SkillCorutaine(IEnumerator routine)
@@ -440,11 +441,12 @@ public class CharacterModel : MonoBehaviour
                 damageMultiplier = 1f; // 두 번째 공격은 20% 증가
                 break;
             case 2:
+            case 3:
                 hitRadius = 4f;
                 hitAngle = 90f;
                 damageMultiplier = 1.2f; // 세 번째 공격은 50% 증가
                 break;
-            default:
+            case 4:
                 damageMultiplier = 1.5f;
                 HandleBasicAttack4(damageMultiplier);
                 return;
@@ -493,7 +495,8 @@ public class CharacterModel : MonoBehaviour
         {
             EnemyBase enemy = target.GetComponentInParent<EnemyBase>();
 
-            if (enemy != null && !hitEnemies.Contains(enemy))
+            if (enemy != null && !enemy.IsDead &&
+                !(enemy is BossModel boss && boss.isImmunity) && !hitEnemies.Contains(enemy))
             {
                 Vector3 dir = (enemy.transform.position - transform.position).normalized;
                 dir.y = 0;
@@ -506,6 +509,7 @@ public class CharacterModel : MonoBehaviour
                 {
                     hitEnemies.Add(enemy);
                     enemy.Damaged(info);
+                    GainIden(2f);
                     OnHitTarget?.Invoke(this, info.damage, true, enemy);
                 }
             }
@@ -578,9 +582,11 @@ public class CharacterModel : MonoBehaviour
         foreach (Collider target in targets)
         {
             EnemyBase enemy = target.GetComponentInParent<EnemyBase>();
-            if (enemy != null && hitEnemies.Add(enemy))
+            if (enemy != null && !enemy.IsDead &&
+                !(enemy is BossModel boss && boss.isImmunity) && hitEnemies.Add(enemy))
             {
                 enemy.Damaged(info);
+                GainIden(4f);
                 OnHitTarget?.Invoke(this, info.damage, true, enemy);
 
                 ICounterable counterable = enemy.GetComponentInParent<ICounterable>();
@@ -765,19 +771,26 @@ public class CharacterModel : MonoBehaviour
     {
         canMove = false;
         canAttack = false;
-        Anim.SetTrigger("IdenOn");
+        if (Anim != null) Anim.SetTrigger("IdenOn");
         isIdenOn = true;
 
-        idenEffectObject = PoolManager.Instance.Pop(idenEnableEffect.name);
-
-        idenEffectObject.transform.SetParent(this.transform);
-        idenEffectObject.transform.localPosition = new Vector3(0, 0, 0);
+        if (PoolManager.Instance != null && idenEnableEffect != null)
+        {
+            idenEffectObject = PoolManager.Instance.Pop(idenEnableEffect.name);
+            if (idenEffectObject != null)
+            {
+                idenEffectObject.transform.SetParent(transform);
+                idenEffectObject.transform.localPosition = Vector3.zero;
+            }
+        }
 
     }
 
     public void IdenDisable()
     {
         isIdenOn = false;
+        // Remove the aura immediately; the finishing animation can be interrupted.
+        RemoveIdenAura();
 
         if (attackCoroutine != null)
         {
@@ -932,11 +945,13 @@ public class CharacterModel : MonoBehaviour
     public void GainIden(float amount)
     {
         Stat.GainIden(amount);
+        GameEvent.OnStatChange?.Invoke(Stat.Stat);
     }
 
     public void ResetIden()
     {
         Stat.ResetIden();
+        GameEvent.OnStatChange?.Invoke(Stat.Stat);
     }
 
     public void GainExp(float amount)

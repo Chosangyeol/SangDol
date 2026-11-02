@@ -26,7 +26,7 @@ MonoBehaviour:
   talkDialogID: D_30004_001
   npcQuests:
   - questID: Q_30001_003
-    requiredQuestID: 
+    requiredQuestID: Q_30001_002
     startDialogID: D_30004_002
     inProgressDialogueID: 
     clearDialogueID: D_30004_010

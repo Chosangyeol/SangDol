@@ -336,6 +336,8 @@ public static class GameplayAuditRuntimeCases
     {
         using (var r = new MovementRig(true))
         {
+            ((UnityEditor.Animations.AnimatorController)r.Model.Anim.runtimeAnimatorController)
+                .AddParameter("AttackSpeed", AnimatorControllerParameterType.Float);
             var enemy = new GameObject("AuditEnemy");
             try
             {
@@ -347,15 +349,136 @@ public static class GameplayAuditRuntimeCases
                     child.AddComponent<BoxCollider>();
                 }
                 int notifications = 0; r.Model.OnHitTarget += (_, __, ___, ____) => notifications++;
+                r.Model.ResetIden();
                 Physics.SyncTransforms();
-                for (int combo = 0; combo < 4; combo++)
+                for (int combo = 1; combo <= 4; combo++)
                 {
                     r.Controller.currentCombo = combo; r.Model.OnAttackHit();
-                    Assert.AreEqual(combo + 1, probe.Hits); Assert.AreEqual(combo + 1, probe.Counters);
-                    Assert.AreEqual(combo + 1, notifications);
+                    Assert.AreEqual(combo, probe.Hits); Assert.AreEqual(combo, probe.Counters);
+                    Assert.AreEqual(combo, notifications);
+                    Assert.AreEqual(combo == 4 ? 10f : combo * 2f, r.Model.Stat.Stat.idenCurrent);
                 }
             }
             finally { UnityEngine.Object.DestroyImmediate(enemy); }
+        }
+        yield return null;
+    }
+
+    public static IEnumerator IdentitySkillConsumesOnlyAtFullGauge()
+    {
+        using (var r = new MovementRig(true))
+        {
+            var buff = ScriptableObject.CreateInstance<BuffSO>();
+            try
+            {
+                r.Model.skill_ZSO.buffSO = buff;
+                var controller = (UnityEditor.Animations.AnimatorController)r.Model.Anim.runtimeAnimatorController;
+                controller.AddParameter("AttackSpeed", AnimatorControllerParameterType.Float);
+                controller.AddParameter("IdenOn", AnimatorControllerParameterType.Trigger);
+                var skill = new Skill_Z(r.Model, r.Model.skill_ZSO);
+                r.Model.Stat.Stat.idenMax = 80f;
+                r.Model.Stat.Stat.idenCurrent = 79f;
+                Assert.IsFalse(skill.UseSkill(r.Model.transform.position + Vector3.forward));
+                Assert.IsTrue(skill.canUse);
+                Assert.AreEqual(79f, r.Model.Stat.Stat.idenCurrent);
+
+                r.Model.Stat.Stat.idenCurrent = 80f;
+                Assert.IsTrue(skill.UseSkill(r.Model.transform.position + Vector3.forward));
+                Assert.IsFalse(skill.canUse);
+                Assert.AreEqual(0f, r.Model.Stat.Stat.idenCurrent);
+            }
+            finally { UnityEngine.Object.DestroyImmediate(buff); }
+        }
+        yield return null;
+    }
+
+    public static IEnumerator SpinningSkillGrantsIdentityOnceAcrossRepeatedHits()
+    {
+        using (var r = new MovementRig(true))
+        {
+            var data = ScriptableObject.CreateInstance<Skill_4SO>();
+            var enemy = new GameObject("IdentitySpinTarget");
+            try
+            {
+                data.idenGain = 20f;
+                data.skillEffects = new PoolableMono[0];
+                data.maxChargeTime = 10f;
+                var controller = (UnityEditor.Animations.AnimatorController)r.Model.Anim.runtimeAnimatorController;
+                controller.AddParameter("AttackSpeed", AnimatorControllerParameterType.Float);
+                controller.AddParameter("Skill4_Spin", AnimatorControllerParameterType.Trigger);
+                var skill = new Skill_4(r.Model, data);
+                r.Model.ResetIden();
+                Assert.IsTrue(skill.UseSkill(r.Model.transform.position + Vector3.forward));
+
+                enemy.transform.position = r.Model.transform.position + Vector3.forward * 10f;
+                enemy.layer = LayerMask.NameToLayer("Enemy");
+                var probe = enemy.AddComponent<AuditCounterEnemy>();
+                enemy.AddComponent<BoxCollider>();
+                Physics.SyncTransforms();
+                skill.UpdateSkill(0.6f);
+                Assert.AreEqual(0f, r.Model.Stat.Stat.idenCurrent);
+
+                enemy.transform.position = r.Model.transform.position + Vector3.forward * 2f;
+                Physics.SyncTransforms();
+                skill.UpdateSkill(0.6f);
+                Assert.Greater(probe.Hits, 0);
+                Assert.AreEqual(20f, r.Model.Stat.Stat.idenCurrent);
+
+                skill.UpdateSkill(0.6f);
+                Assert.Greater(probe.Hits, 1);
+                Assert.AreEqual(20f, r.Model.Stat.Stat.idenCurrent);
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(enemy);
+                UnityEngine.Object.DestroyImmediate(data);
+            }
+        }
+        yield return null;
+    }
+
+    public static IEnumerator SkillHitGrantsIdentityOnceAfterFirstValidTarget()
+    {
+        using (var r = new MovementRig(true))
+        {
+            var data = ScriptableObject.CreateInstance<Skill_2SO>();
+            var enemy = new GameObject("IdentitySkillTarget");
+            try
+            {
+                ((UnityEditor.Animations.AnimatorController)r.Model.Anim.runtimeAnimatorController)
+                    .AddParameter("AttackSpeed", AnimatorControllerParameterType.Float);
+                data.idenGain = 10f;
+                data.attackRadius = 3f;
+                data.forwardOffset = 0f;
+                data.damageMultipliers = new[] { 1f };
+                data.skillEffects = new PoolableMono[0];
+                var skill = new Skill_2(r.Model, data);
+                var attack = r.Model.GetComponent<PlayerAttackContainer>();
+                r.Model.ResetIden();
+                Assert.IsTrue(skill.UseSkill(r.Model.transform.position + Vector3.forward));
+                attack.AnimEvent_ExevuteSkillAttack();
+                Assert.AreEqual(0f, r.Model.Stat.Stat.idenCurrent);
+
+                enemy.transform.position = r.Model.transform.position + Vector3.forward * 2f;
+                enemy.layer = LayerMask.NameToLayer("Enemy");
+                var probe = enemy.AddComponent<AuditCounterEnemy>();
+                enemy.AddComponent<BoxCollider>();
+                var secondCollider = new GameObject("SecondCollider");
+                secondCollider.transform.SetParent(enemy.transform, false);
+                secondCollider.layer = enemy.layer;
+                secondCollider.AddComponent<BoxCollider>();
+                Physics.SyncTransforms();
+                attack.AnimEvent_ExevuteSkillAttack();
+                Assert.Greater(probe.Hits, 0);
+                Assert.AreEqual(10f, r.Model.Stat.Stat.idenCurrent);
+                attack.AnimEvent_ExevuteSkillAttack();
+                Assert.AreEqual(10f, r.Model.Stat.Stat.idenCurrent);
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(enemy);
+                UnityEngine.Object.DestroyImmediate(data);
+            }
         }
         yield return null;
     }

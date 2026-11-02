@@ -8,6 +8,8 @@ public class D1_MiddleBoss : BossModel
     [SerializeField, Min(0f)] private float spellRecovery = 1.2f;
     [SerializeField, Min(0.1f)] private float spellRadius = 2.5f;
     [SerializeField, Min(0f)] private float spellCooldown = 4f;
+    [Header("공격 템포")]
+    [SerializeField, Min(0f)] private float postAttackDelay = 1.2f;
     [Header("전투 크기 (등장 연출 크기 기준)")]
     [SerializeField, Range(.01f, 1f)] private float combatScaleMultiplier = .5f;
     [Header("짤패턴")]
@@ -185,9 +187,13 @@ public class D1_MiddleBoss : BossModel
     private IEnumerator CastSpell()
     {
         if (Anim != null && Anim.runtimeAnimatorController != null) Anim.SetTrigger("Attack");
+        var line = Telegraph(transform.position, spellRadius, 360f);
         yield return new WaitForSeconds(spellWindup);
         HitArea(transform.position, spellRadius, false, 1f);
+        if (line != null) line.startColor = line.endColor = Color.red;
+        RemoveTelegraph(line);
         yield return new WaitForSeconds(spellRecovery);
+        yield return new WaitForSeconds(postAttackDelay);
         OnPatternEnd();
     }
 
@@ -203,6 +209,7 @@ public class D1_MiddleBoss : BossModel
         HitArea(transform.position, swipeRadius, true, .7f, facing);
         RemoveTelegraph(line);
         yield return new WaitForSeconds(swipeRecovery);
+        yield return new WaitForSeconds(postAttackDelay);
         OnPatternEnd();
     }
 
@@ -220,6 +227,7 @@ public class D1_MiddleBoss : BossModel
         HitArea(center, pulseRadius, false, .55f);
         RemoveTelegraph(line);
         yield return new WaitForSeconds(.45f);
+        yield return new WaitForSeconds(postAttackDelay);
         OnPatternEnd();
     }
 
@@ -254,6 +262,7 @@ public class D1_MiddleBoss : BossModel
             HitArea(transform.position, swoopRadius, false, 1.2f);
         RemoveTelegraph(line);
         yield return new WaitForSeconds(swoopRecovery);
+        yield return new WaitForSeconds(postAttackDelay);
         OnPatternEnd();
     }
 

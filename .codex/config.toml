@@ -55,3 +55,24 @@ approval_mode = "approve"
 
 [mcp_servers.ai-game-developer.tools.select_engine_instance]
 approval_mode = "approve"
+
+[mcp_servers.ai-game-developer.tools.scene-open]
+approval_mode = "approve"
+
+[mcp_servers.ai-game-developer.tools.assets-prefab-instantiate]
+approval_mode = "approve"
+
+[mcp_servers.ai-game-developer.tools.scene-unload]
+approval_mode = "approve"
+
+[mcp_servers.ai-game-developer.tools.scene-set-active]
+approval_mode = "approve"
+
+[mcp_servers.ai-game-developer.tools.gameobject-duplicate]
+approval_mode = "approve"
+
+[mcp_servers.ai-game-developer.tools.gameobject-set-parent]
+approval_mode = "approve"
+
+[mcp_servers.ai-game-developer.tools.animation-modify]
+approval_mode = "approve"

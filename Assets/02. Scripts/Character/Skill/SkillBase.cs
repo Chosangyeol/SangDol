@@ -23,6 +23,7 @@ public abstract class SkillBase
     public float currentHoldTime = 0f;
 
     protected PlayerAttackContainer _attackContainer;
+    private bool identityGainAvailable;
     private bool managedExecution;
     private bool executionCancelled;
     private readonly List<Coroutine> executionRoutines = new List<Coroutine>();
@@ -79,6 +80,7 @@ public abstract class SkillBase
     {
         if (!managedExecution || executionCancelled) return;
         executionCancelled = true;
+        identityGainAvailable = false;
         bool wasCharging = isCharging;
         isCharging = false;
         isPerfectCharge = false;
@@ -143,10 +145,26 @@ public abstract class SkillBase
             _model.PlayerController.FaceTo(targetPos);
 
             currentHoldTime = 0f;
+            identityGainAvailable = true;
 
             return true;
         }
         return false;
+    }
+
+    internal void GrantIdentityOnHit()
+    {
+        if (!identityGainAvailable || skillData == null || skillData.idenGain <= 0f ||
+            !(this is Skill_1 || this is Skill_2 || this is Skill_3 || this is Skill_4)) return;
+        identityGainAvailable = false;
+        _model.GainIden(skillData.idenGain);
+    }
+
+    internal void CancelIdentityGain()
+    {
+        identityGainAvailable = false;
+        if (_attackContainer != null && _attackContainer.currentSkill == this)
+            _attackContainer.currentSkill = null;
     }
 
     public virtual void ReleaseSkill(Vector3 targetPos) { }

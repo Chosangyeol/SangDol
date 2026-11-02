@@ -18,9 +18,9 @@ MonoBehaviour:
     \uAC15\uB825\uD55C \uC815\uAD8C \uC9C0\uB974\uAE30\uB97C \uB0B4\uC9C8\uB7EC %%%\uC758
     \uD53C\uD574\uB97C \uC90D\uB2C8\uB2E4."
   skillIcon: {fileID: 21300000, guid: f95ce893fbd58f542aba5399c0b03e63, type: 3}
-  requireLevel: 0
+  requireLevel: 5
   maxLevel: 10
-  skillCool: 1
+  skillCool: 6
   damageMultipliers:
   - 1.5
   - 1.7
@@ -38,7 +38,7 @@ MonoBehaviour:
   attackShape: 0
   forwardOffset: 1.5
   knockDownPower: 4
-  idenGain: 4
+  idenGain: 5
   attackRadius: 2
   boxSize: {x: 2, y: 2, z: 4}
   skillEffects:

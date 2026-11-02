@@ -47,9 +47,11 @@ public class BossModel : EnemyBase, ICounterable
 
     protected List<BossPatternBase> normalPatterns = new List<BossPatternBase>();
     protected BossPatternBase currentPattern = null;
+    private BossPatternBase lastNormalPattern;
 
     [Header("Defeat presentation")]
     [SerializeField] private VideoClip defeatCutsceneClip;
+    [SerializeField, HideInInspector] private WebVideoSource defeatCutsceneClipWeb;
     [SerializeField, Min(0f)] private float deathPresentationDelay = 3f;
     private bool deathSequenceFinished;
     internal bool IsDeathSequenceFinished => _isDead && deathSequenceFinished;
@@ -76,6 +78,7 @@ public class BossModel : EnemyBase, ICounterable
         if (specialPatterns != null)
             foreach (var pattern in specialPatterns) if (pattern != null) pattern.hasDone = false;
         foreach (var pattern in normalPatterns) pattern?.ResetCooldown();
+        lastNormalPattern = null;
         if (_agent != null)
         {
             _agent.enabled = initialAgentEnabled;
@@ -237,7 +240,7 @@ public class BossModel : EnemyBase, ICounterable
     {
         if (deathPresentationDelay > 0f) yield return new WaitForSecondsRealtime(deathPresentationDelay);
         VideoPlayManager video = VideoPlayManager.instance;
-        if (defeatCutsceneClip != null && video != null && !video.isPlaying)
+        if (WebVideoSource.HasVideo(defeatCutsceneClip, defeatCutsceneClipWeb) && video != null && !video.isPlaying)
         {
             deathVideoManager = video;
             if (Target != null && !Target.isDie && !Target.IsExternalControlLocked)
@@ -246,7 +249,7 @@ public class BossModel : EnemyBase, ICounterable
                 Target.PlayerController?.StopMove();
                 Target.SetControlable(false);
             }
-            if (deathVideoManager.TryPlayVideo(defeatCutsceneClip, out deathVideoSession))
+            if (deathVideoManager.TryPlayVideoSource(defeatCutsceneClip, defeatCutsceneClipWeb, out deathVideoSession))
                 while (deathVideoManager != null && deathVideoManager.IsPlaybackActive(deathVideoSession))
                     yield return null;
         }
@@ -317,7 +320,15 @@ public class BossModel : EnemyBase, ICounterable
             }
         }
 
-        if (activePatterns.Count == 0) return false;
+        // Keep the bat's available attack patterns visibly varied instead of allowing
+        // random selection to repeat the same attack while alternatives are ready.
+        if (this is D1_MiddleBoss && activePatterns.Count > 1 &&
+            activePatterns.Remove(lastNormalPattern))
+        {
+            totalWeight -= lastNormalPattern.weight;
+        }
+
+        if (activePatterns.Count == 0 || totalWeight <= 0f) return false;
 
         float random = Random.Range(0, totalWeight);
         float currentWeight = 0f;
@@ -329,6 +340,7 @@ public class BossModel : EnemyBase, ICounterable
             if (random <= currentWeight)
             {
                 currentPattern = pattern;
+                lastNormalPattern = currentPattern;
                 currentPattern.Execute(this);
                 return true;
             }

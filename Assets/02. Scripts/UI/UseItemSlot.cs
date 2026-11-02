@@ -39,7 +39,17 @@ public class UseItemSlot : MonoBehaviour,
         _inventory = inventory;
         this.tooltip = tooltip;
 
+        if (_inventory.useSlots.TryGetValue(useSlot, out int inventoryIndex))
+            rinkedSlotIndex = inventoryIndex;
+
         rootCanvas = GetComponentInParent<Canvas>();
+    }
+
+    internal void SetInventoryItemIndex(int inventoryIndex)
+    {
+        rinkedSlotIndex = inventoryIndex;
+        _inventory.useSlots[useSlot] = inventoryIndex;
+        Refresh();
     }
 
     public void Refresh()

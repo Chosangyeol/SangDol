@@ -483,6 +483,10 @@ MonoBehaviour:
   middleBossSpawnPoint: {fileID: 14414222841257564}
   middleBossIntroductionPoint: {fileID: 8652414244869245494}
   introductionVideo: {fileID: 32900000, guid: 8859abe22ea92a14094270fef242b69c, type: 3}
+  introductionVideoWeb:
+    relativePath: Videos/8859abe22ea92a14094270fef242b69c.mp4
+    length: 5.541666666666667
+    audioTracks: 1
   cameraRig: {fileID: 5016909728547301764}
   cinematicPlayerStandIn: {fileID: 7366161018943773597}
   transitionFade: {fileID: 1619878718350136907}
@@ -6209,7 +6213,7 @@ Transform:
   m_GameObject: {fileID: 4664410542468736113}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 13.31604, y: -1.2182796, z: -11.526245}
+  m_LocalPosition: {x: 13.31604, y: -1.2182796, z: 48}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

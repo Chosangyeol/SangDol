@@ -8233,6 +8233,21 @@ PrefabInstance:
       propertyPath: warpDatas.Array.data[1].playerRespawn
       value: 
       objectReference: {fileID: 188329876}
+    - target: {fileID: 6292796012629706706, guid: 4c09c35c3d85ce64db55b44f895ed03e,
+        type: 3}
+      propertyPath: warpDatas.Array.data[1].clipWeb.length
+      value: 43.166666666666664
+      objectReference: {fileID: 0}
+    - target: {fileID: 6292796012629706706, guid: 4c09c35c3d85ce64db55b44f895ed03e,
+        type: 3}
+      propertyPath: warpDatas.Array.data[1].clipWeb.audioTracks
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6292796012629706706, guid: 4c09c35c3d85ce64db55b44f895ed03e,
+        type: 3}
+      propertyPath: warpDatas.Array.data[1].clipWeb.relativePath
+      value: Videos/2c4e293229814374f8de31a201c4ccd7.mp4
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

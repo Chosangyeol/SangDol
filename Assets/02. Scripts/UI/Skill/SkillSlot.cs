@@ -184,14 +184,26 @@ public class SkillSlot : MonoBehaviour,
 
     public void OnDrop(PointerEventData eventData)
     {
-        if (cantChange) return;
+        if (cantChange)
+        {
+            // A rejected drop onto a locked slot must not be treated as dropping
+            // the skill outside the hotbar (which intentionally unequips it).
+            SkillSlot rejectedSource = eventData.pointerDrag?.GetComponent<SkillSlot>();
+            if (rejectedSource != null) rejectedSource.droppedOnSlot = true;
+            return;
+        }
 
         SkillSlot fromSlot = eventData.pointerDrag?.GetComponent<SkillSlot>();
-        if (fromSlot != null && fromSlot != this)
+        if (fromSlot != null)
         {
-            _skillSystem.Swap(fromSlot.skillSlot, this.skillSlot);
-            Refresh();
-            fromSlot.Refresh();
+            // Prevent OnEndDrag from clearing the source after a successful slot drop.
+            fromSlot.droppedOnSlot = true;
+            if (fromSlot != this)
+            {
+                _skillSystem.Swap(fromSlot.skillSlot, this.skillSlot);
+                Refresh();
+                fromSlot.Refresh();
+            }
             return;
         }
 

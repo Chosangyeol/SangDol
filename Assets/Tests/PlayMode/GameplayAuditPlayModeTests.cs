@@ -32,6 +32,9 @@ public class GameplayAuditPlayModeTests
         return (IEnumerator)type.GetMethod(name).Invoke(null, null);
     }
     [UnityTest] public IEnumerator BasicAttackDamagesAndCountersEachEnemyOnce() => Run(nameof(BasicAttackDamagesAndCountersEachEnemyOnce));
+    [UnityTest] public IEnumerator IdentitySkillConsumesOnlyAtFullGauge() => Run(nameof(IdentitySkillConsumesOnlyAtFullGauge));
+    [UnityTest] public IEnumerator SpinningSkillGrantsIdentityOnceAcrossRepeatedHits() => Run(nameof(SpinningSkillGrantsIdentityOnceAcrossRepeatedHits));
+    [UnityTest] public IEnumerator SkillHitGrantsIdentityOnceAfterFirstValidTarget() => Run(nameof(SkillHitGrantsIdentityOnceAfterFirstValidTarget));
     [UnityTest] public IEnumerator PumpkinAttackHitsOnceAndRejectsInvalidTargets() => Run(nameof(PumpkinAttackHitsOnceAndRejectsInvalidTargets));
     [UnityTest] public IEnumerator ReopeningNpcUiDoesNotDuplicateTalkButtons() => Run(nameof(ReopeningNpcUiDoesNotDuplicateTalkButtons));
 }

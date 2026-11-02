@@ -48,4 +48,7 @@ MonoBehaviour:
   titleSceneName: Title
   returnDelay: 5
   endingVideo: {fileID: 32900000, guid: 1eab8bf75d3fc60419a778ca448268f3, type: 3}
+  endingVideoWeb:
+    relativePath: Videos/1eab8bf75d3fc60419a778ca448268f3.mp4
+    length: 8
   endingDirector: {fileID: 0}

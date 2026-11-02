@@ -8,6 +8,8 @@ public class DungentEnterUI : MonoBehaviour
 {
     private DungeonDataSO dataSO;
 
+    [SerializeField, Min(1)] private int portalTargetLevel = 10;
+
     [Header("던전 입장 UI")]
     public Image dungeonBackGroundImage;
     public TMP_Text dungeonNameText;
@@ -25,6 +27,8 @@ public class DungentEnterUI : MonoBehaviour
 
     public void EnterDungeon()
     {
+        CharacterModel player = FindAnyObjectByType<CharacterModel>();
+        PortalTrialSetup.Apply(player, portalTargetLevel);
         SceneChanger.instance.LoadScene(dataSO.dungeonSceneName,"Spawn_Default",dataSO.loadingImage);
         Toggle(true);
     }

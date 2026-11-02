@@ -20,6 +20,7 @@ public sealed class D1_FinalBoss60Presentation : MonoBehaviour
     [SerializeField] private Transform middleBossSpawnPoint;
     [SerializeField] private Transform middleBossIntroductionPoint;
     [SerializeField] private VideoClip introductionVideo;
+    [SerializeField, HideInInspector] private WebVideoSource introductionVideoWeb;
     [SerializeField] private GameObject cameraRig;
     [SerializeField] private GameObject cinematicPlayerStandIn;
     [Header("Transition fade")]
@@ -49,12 +50,15 @@ public sealed class D1_FinalBoss60Presentation : MonoBehaviour
         public GameObject prefab;
         public Transform waiting, spawn;
         public VideoClip video;
+        public WebVideoSource webVideo;
     }
     private readonly Dictionary<D1_FinalBoss, PreviousBinding> previousDirectors = new Dictionary<D1_FinalBoss, PreviousBinding>();
     private Camera gameplayCamera;
     private AudioSource pausedMusic;
     private bool presenting;
     private bool keepArena;
+    private bool middleBossIntroductionCompleted;
+    internal bool MiddleBossIntroductionCompleted => middleBossIntroductionCompleted;
 
     private void OnEnable()
     {
@@ -80,14 +84,18 @@ public sealed class D1_FinalBoss60Presentation : MonoBehaviour
         {
             director = boss.Special3.cutsceneDirector, actor = boss.Special3.sceneMiddleBoss,
             prefab = boss.Special3.prefab, waiting = boss.Special3.waitingArea,
-            spawn = boss.Special3.middleBossSpawnPoint, video = boss.Special3.cutsceneClip
+            spawn = boss.Special3.middleBossSpawnPoint, video = boss.Special3.cutsceneClip, webVideo = boss.Special3.cutsceneClipWeb
         });
         boss.Special3.cutsceneDirector = director;
         if (middleBoss != null) boss.Special3.sceneMiddleBoss = middleBoss;
         if (middleBossPrefab != null) boss.Special3.prefab = middleBossPrefab;
         if (waitingArea != null) boss.Special3.waitingArea = waitingArea;
         if (middleBossSpawnPoint != null) boss.Special3.middleBossSpawnPoint = middleBossSpawnPoint;
-        if (introductionVideo != null) boss.Special3.cutsceneClip = introductionVideo;
+        if (WebVideoSource.HasVideo(introductionVideo, introductionVideoWeb))
+        {
+            boss.Special3.cutsceneClip = introductionVideo;
+            boss.Special3.cutsceneClipWeb = introductionVideoWeb;
+        }
     }
 
     private void OnPlayed(PlayableDirector source)
@@ -173,6 +181,11 @@ public sealed class D1_FinalBoss60Presentation : MonoBehaviour
         if (cinematicPlayerStandIn != null) cinematicPlayerStandIn.SetActive(false);
     }
 
+    internal void MarkMiddleBossIntroductionCompleted()
+    {
+        middleBossIntroductionCompleted = true;
+    }
+
     internal void FinishEncounter()
     {
         if (transitionFade != null) transitionFade.alpha = 0f;
@@ -213,6 +226,7 @@ public sealed class D1_FinalBoss60Presentation : MonoBehaviour
             if (waitingArea != null && data.waitingArea == waitingArea) data.waitingArea = pair.Value.waiting;
             if (middleBossSpawnPoint != null && data.middleBossSpawnPoint == middleBossSpawnPoint) data.middleBossSpawnPoint = pair.Value.spawn;
             if (introductionVideo != null && data.cutsceneClip == introductionVideo) data.cutsceneClip = pair.Value.video;
+            if (data.cutsceneClipWeb == introductionVideoWeb) data.cutsceneClipWeb = pair.Value.webVideo;
         }
         previousDirectors.Clear();
     }

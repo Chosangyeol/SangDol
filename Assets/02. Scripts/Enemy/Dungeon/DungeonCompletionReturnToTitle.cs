@@ -17,6 +17,7 @@ public sealed class DungeonCompletionReturnToTitle : MonoBehaviour
 
     [Header("엔딩 연출 (영상 다음 Timeline)")]
     [SerializeField] private UnityEngine.Video.VideoClip endingVideo;
+    [SerializeField, HideInInspector] private WebVideoSource endingVideoWeb;
     [SerializeField] private UnityEngine.Playables.PlayableDirector endingDirector;
     private VideoPlayManager endingVideoManager;
     private int endingVideoSession;
@@ -32,13 +33,13 @@ public sealed class DungeonCompletionReturnToTitle : MonoBehaviour
         var audio = AudioManager.instance;
         var bgm = audio != null ? audio.transform.Find("BGM_Player")?.GetComponent<AudioSource>() : null;
         if (bgm != null && bgm.isPlaying) { pausedMusic = bgm; bgm.Pause(); }
-        if (endingVideo != null)
+        if (WebVideoSource.HasVideo(endingVideo, endingVideoWeb))
         {
             endingVideoManager = VideoPlayManager.instance;
             float deadline = Time.realtimeSinceStartup + 20f;
             // Never cancel another caller's active session.
             while (endingVideoManager != null && endingVideoManager.isPlaying && Time.realtimeSinceStartup < deadline) yield return null;
-            if (endingVideoManager != null && endingVideoManager.TryPlayVideo(endingVideo, out endingVideoSession))
+            if (endingVideoManager != null && endingVideoManager.TryPlayVideoSource(endingVideo, endingVideoWeb, out endingVideoSession))
                 while (endingVideoManager != null && endingVideoManager.IsPlaybackActive(endingVideoSession)) yield return null;
         }
         if (endingDirector != null && endingDirector.isActiveAndEnabled && endingDirector.playableAsset != null)

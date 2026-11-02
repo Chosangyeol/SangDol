@@ -118,6 +118,7 @@ GameObject:
   - component: {fileID: 1331419057471550655}
   - component: {fileID: 3523961876848002721}
   - component: {fileID: 4361333004305295713}
+  - component: {fileID: 8254879453907420675}
   m_Layer: 0
   m_Name: Screen
   m_TagString: Untagged
@@ -247,6 +248,23 @@ VideoPlayer:
   m_WaitForFirstFrame: 1
   m_FrameReadyEventEnabled: 0
   m_VideoShaders: []
+--- !u!114 &8254879453907420675
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2682639175160456774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1dedf15b8f81b5649aed2f54d04e3301, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  source:
+    relativePath: Videos/2c4e293229814374f8de31a201c4ccd7.mp4
+    length: 43.166666666666664
+    audioTracks: 1
+  autoplay: 1
 --- !u!1 &7934189553648800033
 GameObject:
   m_ObjectHideFlags: 0

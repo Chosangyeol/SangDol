@@ -1,9 +1,11 @@
+using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
 
 public class Skill_4 : ChargeSkillBase
 {
     private float tickTimer = 0f;
+    internal const float HoldingTickDamageMultiplier = 2f;
     private const float TICK_INTERVAL = 0.5f; // 0.5초마다 다단히트
 
     private PoolableMono spinEffect;
@@ -56,12 +58,14 @@ public class Skill_4 : ChargeSkillBase
         int enemyLayer = LayerMask.GetMask("Enemy");
         Collider[] hitEnemies = Physics.OverlapSphere(_model.transform.position, 5f, enemyLayer);
 
+        HashSet<EnemyBase> damagedEnemies = new HashSet<EnemyBase>();
         foreach (Collider target in hitEnemies)
         {
             EnemyBase enemy = target.GetComponentInParent<EnemyBase>();
-            if (enemy != null)
+            if (enemy != null && damagedEnemies.Add(enemy) && !enemy.IsDead &&
+                !(enemy is BossModel boss && boss.isImmunity))
             {
-                float damageBase = _model.Stat.Stat.attackDamage.FinalValue * 2.0f;
+                float damageBase = _model.Stat.Stat.attackDamage.FinalValue * HoldingTickDamageMultiplier;
 
                 if (_model.Stigma != null && _model.Stigma.HasStigma(EStigmaType.Lv8_B))
                 {
@@ -85,7 +89,11 @@ public class Skill_4 : ChargeSkillBase
                     isBackattack = false
                 };
 
+                if (damageInfo.isCritical)
+                    damageInfo.damage *= _model.Stat.Stat.criticalDamage.FinalValue;
+
                 enemy.Damaged(damageInfo);
+                GrantIdentityOnHit();
             }
         }
 

@@ -42,13 +42,18 @@ public class VideoPlayManager : MonoBehaviour
 
     internal bool TryPlayVideo(VideoClip clip, out int session)
     {
+        return TryPlayVideoSource(clip, null, out session);
+    }
+
+    internal bool TryPlayVideoSource(VideoClip clip, WebVideoSource web, out int session)
+    {
         session = 0;
         // Other callers must not take over an owned playback.
         if (isPlaying || heldFrameSession != 0) return false;
         holdFrameOnCompletion = false;
         playbackSession++;
         result = VideoPlaybackResult.Failed;
-        if (clip == null || vp == null || !vp.isActiveAndEnabled || !isActiveAndEnabled)
+        if (!WebVideoSource.HasVideo(clip, web) || vp == null || !vp.isActiveAndEnabled || !isActiveAndEnabled)
         {
             Debug.LogWarning("[VideoPlayManager] Playback unavailable: clip or active VideoPlayer missing.");
             return false;
@@ -60,12 +65,17 @@ public class VideoPlayManager : MonoBehaviour
         {
             vp.Stop();
             if (vp.targetTexture != null) vp.targetTexture.Release();
-            vp.clip = clip; vp.isLooping = false;
+            if (!WebVideoSource.Configure(vp, clip, web, out double duration))
+            {
+                Finish(session, VideoPlaybackResult.Failed);
+                return false;
+            }
+            vp.isLooping = false;
             objectiveDungeon = DungeonManager.instance;
             if (objectiveDungeon != null) objectiveDungeon.SuppressObjectives(this);
             if (textureImage != null) textureImage.enabled = true;
             vp.Play();
-            watchdog = StartCoroutine(WatchPlayback(session, clip.length));
+            if (IsPlaybackActive(session)) watchdog = StartCoroutine(WatchPlayback(session, duration));
         }
         catch (System.Exception ex)
         {
@@ -92,8 +102,15 @@ public class VideoPlayManager : MonoBehaviour
     {
         float prepareDeadline = Time.realtimeSinceStartup + Mathf.Max(0.1f, preparationTimeout);
         float deadline = Time.realtimeSinceStartup + Mathf.Clamp((float)length + preparationTimeout + 5f, 5f, 3600f);
+        bool prepared = false;
         while (IsPlaybackActive(session))
         {
+            if (!prepared && vp != null && vp.isPrepared)
+            {
+                prepared = true;
+                double duration = length > 0d ? length : vp.length;
+                deadline = Time.realtimeSinceStartup + Mathf.Clamp((float)duration + 5f, 5f, 3600f);
+            }
             if (vp == null || !vp.isActiveAndEnabled ||
                 (!vp.isPrepared && Time.realtimeSinceStartup >= prepareDeadline) ||
                 Time.realtimeSinceStartup >= deadline)
@@ -130,7 +147,7 @@ public class VideoPlayManager : MonoBehaviour
     {
         holdFrameOnCompletion = false;
         heldFrameSession = 0;
-        if (vp != null) { vp.Stop(); vp.clip = null; }
+        if (vp != null) { vp.Stop(); vp.clip = null; vp.url = string.Empty; }
         if (textureImage != null) textureImage.enabled = false;
         if (objectiveDungeon != null) objectiveDungeon.RestoreObjectives(this);
         objectiveDungeon = null;

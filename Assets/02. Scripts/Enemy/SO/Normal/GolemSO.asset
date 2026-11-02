@@ -16,9 +16,9 @@ MonoBehaviour:
   enemyName: "\uACE8\uB818"
   isAggressive: 0
   canDown: 0
-  maxHp: 2000
+  maxHp: 1400
   level: 10
-  attackDamage: 170
+  attackDamage: 105
   moveSpeed: 3
   attackSpeed: 3
   down: 100
@@ -26,3 +26,4 @@ MonoBehaviour:
   attackRange: 3
   expAmount: 80
   goldAmount: 100
+  dropTableSO: {fileID: 0}

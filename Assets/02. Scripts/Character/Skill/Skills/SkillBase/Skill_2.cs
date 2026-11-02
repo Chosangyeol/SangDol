@@ -61,6 +61,7 @@ public class Skill_2 : SkillBase
         }
         finally
         {
+            if (!landed) CancelIdentityGain();
             if (_model != null && _agent != null)
             {
                 // Interrupted jumps return to a known valid point instead of enabling an agent in mid-air.

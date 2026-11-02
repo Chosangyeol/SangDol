@@ -146,10 +146,26 @@ public class SceneChanger : MonoBehaviour
 
         if (targetPoint != null && playerObject != null)
         {
-            // 에이전트가 있으면 Warp 사용, 없으면 transform.position 사용
+            // The agent is disabled while loading. Warp only when active; if it fails,
+            // move the transform while the agent is disabled and let the caller re-enable it.
             if (playerAgent != null)
             {
-                playerAgent.Warp(targetPoint.transform.position);
+                bool warped = playerAgent.isActiveAndEnabled &&
+                    playerAgent.Warp(targetPoint.transform.position);
+                if (!warped)
+                {
+                    if (playerAgent.enabled) playerAgent.enabled = false;
+                    Vector3 spawnPosition = targetPoint.transform.position;
+                    if (NavMesh.SamplePosition(spawnPosition, out NavMeshHit hit, 2f, playerAgent.areaMask))
+                    {
+                        spawnPosition = hit.position;
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"[SceneChanger] SpawnPoint '{pointName}' is not near the player's NavMesh; using its authored position.");
+                    }
+                    playerObject.transform.position = spawnPosition;
+                }
                 playerObject.transform.rotation = targetPoint.transform.rotation;
             }
             else

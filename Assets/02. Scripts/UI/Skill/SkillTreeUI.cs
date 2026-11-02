@@ -41,18 +41,37 @@ public class SkillTreeUI : MonoBehaviour
     private void BindSkillEvent()
     {
         _skillSystem.OnSkillDataChanged += RefreshAll;
+        GameEvent.OnStatChange += HandleStatChanged;
     }
 
     private void UnbindSkillEvent()
     {
         if (_skillSystem != null)
             _skillSystem.OnSkillDataChanged -= RefreshAll;
+        GameEvent.OnStatChange -= HandleStatChanged;
+    }
+
+    private void HandleStatChanged(CharacterStat stat)
+    {
+        if (_model != null && ReferenceEquals(stat, _model.Stat.Stat)) RefreshAll();
     }
 
     private void OnDestroy()
     {
         UnbindSkillEvent();
     }
+
+    private void OnDisable()
+    {
+        HideSkillTooltip();
+    }
+
+    private void HideSkillTooltip()
+    {
+        if (_skillToolTip != null)
+            _skillToolTip.ToggleSkillTooltip(false);
+    }
+
     public void RefreshAll()
     {
         foreach (var slot in slots)
@@ -62,15 +81,46 @@ public class SkillTreeUI : MonoBehaviour
         totalSkillPoint.text = $"전체 포인트 : {_model.Stat.Stat.totalSkillPoint}";
     }
 
+    internal bool ApplyPortalLoadout()
+    {
+        if (_skillSystem == null || slots.Count < 4) return false;
+
+        C_Enums.SkillSlot[] targetSlots =
+        {
+            C_Enums.SkillSlot.Q,
+            C_Enums.SkillSlot.W,
+            C_Enums.SkillSlot.E,
+            C_Enums.SkillSlot.R
+        };
+
+        for (int i = 0; i < targetSlots.Length; i++)
+        {
+            SkillBase skill = slots[i].CurrentSkill;
+            if (skill == null || !_skillSystem.MeetsRequiredLevel(skill)) return false;
+            if (skill.SkillLevel == 0)
+            {
+                if (!_skillSystem.CanLevelUpSkill(skill)) return false;
+                _skillSystem.LevelUpSkill(skill);
+            }
+
+            if (skill.SkillLevel > 0)
+                _skillSystem.RegisterSkillToSlot(targetSlots[i], skill);
+        }
+
+        RefreshAll();
+        return true;
+    }
+
     public void Toggle(bool onlyFalse = false)
     {
+        HideSkillTooltip();
+
         if (onlyFalse)
         {
             gameObject.SetActive(false);
             return;
         }
 
-        _skillToolTip.ToggleSkillTooltip(false);
         gameObject.SetActive(!gameObject.activeSelf);
     }
 }

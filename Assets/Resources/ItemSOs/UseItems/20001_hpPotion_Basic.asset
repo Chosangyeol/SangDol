@@ -18,14 +18,15 @@ MonoBehaviour:
   itemType: 2
   itemRarity: 0
   itemDesc: "\uB2EC\uB2EC\uD55C \uC0AC\uACFC\uB9DB\uC774 \uB098\uB294 \uCCB4\uB825
-    \uD3EC\uC158\uC774\uB2E4.  HP 60\uC744 3\uCD08\uC5D0 \uAC78\uCCD0 \uD68C\uBCF5\uD55C\uB2E4."
+    \uD3EC\uC158\uC774\uB2E4. \uCD5C\uB300 \uCCB4\uB825\uC758 50%\uB97C 3\uCD08\uC5D0
+    \uAC78\uCCD0 \uD68C\uBCF5\uD55C\uB2E4."
   itemPrice: 100
   stackable: 1
   maxStack: 99
   useItemType: 0
   isImmediately: 0
-  isPercent: 0
-  effectAmount: 60
+  isPercent: 1
+  effectAmount: 0.5
   itemDuration: 3
   coolDownTime: 15
   buffSO: {fileID: 11400000, guid: 0b2db036217bd094aae7f7838f79e2b4, type: 2}

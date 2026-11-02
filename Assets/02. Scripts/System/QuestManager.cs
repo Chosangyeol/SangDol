@@ -24,6 +24,7 @@ public class QuestData
     public string questTarget;
     public string questTargetName;
     public int questCount;
+    internal string requiredQuestID;
 
     public string clearNpcID;
 
@@ -156,6 +157,8 @@ public class QuestManager : MonoBehaviour
                 data.rewardItems.Add(new RewardItem { itemID = columns[14], count = count });
             }
 
+            if (columns.Length > 16) data.requiredQuestID = columns[16].Trim();
+
             
 
             questDict.Add(data.questID, data);
@@ -281,12 +284,12 @@ public class QuestManager : MonoBehaviour
 
     public void AcceptQuest(string questID)
     {
+        if (!CanAcceptQuest(questID)) return;
+
         questID = questID.Trim();
 
-        if (GetQuestState(questID) == QuestState.NotStart)
+        if (questDict.TryGetValue(questID, out QuestData data))
         {
-            QuestData data = questDict[questID];
-
             questStateDict[questID] = QuestState.InProgress;
 
             if (questDict[questID].questType == "Kill")
@@ -312,6 +315,17 @@ public class QuestManager : MonoBehaviour
             questPreview.SetActive(false);
             OnQuestProgressUpdated?.Invoke();
         }
+    }
+
+    internal bool CanAcceptQuest(string questID)
+    {
+        if (string.IsNullOrWhiteSpace(questID)) return false;
+        questID = questID.Trim();
+        if (!questDict.TryGetValue(questID, out QuestData data) || data == null ||
+            GetQuestState(questID) != QuestState.NotStart) return false;
+
+        return string.IsNullOrWhiteSpace(data.requiredQuestID) ||
+               GetQuestState(data.requiredQuestID) == QuestState.Completed;
     }
 
     public void RefuseQuest()

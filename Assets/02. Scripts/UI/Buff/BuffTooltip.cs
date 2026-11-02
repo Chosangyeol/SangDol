@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public class BuffTooltip : MonoBehaviour
 {
     RectTransform rectTransform;
+    private RectTransform currentOwner;
 
     public Vector2 offset = new Vector2(0f, 0f);
 
@@ -22,6 +23,7 @@ public class BuffTooltip : MonoBehaviour
 
     public void ToggleTooltip(bool onOff, RectTransform owner = null, BuffBase buff = null)
     {
+        currentOwner = onOff ? owner : null;
         this.gameObject.SetActive(onOff);
 
         if (!onOff) return;
@@ -39,6 +41,12 @@ public class BuffTooltip : MonoBehaviour
         rectTransform.position = new Vector2(slotPos.x + offsetX, slotPos.y + offsetY);
 
         UpdateTooltip(buff);
+    }
+
+    internal void HideFor(RectTransform owner)
+    {
+        if (owner == null || currentOwner != owner) return;
+        ToggleTooltip(false);
     }
 
     public void UpdateTooltip(BuffBase buff)

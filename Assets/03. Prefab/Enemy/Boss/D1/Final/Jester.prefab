@@ -111,6 +111,10 @@ MonoBehaviour:
     hasDone: 0
   patternObjects: []
   defeatCutsceneClip: {fileID: 0}
+  defeatCutsceneClipWeb:
+    relativePath: 
+    length: 0
+    audioTracks: 0
   deathPresentationDelay: 3
   center: {fileID: 0}
   playerStartPos: {fileID: 0}
@@ -201,6 +205,10 @@ MonoBehaviour:
     prefab: {fileID: 2556489368684937025, guid: b4b7044b5da72864b8ebb4f214a10143,
       type: 3}
     cutsceneClip: {fileID: 32900000, guid: 8859abe22ea92a14094270fef242b69c, type: 3}
+    cutsceneClipWeb:
+      relativePath: Videos/8859abe22ea92a14094270fef242b69c.mp4
+      length: 5.541666666666667
+      audioTracks: 1
     sceneMiddleBoss: {fileID: 0}
     cutsceneDirector: {fileID: 0}
     waitingArea: {fileID: 0}
@@ -228,6 +236,7 @@ MonoBehaviour:
     prefab: {fileID: 0}
     cutSceneObj: {fileID: 0}
   bossMeshs: []
+  special3ReturnDelay: 3
 --- !u!54 &4293196031249674694
 Rigidbody:
   m_ObjectHideFlags: 0

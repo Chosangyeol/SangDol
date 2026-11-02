@@ -19,15 +19,16 @@ public class PlayerAttackContainer : MonoBehaviour
     public void AnimEvent_ExevuteSkillAttack()
     {
         if (_model.isDie || _model.Buff.isStun || _model.IsExternalControlLocked) return;
-        if (currentSkill == null || currentSkill.skillData == null) return;
+        SkillBase activeSkill = currentSkill;
+        if (activeSkill == null || activeSkill.skillData == null) return;
 
-        SkillBaseSO data = currentSkill.skillData;
+        SkillBaseSO data = activeSkill.skillData;
 
         int enemyLayer = LayerMask.GetMask("Enemy");
 
         Vector3 attackPos = _model.transform.position + _model.transform.forward * data.forwardOffset;
 
-        float scaleMultiplier = currentSkill.GetCurrentScaleMultiplier();
+        float scaleMultiplier = activeSkill.GetCurrentScaleMultiplier();
 
         Collider[] hitEnemies = null; // 판정된 적들을 담을 배열
 
@@ -49,14 +50,16 @@ public class PlayerAttackContainer : MonoBehaviour
         // 아무도 안 맞았으면 종료
         if (hitEnemies == null || hitEnemies.Length == 0) return;
 
+        HashSet<EnemyBase> damagedEnemies = new HashSet<EnemyBase>();
         foreach (Collider target in hitEnemies)
         {
             EnemyBase enemy = target.GetComponentInParent<EnemyBase>();
 
-            if (enemy != null)
+            if (enemy != null && damagedEnemies.Add(enemy) && !enemy.IsDead &&
+                !(enemy is BossModel boss && boss.isImmunity))
             {
-                float skillMultiplier = currentSkill.GetCurrentDamageMultiplier();
-                float chargeMultiplier = currentSkill.GetChargeMultiplier();
+                float skillMultiplier = activeSkill.GetCurrentDamageMultiplier();
+                float chargeMultiplier = activeSkill.GetChargeMultiplier();
 
                 float damageBase = _model.Stat.Stat.attackDamage.FinalValue * skillMultiplier * chargeMultiplier;
 
@@ -81,7 +84,11 @@ public class PlayerAttackContainer : MonoBehaviour
                     isBackattack = false
                 };
 
+                if (damageInfo.isCritical)
+                    damageInfo.damage *= _model.Stat.Stat.criticalDamage.FinalValue;
+
                 enemy.Damaged(damageInfo);
+                activeSkill.GrantIdentityOnHit();
                 Debug.Log($"{target.name}에게 {data.attackShape} 형태의 타격 적중!");
             }
         }

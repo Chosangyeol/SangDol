@@ -16,9 +16,9 @@ MonoBehaviour:
   enemyName: "\uBCC0\uC774 \uB291\uB300"
   isAggressive: 0
   canDown: 0
-  maxHp: 300
+  maxHp: 210
   level: 0
-  attackDamage: 40
+  attackDamage: 28
   moveSpeed: 3
   attackSpeed: 1
   down: 100

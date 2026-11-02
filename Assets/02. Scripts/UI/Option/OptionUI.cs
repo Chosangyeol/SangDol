@@ -20,6 +20,9 @@ public class OptionUI : MonoBehaviour
     public GameObject optionUI;
     internal bool IsOpen => optionUI != null && optionUI.activeSelf;
 
+    private GameObject soundPanel;
+    private GameObject controlKeysPanel;
+
     [Header("사운드 UI [0:Master , 1:BGM, 2:SFX]")]
     public VolumeComponent[] volumeComponents;
 
@@ -40,6 +43,58 @@ public class OptionUI : MonoBehaviour
 
         // 2. 저장된 설정 불러와서 UI에 적용
         LoadOption();
+        InitializeControlKeysPanel();
+    }
+
+    private void InitializeControlKeysPanel()
+    {
+        if (optionUI == null) return;
+
+        Transform section = optionUI.transform.Find("Section");
+        if (section == null) return;
+
+        Transform sound = section.Find("Sound");
+        if (sound != null) soundPanel = sound.gameObject;
+
+        Transform existingControlKeysPanel = section.Find("ControlKeysPanel");
+        if (existingControlKeysPanel != null)
+        {
+            controlKeysPanel = existingControlKeysPanel.gameObject;
+            controlKeysPanel.SetActive(false);
+        }
+        else
+        {
+            Debug.LogWarning("OptionUI: Section 아래에서 ControlKeysPanel을 찾을 수 없습니다.", this);
+        }
+
+        Transform tabs = optionUI.transform.Find("Tab");
+        if (tabs == null) return;
+
+        Transform soundTab = tabs.Find("Tab1");
+        if (soundTab != null)
+        {
+            Button soundTabButton = soundTab.GetComponent<Button>();
+            if (soundTabButton != null) soundTabButton.onClick.AddListener(ShowSoundPanel);
+        }
+
+        Transform controlKeysTab = tabs.Find("Tab3");
+        if (controlKeysTab != null)
+        {
+            Button controlKeysTabButton = controlKeysTab.GetComponent<Button>();
+            if (controlKeysTabButton != null) controlKeysTabButton.onClick.AddListener(ShowControlKeysPanel);
+        }
+    }
+
+    private void ShowSoundPanel()
+    {
+        if (soundPanel != null) soundPanel.SetActive(true);
+        if (controlKeysPanel != null) controlKeysPanel.SetActive(false);
+    }
+
+    private void ShowControlKeysPanel()
+    {
+        if (soundPanel != null) soundPanel.SetActive(false);
+        if (controlKeysPanel != null) controlKeysPanel.SetActive(true);
     }
 
     private void LoadOption()
@@ -104,12 +159,16 @@ public class OptionUI : MonoBehaviour
 
     public void Toggle(bool onlyFalse = false)
     {
+        if (optionUI == null) return;
+
         if (onlyFalse)
         {
             optionUI.SetActive(false);
             return;
         }
 
-        optionUI.SetActive(!optionUI.activeSelf);
+        bool showOption = !optionUI.activeSelf;
+        optionUI.SetActive(showOption);
+        if (showOption) ShowSoundPanel();
     }
 }

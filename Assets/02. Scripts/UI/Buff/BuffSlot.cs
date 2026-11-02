@@ -32,6 +32,10 @@ public class BuffSlot : MonoBehaviour,
 
     public void Init(SBuff buff, BuffTooltip tooltip)
     {
+        if (!ReferenceEquals(currentBuff, buff.act) || this.tooltip != tooltip)
+        {
+            if (this.tooltip != null) this.tooltip.HideFor(transform as RectTransform);
+        }
         currentBuff = buff.act;
         this.tooltip = tooltip;
 
@@ -79,10 +83,12 @@ public class BuffSlot : MonoBehaviour,
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (currentBuff == null) return;
-        if (tooltip == null) return;
+        if (tooltip != null) tooltip.HideFor(transform as RectTransform);
+    }
 
-        tooltip.ToggleTooltip(false);
+    private void OnDisable()
+    {
+        if (tooltip != null) tooltip.HideFor(transform as RectTransform);
     }
 
     #endregion

@@ -86,6 +86,16 @@ public class C_Stat
         NotifyStatChanged();
     }
 
+    internal void RaiseToLevel(int targetLevel)
+    {
+        while (stat.currentLevel < targetLevel && stat.maxExp > 0f)
+        {
+            int previousLevel = stat.currentLevel;
+            GainExp(Mathf.Max(0f, stat.maxExp - stat.currentExp));
+            if (stat.currentLevel == previousLevel) break;
+        }
+    }
+
     public void GainGold(int amount)
     {
         stat.GainGold(amount);

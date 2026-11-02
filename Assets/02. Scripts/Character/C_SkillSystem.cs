@@ -286,7 +286,7 @@ public class C_SkillSystem
 
     public void LevelUpSkill(SkillBase skill)
     {
-        if (_model.Stat.Stat.remainSkillPoint < 1) return;
+        if (!CanLevelUpSkill(skill)) return;
 
         SkillBase targetSkill = hasSkillData.Find(x => x == skill);
 
@@ -300,6 +300,18 @@ public class C_SkillSystem
         useSkillPoint++;
         targetSkill.LevelUpSkill();
         OnSkillDataChanged?.Invoke();
+    }
+
+    internal bool MeetsRequiredLevel(SkillBase skill)
+    {
+        return skill != null && skill.skillData != null &&
+            _model.Stat.Stat.currentLevel >= skill.skillData.requireLevel;
+    }
+
+    internal bool CanLevelUpSkill(SkillBase skill)
+    {
+        return MeetsRequiredLevel(skill) && skill.SkillLevel < skill.skillData.maxLevel &&
+            _model.Stat.Stat.remainSkillPoint > 0;
     }
 
     public void LevelDownSkill(SkillBase skill)

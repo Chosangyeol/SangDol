@@ -3271,6 +3271,7 @@ MonoBehaviour:
   - enemyPrefab: {fileID: 4660680545929352888, guid: 5f3250fdfdaf20d43b8ac1f93b0d0b87,
       type: 3}
     spawnPoint: {fileID: 1965451643}
+    motion: 0
     delay: 0
   _goal: 
 --- !u!1 &1444084203
@@ -3639,6 +3640,8 @@ MonoBehaviour:
   isSequential: 0
   gateObject: {fileID: 0}
   nextSectorTrigger: {fileID: 0}
+  portalObject: {fileID: 0}
+  nextSector: {fileID: 0}
   cutsceneDirector: {fileID: 0}
   hasCutscene: 0
   navMeshSurface: {fileID: 0}
@@ -6300,6 +6303,21 @@ PrefabInstance:
       propertyPath: warpDatas.Array.data[1].playerRespawn
       value: 
       objectReference: {fileID: 760733637}
+    - target: {fileID: 6292796012629706706, guid: 4c09c35c3d85ce64db55b44f895ed03e,
+        type: 3}
+      propertyPath: warpDatas.Array.data[0].clipWeb.length
+      value: 43.166666666666664
+      objectReference: {fileID: 0}
+    - target: {fileID: 6292796012629706706, guid: 4c09c35c3d85ce64db55b44f895ed03e,
+        type: 3}
+      propertyPath: warpDatas.Array.data[0].clipWeb.audioTracks
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6292796012629706706, guid: 4c09c35c3d85ce64db55b44f895ed03e,
+        type: 3}
+      propertyPath: warpDatas.Array.data[0].clipWeb.relativePath
+      value: Videos/2c4e293229814374f8de31a201c4ccd7.mp4
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

@@ -345,6 +345,7 @@ MonoBehaviour:
   spellRecovery: 1.2
   spellRadius: 8
   spellCooldown: 4
+  postAttackDelay: 1.2
   combatScaleMultiplier: 0.5
   swipeRadius: 3
   swipeWindup: 0.4

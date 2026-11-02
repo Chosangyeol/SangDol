@@ -80,6 +80,7 @@ public class D1_Final_Special3Data
     [Tooltip("D1_MiddleBoss 컴포넌트를 포함한 중간 보스 프리팹")]
     public GameObject prefab;
     public VideoClip cutsceneClip;
+    [SerializeField, HideInInspector] internal WebVideoSource cutsceneClipWeb;
     [Tooltip("컷씬과 전투에서 함께 사용하는 씬의 중간 보스. 비어 있으면 prefab을 생성합니다.")]
     public D1_MiddleBoss sceneMiddleBoss;
     [Tooltip("중앙 이동과 동영상 종료 후 재생할 Cinemachine Timeline")]
@@ -671,24 +672,28 @@ public class D1_FinalBoss : BossModel
         Target.PlayerController?.StopMove();
         Target.SetControlable(false);
         special3ControlsLocked = true;
-        PauseSpecial3Bgm();
-        special3Video = VideoPlayManager.instance;
-        if (special3Video != null && special3Video.TryPlayVideo(Special3.cutsceneClip, out special3VideoSession))
-        {
-            if (GetSpecial3Presentation() != null) special3Video.HoldFrameForTransition(special3VideoSession);
-            while (special3Video != null && special3Video.IsPlaybackActive(special3VideoSession) &&
-                Target != null && !Target.isDie) yield return null;
-        }
-        else Debug.LogWarning("[D1_FinalBoss] Special3 cutscene unavailable; continuing the middle boss encounter.");
         var transitionPresentation = GetSpecial3Presentation();
-        if (transitionPresentation != null && Target != null && !Target.isDie) yield return transitionPresentation.FadeTo(1f);
-        if (special3Video != null) special3Video.CancelPlayback(special3VideoSession);
-        special3Video = null; special3VideoSession = 0;
+        bool playIntroduction = transitionPresentation == null || !transitionPresentation.MiddleBossIntroductionCompleted;
+        if (playIntroduction)
+        {
+            PauseSpecial3Bgm();
+            special3Video = VideoPlayManager.instance;
+            if (special3Video != null && special3Video.TryPlayVideoSource(Special3.cutsceneClip, Special3.cutsceneClipWeb, out special3VideoSession))
+            {
+                if (transitionPresentation != null) special3Video.HoldFrameForTransition(special3VideoSession);
+                while (special3Video != null && special3Video.IsPlaybackActive(special3VideoSession) &&
+                    Target != null && !Target.isDie) yield return null;
+            }
+            else Debug.LogWarning("[D1_FinalBoss] Special3 cutscene unavailable; continuing the middle boss encounter.");
+            if (transitionPresentation != null && Target != null && !Target.isDie) yield return transitionPresentation.FadeTo(1f);
+            if (special3Video != null) special3Video.CancelPlayback(special3VideoSession);
+            special3Video = null; special3VideoSession = 0;
 
-        if (Target == null || Target.isDie) yield break;
+            if (Target == null || Target.isDie) yield break;
 
-        yield return PlaySpecial3Timeline();
-        if (Target == null || Target.isDie) yield break;
+            yield return PlaySpecial3Timeline();
+            if (Target == null || Target.isDie) yield break;
+        }
 
         GameObject spawnedMiddleBoss = null;
         special3UsesSceneBoss = Special3.sceneMiddleBoss != null;
@@ -734,6 +739,7 @@ public class D1_FinalBoss : BossModel
         _special3MiddleBoss.isInField = true;
         _special3MiddleBoss.isCombatStarted = false;
         _special3MiddleBoss.bossSpawnPoint = Special3.middleBossSpawnPoint;
+        if (transitionPresentation != null) transitionPresentation.MarkMiddleBossIntroductionCompleted();
 
         WarpPlayerTo(Special3.waitingArea);
         special3InEncounter = true;
@@ -1028,10 +1034,12 @@ public class D1_FinalBoss : BossModel
     {
         ReleaseChessControls();
         StopSpecial3Timeline();
+        bool preserveArenaForRetry = Target != null && Target.isDie &&
+            GetSpecial3Presentation() != null && GetSpecial3Presentation().MiddleBossIntroductionCompleted;
         if (special3InEncounter && Target != null && !Target.isDie)
             WarpPlayerTo(Special3.returnPoint != null ? Special3.returnPoint : playerStartPos);
         special3InEncounter = false;
-        FinishSpecial3Arena();
+        if (!preserveArenaForRetry) FinishSpecial3Arena();
         RestoreSpecial3Bgm();
         RestoreSpecial3Movement();
         if (special3Video != null) special3Video.CancelPlayback(special3VideoSession);

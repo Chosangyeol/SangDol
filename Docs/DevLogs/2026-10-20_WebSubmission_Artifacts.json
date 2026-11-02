@@ -1,0 +1,49 @@
+{
+  "status": "PASS",
+  "templateScriptParses": true,
+  "referencedFilesExist": [
+    "WebSubmission.data.br",
+    "WebSubmission.framework.js.br",
+    "WebSubmission.wasm.br",
+    "WebSubmission.loader.js"
+  ],
+  "compressed": [
+    {
+      "file": "WebSubmission.data.br",
+      "bytes": 856907541,
+      "decompressedBytes": 1002175016
+    },
+    {
+      "file": "WebSubmission.framework.js.br",
+      "bytes": 74015,
+      "decompressedBytes": 430795
+    },
+    {
+      "file": "WebSubmission.wasm.br",
+      "bytes": 9136174,
+      "decompressedBytes": 50152488
+    }
+  ],
+  "videos": [
+    {
+      "file": "1eab8bf75d3fc60419a778ca448268f3.mp4",
+      "bytes": 1848432,
+      "sha256MatchesOriginal": true
+    },
+    {
+      "file": "2c4e293229814374f8de31a201c4ccd7.mp4",
+      "bytes": 12114773,
+      "sha256MatchesOriginal": true
+    },
+    {
+      "file": "8859abe22ea92a14094270fef242b69c.mp4",
+      "bytes": 3318293,
+      "sha256MatchesOriginal": true
+    },
+    {
+      "file": "91118005997c0ee44813a892433aef45.mp4",
+      "bytes": 1694226,
+      "sha256MatchesOriginal": true
+    }
+  ]
+}

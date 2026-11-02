@@ -25,6 +25,7 @@ public class WarpData
     [Header("연출 설정")]
     public bool hasVideo;
     public VideoClip clip;
+    [SerializeField, HideInInspector] internal WebVideoSource clipWeb;
     public bool hasAudio;
     public C_Enums.BGM_List bgm;
     public bool hasPlayed;
@@ -224,7 +225,7 @@ public class DungeonManager : MonoBehaviour
             if (data.hasVideo && !data.hasPlayed)
             {
                 warpVideo = VideoPlayManager.instance;
-                if (warpVideo != null && warpVideo.TryPlayVideo(data.clip, out warpVideoSession))
+                if (warpVideo != null && warpVideo.TryPlayVideoSource(data.clip, data.clipWeb, out warpVideoSession))
                 {
                     while (warpVideo != null && warpVideo.IsPlaybackActive(warpVideoSession) &&
                         _model != null && !_model.isDie) yield return null;
@@ -290,6 +291,7 @@ public class DungeonManager : MonoBehaviour
         }
 
         yield return new WaitForSeconds(3f);
+        if (_model != null && !_model.isDie) _model.SetControlable(true);
     }
     #endregion
 

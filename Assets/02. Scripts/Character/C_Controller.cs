@@ -51,10 +51,9 @@ public class C_Controller
             {
                 hasBufferedMoveDestination = false;
             }
-            else if (!isAttacking && _model.canMove)
+            else if (_model.canMove)
             {
                 Vector3 destination = bufferedMoveDestination;
-                hasBufferedMoveDestination = false;
                 RequestMove(destination);
             }
         }
@@ -148,6 +147,7 @@ public class C_Controller
         lastMoveDestination = dest;
         hasMoveDestination = true;
         nextRepathTime = Time.time + RepathInterval;
+        hasBufferedMoveDestination = false;
         if (_model.Anim != null) _model.Anim.SetBool("Move", true);
     }
 

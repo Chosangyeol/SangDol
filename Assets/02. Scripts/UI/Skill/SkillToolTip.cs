@@ -1,5 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;
+using System.Globalization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -31,11 +31,21 @@ public class SkillToolTip : MonoBehaviour
     {
         if (!onoff)
         {
-            this.gameObject.SetActive(false);
+            StopAllCoroutines();
+            if (canvasGroup != null) canvasGroup.alpha = 0f;
+            gameObject.SetActive(false);
             return;
         }
-        this.gameObject.SetActive(true);
-        canvasGroup.alpha = 0f;
+
+        if (owner == null || skill == null || skill.skillData == null)
+        {
+            ToggleSkillTooltip(false);
+            return;
+        }
+
+        gameObject.SetActive(true);
+        StopAllCoroutines();
+        if (canvasGroup != null) canvasGroup.alpha = 0f;
         StartCoroutine(TooltipCo(owner, skill));
     }
 
@@ -59,7 +69,7 @@ public class SkillToolTip : MonoBehaviour
 
         yield return null;
 
-        canvasGroup.alpha = 1f;
+        if (canvasGroup != null) canvasGroup.alpha = 1f;
     }
 
     public void UpdateTooltip(SkillBase skill)
@@ -86,17 +96,11 @@ public class SkillToolTip : MonoBehaviour
             }
         }
 
-        if (skill.skillData.hasDamage)
+        string damageText = GetDamageText(skill);
+        if (damageText != null)
         {
             _skillDamage.gameObject.SetActive(true);
-            if (skill.SkillLevel == 0)
-            {
-                _skillDamage.text = $"데미지: {skill.skillData.damageMultipliers[0] * 100f}%";
-            }
-            else
-            {
-                _skillDamage.text = $"데미지: {skill.GetCurrentDamageMultiplier() * 100f}%";
-            }
+            _skillDamage.text = damageText;
         }
         else
         {
@@ -104,9 +108,58 @@ public class SkillToolTip : MonoBehaviour
         }
 
 
-        _skillDesc.text = skill.skillData.skillDesc;
+        string description = skill.skillData.skillDesc;
+        if (description.Contains("%%%"))
+        {
+            string damagePercent = GetBaseDamagePercent(skill);
+            if (!string.IsNullOrEmpty(damagePercent))
+                description = description.Replace("%%%", damagePercent);
+        }
+        _skillDesc.text = description;
 
         Canvas.ForceUpdateCanvases();
         LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
     }
+
+    private static string GetDamageText(SkillBase skill)
+    {
+        if (skill == null || skill.skillData == null || !skill.skillData.hasDamage)
+            return null;
+
+        if (skill is Skill_4)
+            return $"피해량: 공격력의 {FormatPercent(Skill_4.HoldingTickDamageMultiplier)} (0.5초마다)";
+
+        if (skill.skillData.damageMultipliers == null || skill.skillData.damageMultipliers.Length == 0)
+            return null;
+
+        float baseMultiplier = skill.GetCurrentDamageMultiplier();
+        float[] chargeMultipliers = skill.skillData.chargeDamageMultipliers;
+        if (!skill.skillData.isChargeSkill || chargeMultipliers == null || chargeMultipliers.Length == 0)
+            return $"피해량: 공격력의 {FormatPercent(baseMultiplier)}";
+
+        float minChargeMultiplier = chargeMultipliers[0];
+        float maxChargeMultiplier = chargeMultipliers[0];
+        for (int i = 1; i < chargeMultipliers.Length; i++)
+        {
+            minChargeMultiplier = Mathf.Min(minChargeMultiplier, chargeMultipliers[i]);
+            maxChargeMultiplier = Mathf.Max(maxChargeMultiplier, chargeMultipliers[i]);
+        }
+
+        float minDamage = baseMultiplier * minChargeMultiplier;
+        float maxDamage = baseMultiplier * maxChargeMultiplier;
+        if (Mathf.Approximately(minDamage, maxDamage))
+            return $"피해량: 공격력의 {FormatPercent(minDamage)}";
+
+        return $"피해량: 공격력의 {FormatPercent(minDamage)} ~ {FormatPercent(maxDamage)} (차지 단계에 따라)";
+    }
+
+    private static string GetBaseDamagePercent(SkillBase skill)
+    {
+        if (skill.skillData.damageMultipliers == null || skill.skillData.damageMultipliers.Length == 0)
+            return null;
+        return FormatPercent(skill.GetCurrentDamageMultiplier());
+    }
+
+    private static string FormatPercent(float multiplier)
+        => (multiplier * 100f).ToString("0.#", CultureInfo.InvariantCulture) + "%";
 }
